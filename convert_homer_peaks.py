@@ -17,7 +17,7 @@ def homerPeak_to_bed(input_path, output_path):
             start = tokens[2]
             end = tokens[3]
             
-            out_file.write('\t'.join([chrom, start, end, name, '\n'])
+            out_file.write('\t'.join([chrom, start, end, name, '\n']))
     out_file.close()
             
 
