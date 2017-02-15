@@ -42,6 +42,8 @@ def get_random_background(target_positions,
                       sequences [[chr,start,end],...]
     size_ratio: float, ratio of background sequences to target sequences
     tolerance: float, max difference in GC content between target and background
+    N_threshold: proportion of background sequences that can be N
+    genome: genome from which to draw background sequences
     """
     
     ###load genome into memory
@@ -165,42 +167,46 @@ def write_background_positions(background_positions, output_dir):
     fasta_file.close()
 
 if __name__ == '__main__':
-    input_path = sys.argv[1]
-    output_path = sys.argv[2]
-
     parser = argparse.ArgumentParser(description='Constructs random GC matched'+
                                      'background regions')
-    parser.add_argument("samples",
-        help="space separated listed of Homer peak files", nargs='+')
+    parser.add_argument("inputPath",
+        help="path to a bed file containing a chr, start, end, and end column",
+        type = str)
     parser.add_argument("outputPath",
         help="directory where output files should be written",
-        default="~/", type=str)
-    parser.add_argument("-threshold",
-        help="idr threshold to use",
-        default = "0.05", type=float)
-    parser.add_argument("-scoreColumn",
-        help="column to use for ranking peaks",
-        default = ['findPeaks','Score'],
-        type=str,
-        nargs='+')
-    parser.add_argument("-print", 
-        help="just print commands", 
-        default = False, action = "store_true")
+        default="./", type=str)
+    parser.add_argument("-sizeRatio",
+        help="size of the background region with respect to the target region",
+        default = 1.0, type=float)
+    parser.add_argument("-gcTolerance",
+        help="maximum difference allowed between the GC content of target and background",
+        default = 0.01,
+        type=float)
+    parser.add_argument("-nThreshold",
+        help="maximum fraction of background sequences that can be N",
+        default = 0.1,
+        type=float)
+    parser.add_argument("-genome",
+        help="genome from which to construct background regions",
+        default = "mm10",
+        type=str)
+
     # parse arguments
     args = parser.parse_args()
 
-    samples = args.samples
-    outPath = args.outputPath
-    threshold = args.threshold
-    scoreColumn = ' '.join(args.scoreColumn)
-    justPrint = False
-
+    input_path = args.inputPath
+    output_path = args.outputPath
+    size_ratio = args.sizeRatio
+    gc_tolerance = args.gcTolerance
+    n_threshold = args.nThreshold
+    genome = args.genome
+    
     target_positions = read_target_positions(input_path)
     
     background_positions = get_random_background(target_positions, 
-                                                size_ratio = 1.0, 
-                                                tolerance = 0.01, 
-                                                N_threshold = 0.5,
-                                                genome = 'mm10'
+                                                size_ratio = size_ratio, 
+                                                tolerance = gc_tolerance, 
+                                                N_threshold = n_threshold,
+                                                genome = genome
                                                 )
     write_background_positions(background_positions, output_path) 
