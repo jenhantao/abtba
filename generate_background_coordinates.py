@@ -28,21 +28,32 @@ def read_target_positions(file_path):
         start = int(tokens[1])
         end = int(tokens[2])
         name = tokens[3]
-        positions.append((chrom, start, end, name))
+        positions.append([chrom, start, end, name])
     return positions 
 
-def get_random_background(target_positions, 
-                        size_ratio = 1.0, 
-                        tolerance = 0.01, 
-                        N_threshold = 0.5,
-                        genome = 'mm10'
-                        ):
+def calc_gc_content(sequence):
+    '''
+    sequence - a string, representing a DNA sequence in upper case
+    returns the GC content of sequence
+    '''
+    C_count = sequence.count('C')
+    G_count = sequence.count('G')
+    GC_count = C_count + G_count
+    GC_content = GC_count/len(sequence)
+    return GC_content
+
+def get_random_background(target_positions,
+                          size_ratio,
+                          num_bins = 10,
+                          n_threshold = 0.5,
+                          genome = 'mm10',
+                          ):
     """
     target_sequences: 2D numpy array, list of genomic coordinates for target 
                       sequences [[chr,start,end],...]
     size_ratio: float, ratio of background sequences to target sequences
-    tolerance: float, max difference in GC content between target and background
-    N_threshold: proportion of background sequences that can be N
+    num_bins: int, number of GC bins
+    n_threshold: proportion of background sequences that can be N
     genome: genome from which to draw background sequences
     """
     
@@ -55,62 +66,115 @@ def get_random_background(target_positions,
     genome_path = os.path.dirname(__file__) + '/mm10/'
 
     if genome == 'mm10':
-        _chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
+        chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
                         'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
                         'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
                         'chr16', 'chr17', 'chr18', 'chr19', 'chrX']
-    _chrom_size_dict = {}
-    _chrom_seq_dict = {}
+    chrom_size_dict = {}
+    chrom_seq_dict = {}
 
     print('reading genome')
-    for chrom in _chromosomes:
+    for chrom in chromosomes:
         with open(genome_path + chrom + '.fa') as f:
             data = f.readlines()
         seq = ''.join(x.upper().strip() for x in data[1:])
         size = len(seq)
-        _chrom_size_dict[chrom] = size
-        _chrom_seq_dict[chrom] = seq
-    _numChromosomes = len(_chromosomes)
+        chrom_size_dict[chrom] = size
+        chrom_seq_dict[chrom] = seq
+
     print('done reading genome')
-    
-    target_chr_position_dict = {x:np.zeros(200000000) for x in _chromosomes} 
+
     ### initialize target_chr_position_dict using target positions
-    ### retreive target sequences
-    target_sequences = []
+    target_chr_position_dict = {x:np.zeros(200000000) for x in chromosomes} 
+    ### retrieve target sequences and calculate GC content and mean length
+    target_length_count = 0
     for pos in target_positions:
         chrom = pos[0]        
         start = int(pos[1])
         end = int(pos[2])
         # use 0 indexing of position, versus 1 indexing used in fasta
         target_chr_position_dict[chrom][start-1:end] = 1         
-        seq = _chrom_seq_dict[chrom][start:(end)]
-        target_sequences.append(seq)
+        seq = chrom_seq_dict[chrom][start:(end)]
+        gc_content = calc_gc_content(seq)
+
+        pos.append(seq)
+        pos.append(gc_content)
+        target_length_count += len(seq)
+
+    # average length of target sequences
+    mean_target_length = target_length_count/len(target_positions)     
+    mean_target_length = int(np.floor(mean_target_length))
+
+    # sort target_positions by gc_content and bin according to GC content
+    sorted_target_positions = sorted(target_positions, key=lambda x:x[-1])
+    sorted_target_positions = np.array(sorted_target_positions)
+
+    target_position_bins = np.array_split(sorted_target_positions, num_bins)
+
+    min_gc = float(sorted_target_positions[0][-1])
+    max_gc = float(sorted_target_positions[-1][-1])
+
+    gc_threshold = (max_gc - min_gc)/(num_bins*2)
+
+    background_positions = [] 
+
+    for target_pos_bin in target_position_bins:
+        current_random_pos = get_random_positions_with_gc(target_pos_bin,
+                                                         size_ratio,
+                                                         gc_threshold,
+                                                         n_threshold,
+                                                         chrom_seq_dict,
+                                                         chrom_size_dict,
+                                                         target_chr_position_dict,
+                                                         mean_target_length)
+        background_positions = background_positions + current_random_pos
+
+    return background_positions
+
+def get_random_positions_with_gc(target_positions, 
+                                 size_ratio, 
+                                 tolerance, 
+                                 n_threshold,
+                                 chrom_seq_dict,
+                                 chrom_size_dict,
+                                 target_chr_position_dict,
+                                 mean_target_length
+                                 ):
+    """
+    target_positions: 2D numpy array, list of genomic coordinates for target 
+                      sequences [[chr,start,end, seq, gc_content],...]
+    size_ratio: float, ratio of background sequences to target sequences
+    tolerance: float, max difference in GC content between target and background
+    n_threshold: proportion of background sequences that can be N
+    genome: genome from which to draw background sequences
+    """
+    chromosomes = sorted(chrom_seq_dict.keys())
+    numChromosomes = len(chrom_seq_dict.keys()) # number of chromosomes
+
     ### calculate GC content and average length of the target sequences
     target_gc_count = 0
     target_length_count = 0
-    for s in target_sequences:
-        target_gc_count += s.count('G')
-        target_gc_count += s.count('C')
-        target_length_count += len(s)
-    # GC content of target sequences
-    target_gc_content = target_gc_count/(target_length_count+0.0000001) 
-    # average length of target sequences
-    mean_target_length = target_length_count/len(target_sequences)     
-    mean_target_length = int(np.floor(mean_target_length))
+    for pos in target_positions:
+        seq = pos[-2]
+        target_gc_count += seq.count('G')
+        target_gc_count += seq.count('C')
+        target_length_count += len(seq)
+    target_gc_content = target_gc_count/(target_length_count+0.0000001) # GC content of target sequences
+    
     ### select random genomic loci such that they do no overlap target sequences
     numSelected = 0
     # candidate pool of background seqs is size_ratio X larger
     numToSelect = len(target_positions) * size_ratio 
     candidate_positions = []
-    numNallowed = int(N_threshold * mean_target_length) # number of allowable Ns
+    numNallowed = int(n_threshold * mean_target_length) # number of allowable Ns
     counter = 0
     while numSelected < numToSelect:
         if counter % 100000 == 0:
             print(counter, numSelected)
         # select random chromsome
-        chromIndex = np.random.randint(_numChromosomes)
-        randChrom = _chromosomes[chromIndex]
-        randChromSize = _chrom_size_dict[randChrom]
+        chromIndex = np.random.randint(numChromosomes)
+        randChrom = chromosomes[chromIndex]
+        randChromSize = chrom_size_dict[randChrom]
         # must find non overlapping segment on this chromosome before moving on
         selectedSequence = False
         while not selectedSequence:
@@ -120,7 +184,7 @@ def get_random_background(target_positions,
             overlap_sum = np.sum(target_chr_position_dict[randChrom][randStart:(randEnd + 1)])
             
             if not overlap_sum > 0:
-                randSeq = _chrom_seq_dict[randChrom][randStart:(randEnd+1)]
+                randSeq = chrom_seq_dict[randChrom][randStart:(randEnd+1)]
                 numN = randSeq.count('N')
                 if numN <= numNallowed:
                     rand_gc_count = randSeq.count('G')+ randSeq.count('C')
@@ -178,9 +242,9 @@ if __name__ == '__main__':
     parser.add_argument("-sizeRatio",
         help="size of the background region with respect to the target region",
         default = 1.0, type=float)
-    parser.add_argument("-gcTolerance",
-        help="maximum difference allowed between the GC content of target and background",
-        default = 0.01,
+    parser.add_argument("-numBins",
+        help="number of bins to use for GC normalization",
+        default = 10,
         type=float)
     parser.add_argument("-nThreshold",
         help="maximum fraction of background sequences that can be N",
@@ -197,7 +261,7 @@ if __name__ == '__main__':
     input_path = args.inputPath
     output_path = args.outputPath
     size_ratio = args.sizeRatio
-    gc_tolerance = args.gcTolerance
+    num_bins = args.numBins
     n_threshold = args.nThreshold
     genome = args.genome
     
@@ -205,8 +269,8 @@ if __name__ == '__main__':
     
     background_positions = get_random_background(target_positions, 
                                                 size_ratio = size_ratio, 
-                                                tolerance = gc_tolerance, 
-                                                N_threshold = n_threshold,
+                                                num_bins = num_bins, 
+                                                n_threshold = n_threshold,
                                                 genome = genome
                                                 )
     write_background_positions(background_positions, output_path) 
