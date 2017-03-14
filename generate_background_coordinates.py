@@ -63,17 +63,24 @@ def get_random_background(target_positions,
     # {chr:[]}, value is chromosome length boolean array
     # largest chromosome has 200 million bps 
 
-    genome_path = os.path.dirname(__file__) + '/mm10/'
 
     if genome == 'mm10':
+        genome_path = os.path.dirname(__file__) + '/mm10/'
         chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
                         'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
                         'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
                         'chr16', 'chr17', 'chr18', 'chr19', 'chrX']
+    elif genome == 'hg38':
+        genome_path = os.path.dirname(__file__) + '/hg38/'
+        chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
+                        'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
+                        'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
+                        'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 
+                        'chr21', 'chr22', 'chrX']
     chrom_size_dict = {}
     chrom_seq_dict = {}
 
-    print('reading genome')
+    print('reading genome', genome)
     for chrom in chromosomes:
         with open(genome_path + chrom + '.fa') as f:
             data = f.readlines()

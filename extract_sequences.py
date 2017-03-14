@@ -9,6 +9,7 @@ Extracts the genomic sequences
 
 ### imports ###
 import sys
+import os
 
 def read_bed_file(input_path):
     '''
