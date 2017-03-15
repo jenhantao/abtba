@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """
-Given a fasta file, and a set of PWMs in Homer format calculates the top motif
-match for each motif for each sequence:
+Given a set of negative  sequences and positive sequences (in FASTA format) 
+as well as a list of motifs, calculates standardized motif scores 
+and sequence labels suitable for training classifier
 """
 
 ### imports ###
@@ -13,10 +14,10 @@ import pandas as pd
 from sklearn import preprocessing
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='given a fasta file and a list \
-                                     and a list of motif files, calculates the \
-                                     the best match to each motif for each \
-                                     sequence' )
+    parser = argparse.ArgumentParser(description='Given a set of negative \
+                sequences and positive sequences (in FASTA format) as well \
+                as a list of motifs, calculates standardized motif scores \
+                and sequence labels suitable for training classifier' )
     parser.add_argument("positive_sequences_path",
         help="path to a fasta_file containing positive sequences to score",
         type = str)
@@ -48,6 +49,9 @@ if __name__ == '__main__':
     motif_files = args.motif_files
     num_processors = args.num_procs
     pseudocount = args.pseudocount
+
+    if not os.path.isdir(output_path):
+        os.mkdir(output_path)
 
     start = time.time()
     script_path = os.path.dirname(__file__)
@@ -95,13 +99,12 @@ if __name__ == '__main__':
     
     # create labels
     print('creating labels')
-    label_vals = [True] * positive_score_frame.shape[0] + [False] * negative_score_frame.shape[0]
-    labels = pd.Series(label_vals, index=np.concatenate([positive_score_frame.index.values, negative_score_frame.index.values]))
     label_path = output_path + '/labels.txt'
     label_file = open(label_path, 'w')
     for ind in positive_score_frame.index.values:
         label_file.write(ind + '\t1\n')
     for ind in negative_score_frame.index.values:
         label_file.write(ind + '\t0\n')
+    label_file.close()
 
     end = time.time()
