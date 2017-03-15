@@ -206,10 +206,10 @@ if __name__ == '__main__':
     motif_start_frame = pd.DataFrame(motif_start_dict, 
                                      index = id_list)
     name_root = fasta_path.split('/')[-1].split('.')[0]
-    score_pickle_path = output_path + '/' + name_root + '_motif_scores.pickle'
-    start_pickle_path = output_path + '/' + name_root + '_motif_starts.pickle'
-    motif_score_frame.to_pickle(score_pickle_path)
-    motif_start_frame.to_pickle(start_pickle_path)
+    score_tsv_path = output_path + '/' + name_root + '_motif_scores.tsv'
+    start_tsv_path = output_path + '/' + name_root + '_motif_starts.tsv'
+    motif_score_frame.to_csv(score_tsv_path, sep='\t')
+    motif_start_frame.to_csv(start_tsv_path, sep='\t')
     
     end = time.time()
     print('total time', end-start)
