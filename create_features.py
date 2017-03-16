@@ -94,7 +94,7 @@ if __name__ == '__main__':
     standardized_combined_frame.columns = combined_frame.columns.values
     standardized_combined_frame.index = combined_frame.index.values
     
-    feature_out_path = output_path +  '/standardized_features.csv'
+    feature_out_path = output_path +  '/standardized_features.tsv'
     standardized_combined_frame.to_csv(feature_out_path, sep='\t')
     
     # create labels
