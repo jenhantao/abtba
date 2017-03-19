@@ -72,7 +72,7 @@ def extract_sequence(coordinates, genome, out_file_path):
 if __name__ == '__main__':
     if len(sys.argv) < 4:
         print('Usage')
-        print('extract_sequences.py <bed file> <mm10> <output_file_path')
+        print('extract_sequences.py <bed file> <genome> <output_file_path>')
         sys.exit(0)
     else:
         bed_path = sys.argv[1]
