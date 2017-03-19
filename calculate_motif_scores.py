@@ -110,19 +110,34 @@ def calculate_top_motif_matches_async(sequence_array_list,
             # get substring represented as matrix
             subseq_array = seq_array[i: i + pwm_length] 
             # get corresponding pwm frequencies
-            frequencies = (pwm * subseq_array).sum(axis=1) 
+            frequencies = ((pwm + pseudocount) * subseq_array).sum(axis=1) 
             # 0.25 background freq
-            ratios = (frequencies + pseudo_count)/(background_frequency + pseudo_count) 
+            ratios = (frequencies)/(background_frequency) 
             # calculate log likelihood ratios
             llr = np.log2(ratios) 
             # sum to calculate motif score
             score = np.sum(llr) 
-            scores.append((score, i))
+            scores.append((score, i, '+'))
+            
+        # calculate reverse complement and scores for reverse complement
+        rc_seq_array = seq_array[::-1, ::-1]
+        for i in range(seq_length - pwm_length):
+            # get substring represented as matrix
+            subseq_array = rc_seq_array[i: i + pwm_length] 
+            # get corresponding pwm frequencies
+            frequencies = ((pwm + pseudocount) * subseq_array).sum(axis=1) 
+            # 0.25 background freq
+            ratios = (frequencies)/(background_frequency) 
+            # calculate log likelihood ratios
+            llr = np.log2(ratios) 
+            # sum to calculate motif score
+            score = np.sum(llr) 
+            scores.append((score, seq_length - i + pwm_length, '-')) 
             
         scores.sort(key = lambda x:x[0], reverse = True)
         top_hit = scores[0]
         top_scores.append(top_hit[0])
-        top_starts.append(top_hit[1])
+        top_starts.append(str(top_hit[1]) + ' ' + top_hit[2])
     motif_score_dict[motif_name] = top_scores
     motif_start_dict[motif_name] = top_starts
     end = time.time()
