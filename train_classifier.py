@@ -176,14 +176,16 @@ if __name__ == '__main__':
         os.mkdir(output_path)
 
     # read in features
+    print('reading features and labels')
     feature_frame = pd.read_csv(feature_path, sep='\t', index_col=0)
 
     # read in labels
     labels = read_labels(label_path)
 
+    print('training classifier')
     results = train_classifier(feature_frame,
                  labels,
                  numIterations=num_iterations,
                  test_size=test_fraction)
-
-    write_classifier_results(results, out_path) 
+    print('writing results')
+    write_classifier_results(results, output_path) 
