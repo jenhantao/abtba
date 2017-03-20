@@ -12,7 +12,7 @@ import multiprocessing
 import pandas as pd
 
 ### functions ###
-def read_motif_file(motifPath):
+def read_motif_file(motifPath, pseudocount):
     '''
     reads all motif files in a directory 
     inputs: path to a directory containing homer motif files
@@ -28,6 +28,7 @@ def read_motif_file(motifPath):
         tokens = line.strip().split("\t")
         if len(tokens) > 1:
             scores = np.array([float(x) for x in tokens])
+            scores = scores + pseudocount
             scores= scores/np.sum(scores)
             matrix.append(scores)
     return (name,np.array(matrix))
@@ -82,7 +83,7 @@ def calculate_top_motif_matches_async(sequence_array_list,
                                       motif_name, 
                                       motif_score_dict, 
                                       motif_start_dict,
-                                      pseudo_count):
+                                     ):
     '''
     identifies the highest scoring match to pwm for each sequence
     inputs: pwm - a numpy array representing a pwm
@@ -106,11 +107,11 @@ def calculate_top_motif_matches_async(sequence_array_list,
     for seq_array in sequence_array_list:
         seq_length = seq_array.shape[0]
         scores = []
-        for i in range(seq_length - pwm_length):
+        for i in range(seq_length - pwm_length + 1):
             # get substring represented as matrix
             subseq_array = seq_array[i: i + pwm_length] 
             # get corresponding pwm frequencies
-            frequencies = ((pwm + pseudocount) * subseq_array).sum(axis=1) 
+            frequencies = (pwm * subseq_array).sum(axis=1) 
             # 0.25 background freq
             ratios = (frequencies)/(background_frequency) 
             # calculate log likelihood ratios
@@ -121,23 +122,27 @@ def calculate_top_motif_matches_async(sequence_array_list,
             
         # calculate reverse complement and scores for reverse complement
         rc_seq_array = seq_array[::-1, ::-1]
-        for i in range(seq_length - pwm_length):
+        for i in range(seq_length - pwm_length + 1):
             # get substring represented as matrix
             subseq_array = rc_seq_array[i: i + pwm_length] 
             # get corresponding pwm frequencies
-            frequencies = ((pwm + pseudocount) * subseq_array).sum(axis=1) 
+            frequencies = (pwm  * subseq_array).sum(axis=1) 
             # 0.25 background freq
             ratios = (frequencies)/(background_frequency) 
             # calculate log likelihood ratios
             llr = np.log2(ratios) 
             # sum to calculate motif score
             score = np.sum(llr) 
-            scores.append((score, seq_length - i + pwm_length, '-')) 
+            scores.append((score, seq_length - i, '-')) 
             
         scores.sort(key = lambda x:x[0], reverse = True)
         top_hit = scores[0]
-        top_scores.append(top_hit[0])
-        top_starts.append(str(top_hit[1]) + ' ' + top_hit[2])
+        if top_hit[0] > 0:
+            top_scores.append(top_hit[0])
+            top_starts.append(str(top_hit[1]) + ' ' + top_hit[2])
+        else:
+            top_scores.append(0)
+            top_starts.append('-1 ?')
     motif_score_dict[motif_name] = top_scores
     motif_start_dict[motif_name] = top_starts
     end = time.time()
@@ -181,7 +186,7 @@ if __name__ == '__main__':
     # read in motif files
     all_motifs = []
     for m in motif_files:
-        motif = read_motif_file(m)
+        motif = read_motif_file(m, pseudocount)
         all_motifs.append(motif)
     # sort motifs by name
     all_motifs.sort(key=lambda x:x[0])
@@ -208,8 +213,7 @@ if __name__ == '__main__':
                                                 pwm, 
                                                 motif_name, 
                                                 motif_score_dict, 
-                                                motif_start_dict,
-                                                pseudocount
+                                                motif_start_dict
                                            )
                         )
     pool.close()
