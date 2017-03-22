@@ -158,7 +158,7 @@ if __name__ == '__main__':
     parser.add_argument("-num_iterations", 
         help="number of iterations to train classifier",
         type=int,
-        default=4)
+        default=5)
     parser.add_argument("-test_fraction", 
         help="fraction of data to use for testing classifier",
         type=float,
