@@ -74,7 +74,7 @@ def train_classifier(features,
 
         # score predictions
         probas = classifier.predict_proba(test_features)
-        current_rocs = sklearn.metrics.roc_auc_score(test_labels, 
+        current_roc = sklearn.metrics.roc_auc_score(test_labels, 
                                                               probas[:, 1], 
                                                               average = None)
         current_precision = sklearn.metrics.average_precision_score(test_labels,
@@ -84,7 +84,7 @@ def train_classifier(features,
          # retrieve coefficients
         current_coefficients = classifier.coef_.flatten()
         
-        all_rocs.append(current_rocs)
+        all_rocs.append(current_roc)
         all_precisions.append(current_precision)
         all_coefficients.append(current_coefficients)
         all_scores.append(probas)
@@ -92,7 +92,8 @@ def train_classifier(features,
         
         iter_end = time.time()
         
-        print('iteration training time:', iter_end-iter_start)
+        print('iteration training time:', iter_end-iter_start, 
+              'ROC', current_roc)
     end = time.time()
     
     # convert coefficients into data frame
@@ -182,7 +183,7 @@ if __name__ == '__main__':
     # read in labels
     labels = read_labels(label_path)
 
-    print('training classifier')
+    print('training classifier for', feature_path)
     results = train_classifier(feature_frame,
                  labels,
                  numIterations=num_iterations,
