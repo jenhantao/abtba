@@ -51,12 +51,12 @@ def mergeMotifs(motifArray):
     # determine the orientation of each motif relative to the longest motif
     for motif in motifArray[1:]:
         # calc scores for the forward direction
-        alignment_fwd, alignScore_fwd = localAlignMotifs(orientedMotifArray[0], 
+        alignment_fwd, alignScore_fwd = global_align_motifs(orientedMotifArray[0], 
                                                          motif)
         r_fwd = calcCorrelation(alignment_fwd[0], alignment_fwd[1])
         # calc scores for one motif reversed
         rcMotif = revCompMotif(motif)
-        alignment_rev, alignScore_rev = localAlignMotifs(motifArray[0], rcMotif)
+        alignment_rev, alignScore_rev = global_align_motifs(motifArray[0], rcMotif)
         r_rev = calcCorrelation(alignment_rev[0], alignment_rev[1])
         if r_rev > r_fwd:
             orientedMotifArray.append(rcMotif)
@@ -70,7 +70,7 @@ def mergeMotifs(motifArray):
     if len(orientedMotifArray) > 1:
         for i in range(1, len(orientedMotifArray)):
             cleanedMotif = (orientedMotifArray[i][0], cleanMatrix(orientedMotifArray[i][1]))
-            alignment, score= localAlignMotifs(("name", alignAgainst), cleanedMotif)
+            alignment, score= global_align_motifs(("name", alignAgainst), cleanedMotif)
             align1 = alignment[0]
             align2 = alignment[1]
             alignAgainst = (align1 + align2)/2.0

@@ -4,13 +4,7 @@
 ### imports ###
 import sys
 import numpy as np
-import scipy.stats as st
-from itertools import combinations
 import os
-from os import listdir
-from os.path import isfile, join
-import scipy.spatial.distance
-import scipy.cluster.hierarchy
 import matplotlib 
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -60,6 +54,7 @@ if __name__ == "__main__":
     print('Calculating alignments between motifs and scoring motifs')
     for i in range(len(allMotifs) - 1 ):
         motif1 = allMotifs[i]
+        print('scoring against ' +  str(i+1) + '/' +str(len(allMotifs)))
         for j in range(i + 1, len(allMotifs)):
             # calc scores for the forward direction
             motif2 = allMotifs[j]
@@ -167,5 +162,3 @@ if __name__ == "__main__":
     # pearson correlation for each pair of motifs
     np.savez_compressed(outputPath+"/correlation", rs, motifNames)
     # euclidian distance between each pair of motifs
-    np.savez_compressed(outputPath+"/distances", distances, motifNames)
-    #np.savez_compressed(outputPath+"/alignScores", alignScores)

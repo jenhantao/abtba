@@ -44,11 +44,17 @@ if __name__ == "__main__":
         type=str,
         nargs="+")
 
+    parser.add_argument("-num_procs", 
+        help="number of cores to use",
+        type=int,
+        default=8)
+
     # parse arguments
     args = parser.parse_args()
 
     outputPath = args.outputPath
     motifFiles = args.motifFiles
+    num_procs = args.num_procs
 
     # make output directory if it doesn't est
     if not os.path.isdir(outputPath):
@@ -73,7 +79,7 @@ if __name__ == "__main__":
     # align motifs and calculate scores (pearson correlation)
     result_matrix = np.zeros((len(allMotifs), len(allMotifs)))
     print('Calculating alignments between motifs and scoring motifs')
-    pool = multiprocessing.Pool(processes=8)
+    pool = multiprocessing.Pool(processes=num_procs)
     manager = multiprocessing.Manager()
     result_dict = manager.dict()
     for i in range(len(allMotifs) - 1 ):
