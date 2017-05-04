@@ -15,7 +15,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import argparse
-from motifUtilities import *
+from motif_utilities import *
 
 # given two motif objects, aligns the motifs using a needleman-wunsch derivative
 # inputs: two motif data objects

@@ -15,7 +15,7 @@ from os import listdir
 from os.path import isfile, join
 from subprocess import call
 import argparse
-from motifUtilities import *
+from motif_utilities import *
 import shutil
 
 
