@@ -17,60 +17,6 @@ from matplotlib import pyplot as plt
 import argparse
 from motif_utilities import *
 
-# given two motif objects, aligns the motifs using a needleman-wunsch derivative
-# inputs: two motif data objects
-# outputs: an alignment data object
-def globalAlignMotifs(motif1, motif2):
-
-    length1 = motif1[2].shape[0]    
-    length2 = motif2[2].shape[0]    
-
-    # initialize alignment score matrix
-    scoreMatrix = np.zeros((length1+1,length2+1))
-    for i in range(length1+1):
-        scoreMatrix[i][0] = i * gapPenalty
-    for j in range(length2+1):
-        scoreMatrix[0][j] = j * gapPenalty
-    
-    # populate score matrix
-    for i in range(1, length1+1):
-        for j in range(1, length2+1):
-            matchScore = scoreMatrix[i-1][j-1] + scoreMatch(motif1[2][i-1], motif2[2][j-1])
-            deleteScore = scoreMatrix[i-1][j] + gapPenalty  # penalize deletions
-            insertScore = scoreMatrix[i][j-1] + gapPenalty  # penalize insertions
-            scoreMatrix[i][j] = np.max([matchScore, deleteScore, insertScore])
-    # perform traceback
-    alignMatrix1 = []
-    alignMatrix2 = []
-    i = length1 
-    j = length2
-    while i > 0 or j > 0:
-        if i > 0 and j > 0 and  scoreMatrix[i][j] == scoreMatrix[i-1][j-1] + scoreMatch(motif1[2][i-1], motif2[2][j-1]):
-            alignMatrix1.append(motif1[2][i-1])
-            alignMatrix2.append(motif2[2][j-1])
-            i -= 1
-            j -= 1
-        elif i > 0 and scoreMatrix[i][j] == scoreMatrix[i-1][j] + gapPenalty:
-            alignMatrix1.append(motif1[2][i-1])
-            alignMatrix2.append([0.25,0.25,0.25,0.25])
-            i -= 1
-        elif j > 0 and scoreMatrix[i][j] == scoreMatrix[i][j-1] + gapPenalty:
-            alignMatrix1.append([0.25,0.25,0.25,0.25])
-            alignMatrix2.append(motif2[2][j-1])
-            j -= 1
-        else:
-            if i > 0:
-                alignMatrix1.append(motif1[2][i-1])
-                alignMatrix2.append([0.25,0.25,0.25,0.25])
-                i -= 1
-            elif j > 0:
-                alignMatrix1.append([0.25,0.25,0.25,0.25])
-                alignMatrix2.append(motif2[2][j-1])
-                j -= 1
-    alignMatrix1 = np.array(alignMatrix1[::-1])
-    alignMatrix2 = np.array(alignMatrix2[::-1])
-    return (alignMatrix1, alignMatrix2), scoreMatrix[-1][-1] 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='calculates pairwise \
                                       scores between pairs of motifs')
