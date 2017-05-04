@@ -19,7 +19,7 @@ def readMotifFile(motifPath):
     name_metadata_dict = {}
     with open(motifPath) as f:
         data = f.readlines()
-    name = '.'.join(motifPath.split('/')[-1].split('.')[:-1])
+    name = data[0].strip().split()[1]
     matrix = []
     metadata = data[0].strip()
     for line in data[1:]:
