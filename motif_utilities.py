@@ -20,6 +20,8 @@ def readMotifFile(motifPath):
     with open(motifPath) as f:
         data = f.readlines()
     name = data[0].strip().split()[1]
+    name = name.replace(')','')
+    name = name.replace('(','_')
     matrix = []
     metadata = data[0].strip()
     for line in data[1:]:

@@ -29,7 +29,7 @@ def mergeMotifs(motifArray):
     names = []    
     for i in range(len(motifArray)):
         names.append(motifArray[i][0])
-    name = "_".join(sorted(list(set(names))))+"_merged"
+    name = "_".join(sorted(list(set(names)))[:10])+"_merged"
     if len(motifArray) < 2:
         return None
     alignedMotifs = []
@@ -131,7 +131,7 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
 
         # create table from merged indices
         mergeNames.sort()
-        consensusName = "_".join(sorted(list(set(mergeNames))))+ "_merged"
+        consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
         if not consensusName in seenNames:
             # don't add repeats
             seenNames.add(consensusName)
