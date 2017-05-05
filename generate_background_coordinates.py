@@ -15,12 +15,15 @@ import numpy as np
 import argparse
 
 
-def read_target_positions(file_path):
+def read_target_positions(file_path, filter_chromosomes):
     """
     reads a bed file and returns a list of tuples containing genomic coordinates
     """
+    if filter_chromosomes==None:
+        filter_chromosomes = []
     with open(file_path) as f:
         data = f.readlines()
+    filter_chromosomes = set(filter_chromosomes)
     positions = []
     for line in data:
         tokens = line.strip().split()
@@ -28,7 +31,9 @@ def read_target_positions(file_path):
         start = int(tokens[1])
         end = int(tokens[2])
         name = tokens[3]
-        positions.append([chrom, start, end, name])
+        if not chrom in filter_chromosomes:
+            if not 'chrUn' in chrom and not 'random' in chrom:
+                positions.append([chrom, start, end, name])
     return positions 
 
 def calc_gc_content(sequence):
@@ -261,6 +266,10 @@ if __name__ == '__main__':
         help="genome from which to construct background regions",
         default = "mm10",
         type=str)
+    parser.add_argument("-filterChromosomes",
+        help="chromosomes to ignore",
+        type=str,
+        nargs='+')
 
     # parse arguments
     args = parser.parse_args()
@@ -271,8 +280,9 @@ if __name__ == '__main__':
     num_bins = args.numBins
     n_threshold = args.nThreshold
     genome = args.genome
+    filter_chromosomes = args.filterChromosomes
     
-    target_positions = read_target_positions(input_path)
+    target_positions = read_target_positions(input_path, filter_chromosomes)
     
     background_positions = get_random_background(target_positions, 
                                                 size_ratio = size_ratio, 
@@ -281,3 +291,4 @@ if __name__ == '__main__':
                                                 genome = genome
                                                 )
     write_background_positions(background_positions, output_path) 
+
