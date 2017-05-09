@@ -166,7 +166,7 @@ def cleanMatrix(matrix):
         freqs = matrix[i]
         ambiguous = True
         for freq in freqs:
-            if freq > 0.30:
+            if freq >= 0.30:
                 ambiguous = False
         if ambiguous and (i == startIndex + 1 or i==startIndex):
             startIndex = i
