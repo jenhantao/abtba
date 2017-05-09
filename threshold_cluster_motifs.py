@@ -20,20 +20,74 @@ import shutil
 
 
 
+#def mergeMotifs(motifArray):
+#    '''
+#    given an array of tuples representing motifs, produces a consensus motif
+#    inputs: an array of motifs
+#    outputs: motif representing the consensus motif (name, matrix)
+#    '''
+#    names = []    
+#    for i in range(len(motifArray)):
+#        names.append(motifArray[i][0])
+#    name = "_".join(sorted(list(set(names)))[:10])+"_merged"
+#    if len(motifArray) < 2:
+#        return None
+#    alignedMotifs = []
+#    alignAgainst = None
+#
+#    #find the longest motif, move it to the front
+#    maxLength = -1
+#    maxLengthMotif = None
+#    for motif in motifArray:
+#        if motif[1].shape[0] > maxLength:
+#            maxLength = motif[1].shape[0]
+#            maxLengthMotif = motif
+#    motifArray.remove(maxLengthMotif)
+#    motifArray.insert(0, maxLengthMotif)
+#
+#    orientedMotifArray = [ motifArray[0] ] # array of motifs with all motifs in the best orientation
+#    directions = [orientedMotifArray[0][0]+"_fwd"]
+#
+#    # determine the orientation of each motif relative to the longest motif
+#    for motif in motifArray[1:]:
+#        # calc scores for the forward direction
+#        alignment_fwd, alignScore_fwd = global_align_motifs(orientedMotifArray[0], 
+#                                                         motif)
+#        r_fwd = calcCorrelation(alignment_fwd[0], alignment_fwd[1])
+#        # calc scores for one motif reversed
+#        rcMotif = revCompMotif(motif)
+#        alignment_rev, alignScore_rev = global_align_motifs(motifArray[0], rcMotif)
+#        r_rev = calcCorrelation(alignment_rev[0], alignment_rev[1])
+#        if r_rev > r_fwd:
+#            orientedMotifArray.append(rcMotif)
+#            directions.append(motif[0]+"_rev")
+#        else:
+#            orientedMotifArray.append(motif)
+#            directions.append(motif[0]+"_fwd")
+#
+#    # iteratively align motifs against the longest motif
+#    alignAgainst = orientedMotifArray[0][1]
+#    if len(orientedMotifArray) > 1:
+#        for i in range(1, len(orientedMotifArray)):
+#            cleanedMotif = (orientedMotifArray[i][0], cleanMatrix(orientedMotifArray[i][1]))
+#            alignment, score= global_align_motifs(("name", alignAgainst), cleanedMotif)
+#            align1 = alignment[0]
+#            align2 = alignment[1]
+#            alignAgainst = (align1 + align2)/2.0
+#            alignAgainst = cleanMatrix(alignAgainst)
+#    alignAgainst = cleanMatrix(orientedMotifArray[0][1])
+#    consensus = (name, alignAgainst)
+#    orientedMotifArray.insert(0,consensus)
+#    return orientedMotifArray
+
 def mergeMotifs(motifArray):
     '''
     given an array of tuples representing motifs, produces a consensus motif
     inputs: an array of motifs
     outputs: motif representing the consensus motif (name, matrix)
     '''
-    names = []    
-    for i in range(len(motifArray)):
-        names.append(motifArray[i][0])
-    name = "_".join(sorted(list(set(names)))[:10])+"_merged"
     if len(motifArray) < 2:
         return None
-    alignedMotifs = []
-    alignAgainst = None
 
     #find the longest motif, move it to the front
     maxLength = -1
@@ -45,40 +99,85 @@ def mergeMotifs(motifArray):
     motifArray.remove(maxLengthMotif)
     motifArray.insert(0, maxLengthMotif)
 
-    orientedMotifArray = [ motifArray[0] ] # array of motifs with all motifs in the best orientation
-    directions = [orientedMotifArray[0][0]+"_fwd"]
+    oriented_alignment_array = [] # array of aligned motifs in best orientation
+    maxLengthAlignment = None
+    maxAlignmentLength = -1 
 
     # determine the orientation of each motif relative to the longest motif
     for motif in motifArray[1:]:
-        # calc scores for the forward direction
-        alignment_fwd, alignScore_fwd = global_align_motifs(orientedMotifArray[0], 
-                                                         motif)
-        r_fwd = calcCorrelation(alignment_fwd[0], alignment_fwd[1])
-        # calc scores for one motif reversed
-        rcMotif = revCompMotif(motif)
-        alignment_rev, alignScore_rev = global_align_motifs(motifArray[0], rcMotif)
-        r_rev = calcCorrelation(alignment_rev[0], alignment_rev[1])
-        if r_rev > r_fwd:
-            orientedMotifArray.append(rcMotif)
-            directions.append(motif[0]+"_rev")
-        else:
-            orientedMotifArray.append(motif)
-            directions.append(motif[0]+"_fwd")
+        # align motifs in both orientations
+        alignment_fwd, alignScore_fwd = local_align_motifs(maxLengthMotif, 
+                                                            motif)
+        rev_comp_motif = revCompMotif(motif)
+        alignment_rev, alignScore_rev = local_align_motifs(maxLengthMotif, 
+                                                            rev_comp_motif)
 
-    # iteratively align motifs against the longest motif
-    alignAgainst = orientedMotifArray[0][1]
-    if len(orientedMotifArray) > 1:
-        for i in range(1, len(orientedMotifArray)):
-            cleanedMotif = (orientedMotifArray[i][0], cleanMatrix(orientedMotifArray[i][1]))
-            alignment, score= global_align_motifs(("name", alignAgainst), cleanedMotif)
-            align1 = alignment[0]
-            align2 = alignment[1]
-            alignAgainst = (align1 + align2)/2.0
-            alignAgainst = cleanMatrix(alignAgainst)
-    alignAgainst = cleanMatrix(orientedMotifArray[0][1])
-    consensus = (name, alignAgainst)
-    orientedMotifArray.insert(0,consensus)
-    return orientedMotifArray
+        longest_motif_alignment_fwd = alignment_fwd[0]
+        longest_motif_alignment_rev = alignment_rev[0]
+        compared_motif_alignment_fwd = alignment_fwd[1]
+        compared_motif_alignment_rev = alignment_rev[1]
+
+        # calc scores for aligned motifs in both orientations
+        pearson_fwd = calcCorrelation(longest_motif_alignment_fwd, 
+                                      compared_motif_alignment_fwd)
+        pearson_rev = calcCorrelation(longest_motif_alignment_rev, 
+                                      compared_motif_alignment_rev)
+        if pearson_rev > pearson_fwd:
+            oriented_alignment_array.append(compared_motif_alignment_rev)
+        else:
+            oriented_alignment_array.append(compared_motif_alignment_fwd)
+
+        # store the longest alignment of the longest motif
+        if len(longest_motif_alignment_fwd) > maxAlignmentLength:
+            maxLengthAlignment = longest_motif_alignment_fwd
+            maxAlignmentLength = len(longest_motif_alignment_fwd)
+        if len(longest_motif_alignment_rev) > maxAlignmentLength:
+            maxLengthAlignment = longest_motif_alignment_rev
+            maxAlignmentLength = len(longest_motif_alignment_rev)
+
+    # merge motifs together
+    merged_motif = maxLengthAlignment.copy()
+    for i in range(len(oriented_alignment_array)):
+        oriented_alignment = oriented_alignment_array[i]
+        if len(oriented_alignment) == len(maxLengthAlignment):
+            merged_motif = merged_motif + oriented_alignment
+        else:
+            oriented_alignment_left = oriented_alignment_array[i].copy()
+            # pad from the left
+            while len(oriented_alignment) < len(maxLengthAlignment):
+                oriented_alignment_left = np.concatentate([[[0.25,0.25,0.25,0.25]],
+                                                      oriented_alignment_left
+                                                     ], axis=0)
+            # pad from the right
+            oriented_alignment_right = oriented_alignment_array[i].copy()
+            while len(oriented_alignment) < len(maxLengthAlignment):
+                oriented_alignment_right = np.concatentate([oriented_alignment_right,
+                                                            [[0.25,0.25,0.25,0.25]]
+                                                           ], axis=0)
+            pearson_left = calcCorrelation(maxLengthAlignment,
+                                           oriented_alignment_left) 
+            pearson_right = calcCorrelation(maxLengthAlignment,
+                                           oriented_alignment_right) 
+            if pearson_left > pearson_right:
+                merged_motif = merged_motif + oriented_alignment_left
+            else:
+                merged_motif = merged_motif + oriented_alignment_right
+    merged_motif = merged_motif / (len(oriented_alignment_array) + 1.0)
+    merged_motif = cleanMatrix(merged_motif)
+
+    oriented_alignment_array.insert(0, maxLengthAlignment)
+    names = []    
+    aligned_motif_array = []
+    for i in range(len(motifArray)):
+        mn = motifArray[i][0]
+        names.append(mn)
+        aligned_motif_array.append((mn, cleanMatrix(oriented_alignment_array[i])))
+    name = "_".join(sorted(list(set(names)))[:10])+"_merged"
+
+    consensus = (name, merged_motif)
+    aligned_motif_array.insert(0,consensus)
+
+    return aligned_motif_array
 
 def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
     '''
@@ -216,7 +315,7 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
         motif_count+=1
         listFile.write("<tr><td>" + str(motif_count) + "</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.png'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n")
         motifListFile.write(allMotifs[ind][0]+".motif\n")
-        writePWMMatrix(allMotifs[ind][1], 
+        writePWMMatrix(cleanMatrix(allMotifs[ind][1]), 
                        allMotifs[ind][0], 
                        outputPath+"/clustered_motifs/"+allMotifs[ind][0]+".motif")
         
