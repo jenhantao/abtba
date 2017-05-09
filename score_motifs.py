@@ -19,14 +19,16 @@ def score_motif_against_others(motifs,
                                result_dict
                                ):
     motif1 = motifs[index]
+    cleaned_motif1 = (motif1[0], cleanMatrix(motif1[1]))
 
     for j in other_indices:
         motif2 = motifs[j]
+        cleaned_motif2 = (motif2[0], cleanMatrix(motif2[1]))
         # calc scores for original orientation 
-        alignment_fwd, alignScore_fwd = global_align_motifs(motif1, motif2)
+        alignment_fwd, alignScore_fwd = global_align_motifs(cleaned_motif1, cleaned_motif2)
         r_fwd = calcCorrelation(alignment_fwd[0], alignment_fwd[1])
         # calc scores for one motif reversed
-        alignment_rev, alignScore_rev = global_align_motifs(motif1, revCompMotif(motif2))
+        alignment_rev, alignScore_rev = global_align_motifs(cleaned_motif1, revCompMotif(cleaned_motif2))
         r_rev = calcCorrelation(alignment_rev[0], alignment_rev[1])
         # select largest score
         r = np.max([r_fwd, r_rev])
@@ -92,7 +94,6 @@ if __name__ == "__main__":
     pool.join()
     
     # fill in matrix with result dict
-    #result_dict = dict(result_dict)
     for key in result_dict.keys():
         tokens = key.split('_')
         i = int(tokens[0])
