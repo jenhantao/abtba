@@ -19,67 +19,6 @@ from motif_utilities import *
 import shutil
 
 
-
-#def mergeMotifs(motifArray):
-#    '''
-#    given an array of tuples representing motifs, produces a consensus motif
-#    inputs: an array of motifs
-#    outputs: motif representing the consensus motif (name, matrix)
-#    '''
-#    names = []    
-#    for i in range(len(motifArray)):
-#        names.append(motifArray[i][0])
-#    name = "_".join(sorted(list(set(names)))[:10])+"_merged"
-#    if len(motifArray) < 2:
-#        return None
-#    alignedMotifs = []
-#    alignAgainst = None
-#
-#    #find the longest motif, move it to the front
-#    maxLength = -1
-#    maxLengthMotif = None
-#    for motif in motifArray:
-#        if motif[1].shape[0] > maxLength:
-#            maxLength = motif[1].shape[0]
-#            maxLengthMotif = motif
-#    motifArray.remove(maxLengthMotif)
-#    motifArray.insert(0, maxLengthMotif)
-#
-#    orientedMotifArray = [ motifArray[0] ] # array of motifs with all motifs in the best orientation
-#    directions = [orientedMotifArray[0][0]+"_fwd"]
-#
-#    # determine the orientation of each motif relative to the longest motif
-#    for motif in motifArray[1:]:
-#        # calc scores for the forward direction
-#        alignment_fwd, alignScore_fwd = global_align_motifs(orientedMotifArray[0], 
-#                                                         motif)
-#        r_fwd = calcCorrelation(alignment_fwd[0], alignment_fwd[1])
-#        # calc scores for one motif reversed
-#        rcMotif = revCompMotif(motif)
-#        alignment_rev, alignScore_rev = global_align_motifs(motifArray[0], rcMotif)
-#        r_rev = calcCorrelation(alignment_rev[0], alignment_rev[1])
-#        if r_rev > r_fwd:
-#            orientedMotifArray.append(rcMotif)
-#            directions.append(motif[0]+"_rev")
-#        else:
-#            orientedMotifArray.append(motif)
-#            directions.append(motif[0]+"_fwd")
-#
-#    # iteratively align motifs against the longest motif
-#    alignAgainst = orientedMotifArray[0][1]
-#    if len(orientedMotifArray) > 1:
-#        for i in range(1, len(orientedMotifArray)):
-#            cleanedMotif = (orientedMotifArray[i][0], cleanMatrix(orientedMotifArray[i][1]))
-#            alignment, score= global_align_motifs(("name", alignAgainst), cleanedMotif)
-#            align1 = alignment[0]
-#            align2 = alignment[1]
-#            alignAgainst = (align1 + align2)/2.0
-#            alignAgainst = cleanMatrix(alignAgainst)
-#    alignAgainst = cleanMatrix(orientedMotifArray[0][1])
-#    consensus = (name, alignAgainst)
-#    orientedMotifArray.insert(0,consensus)
-#    return orientedMotifArray
-
 def mergeMotifs(motifArray):
     '''
     given an array of tuples representing motifs, produces a consensus motif
@@ -106,10 +45,10 @@ def mergeMotifs(motifArray):
     # determine the orientation of each motif relative to the longest motif
     for motif in motifArray[1:]:
         # align motifs in both orientations
-        alignment_fwd, alignScore_fwd = local_align_motifs(maxLengthMotif, 
+        alignment_fwd, alignScore_fwd = global_align_motifs(maxLengthMotif, 
                                                             motif)
         rev_comp_motif = revCompMotif(motif)
-        alignment_rev, alignScore_rev = local_align_motifs(maxLengthMotif, 
+        alignment_rev, alignScore_rev = global_align_motifs(maxLengthMotif, 
                                                             rev_comp_motif)
 
         longest_motif_alignment_fwd = alignment_fwd[0]
@@ -432,8 +371,14 @@ if __name__ == "__main__":
 
     if not os.path.isdir(outputPath + '/html_files/'):
         os.mkdir(outputPath + '/html_files')
+    else:
+        for f in os.listdir(outputPath + '/html_files'):
+            os.remove(outputPath + '/html_files/' + f)
     if not os.path.isdir(outputPath + '/clustered_motifs/'):
         os.mkdir(outputPath + '/clustered_motifs')
+    else:
+        for f in os.listdir(outputPath + '/clustered_motifs'):
+            os.remove(outputPath + '/clustered_motifs/' + f)
 
     # read in motifs
     # find all motifs in input directory
