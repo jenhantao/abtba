@@ -14,7 +14,6 @@ import numpy as np
 import os
 from os import listdir
 from os.path import isfile, join
-from subprocess import call
 import argparse
 from motif_utilities import *
 import shutil
@@ -125,6 +124,8 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
     files for the new set of motifs
     inputs: score matrix, array of motifs, threshold, outputPath
     '''
+    family_count_dict = {}
+
     mergeDict = {} # key: motif index, value: set of motifs that should be merged together
     # copy heatmap.js file
     heatmap_script_path = os.path.dirname(__file__) + '/heatMap.js'
@@ -170,13 +171,22 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
 
         # create table from merged indices
         mergeNames.sort()
-        consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
+        #consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
+        consensusFamily = toMerge[0][3] # get the TF family of the first motif
+        if consensusFamily in family_count_dict:
+            family_count_dict[consensusFamily] += 1
+        else:
+            family_count_dict[consensusFamily] = 1
+
+        consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily]) + '_merged'
+        consensusName = consensusName.replace('/','')
+
         if not consensusName in seenNames:
             # don't add repeats
             seenNames.add(consensusName)
             # merge consensus motif
             motifs = mergeMotifs(toMerge) # list of all motifs associated with merge
-            consensusMotif = motifs[0]
+            consensusMotif = (consensusName, motifs[0][1])
 
             # write position weight matrix
             writePWMMatrix(consensusMotif[1], 
@@ -186,7 +196,7 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
                            consensusMotif[0], 
                            outputPath+"/clustered_motifs/"+consensusMotif[0]+".motif")
             # call homer to create logos
-            call(["motif2Logo.pl" ,outputPath+"/html_files/"+consensusMotif[0]+".motif"])
+            os.system('motif2Logo.pl "'+outputPath+'/html_files/'+consensusMotif[0]+'.motif"')
 
             # create merged motif page
             mergedMotifFile = open(outputPath+"/html_files/"+consensusName+".html", "w")
@@ -215,7 +225,7 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
                 # write position weight matrix
                 writePWMMatrix(motif[1], motif[0], outputPath+"/html_files/"+motif[0]+".motif")
                 # call homer to create logos
-                call(["motif2Logo.pl" ,outputPath+"/html_files/"+motif[0]+".motif"])
+                os.system('motif2Logo.pl "'+outputPath+'/html_files/'+motif[0]+'.motif"')
 
                 mergedMotifFile.write("<tr><td><a href='"+motif[0]+".html'>" +motif[0]+"</a></td><td>"+motif[0]+"</td><td><img src = '" + motif[0]+".motif.png'></td><td><a href='"+motif[0]+".motif' target='_blank'>Download</a></tr>\n")
             mergedMotifFile.write("</tbody></table>\n")
@@ -265,7 +275,7 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
         # write pwm matrix file
         writePWMMatrix(allMotifs[ind][1], allMotifs[ind][0], outputPath+"/html_files/"+allMotifs[ind][0]+".motif")
         # call homer to create logos
-        call(["motif2Logo.pl" ,outputPath+"/html_files/"+allMotifs[ind][0]+".motif"])
+        os.system('motif2Logo.pl "'+outputPath+'/html_files/'+allMotifs[ind][0]+'.motif"')
         # write html file
         indMotifFile = open(outputPath+"/html_files/"+allMotifs[ind][0]+".html", "w")
         indMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='html_files/heatMap.js'></script></head><body>\n")
