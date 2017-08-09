@@ -70,7 +70,7 @@ if __name__ == "__main__":
     print('Reading motif files...')
     counter = 0
     for mf in sorted(motifFiles):
-        motif = readMotifFile(mf) # (name, PWM)
+        motif = readMotifFile(mf, clean=True) # (name, PWM)
         allMotifs.append(motif)
         motif_name = motif[0]
         motifNames.append(motif_name)
@@ -121,26 +121,6 @@ if __name__ == "__main__":
     plt.savefig(outputPath + "/correlation_distribution.png")
     plt.close()
             
-    # plot estimates for the number of motifs that would be merged according to threshold
-    numMerged = []
-    thresholds = []
-    for t in np.arange(0,1,0.01):
-        merged = set()
-        thresholds.append(t)
-        for i in range(result_matrix.shape[0] - 1):
-            for j in range(i+1, result_matrix.shape[0]):
-                if result_matrix[i][j] > t:
-                    merged.add(i)
-                    merged.add(j)
-        numMerged.append(len(merged))
-
-    plt.plot(thresholds, numMerged)
-    plt.xlim([min(thresholds),1.0])
-    plt.xlabel("correlation threshold")
-    plt.ylabel("number of motifs merged")
-    plt.savefig(outputPath + "/correlationThreshold.png")
-    plt.close()
-
     # save matrix
     print('Serializing scores... \ncorrelation should be used for clustering.')
     # pearson correlation for each pair of motifs
