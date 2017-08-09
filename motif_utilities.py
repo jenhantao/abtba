@@ -19,21 +19,27 @@ def readMotifFile(motifPath):
     name_metadata_dict = {}
     with open(motifPath) as f:
         data = f.readlines()
-    name = data[0].strip().split()[1]
-    name = name.replace('/','_')
-    name = name.replace(')','_')
-    name = name.replace('(','_')
-    name = name.replace('|','_')
-    name = name.replace('__','_')
+    metadata = data[0].strip().split()
+    motif_id = metadata[0]
+    name = metadata[1]
+    if len(metadata) > 2:
+        family = metadata[2]
+    else:
+        family = name
+    
+    if len(metadata) > 3:
+        refseq = metadata[3]
+    else:
+        refseq = 'None'
+
     matrix = []
-    metadata = data[0].strip()
     for line in data[1:]:
         tokens = line.strip().split("\t")
         if len(tokens) > 1:
             scores = np.array([float(x) for x in tokens])
             scores= scores/np.sum(scores)
             matrix.append(scores)
-    return (name,np.array(matrix))
+    return (name,np.array(matrix), motif_id, family, refseq)
 
 # given two motif objects, aligns the motifs using a needleman wunsch derivative
 # that uses the pearson correlation coefficient to score columns
