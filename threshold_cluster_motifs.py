@@ -118,7 +118,7 @@ def mergeMotifs(motifArray):
 
     return aligned_motif_array
 
-def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
+def thresholdClusterMotifs(scoreArray, threshold, allMotifs, motifNames, outputPath):
     '''
     given a score matrix for an array of motifs, merges motifs and writes a new 
     files for the new set of motifs
@@ -185,7 +185,6 @@ def thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath):
             family_count_dict[consensusFamily] += 1
         else:
             family_count_dict[consensusFamily] = 1
-
 
         consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily]) + '_merged'
         consensusName = consensusName.replace('/','')
@@ -438,4 +437,4 @@ if __name__ == "__main__":
     if not os.path.exists(outputPath):
         os.makedirs(outputPath)
 
-    thresholdClusterMotifs(scoreArray, allMotifs, motifNames, outputPath)
+    thresholdClusterMotifs(scoreArray, threshold, allMotifs, motifNames, outputPath)
