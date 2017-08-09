@@ -22,15 +22,22 @@ def readMotifFile(motifPath):
     metadata = data[0].strip().split()
     motif_id = metadata[0]
     name = metadata[1]
+
+    name = name.replace('/','_')
+    name = name.replace(')','_')
+    name = name.replace('(','_')
+    name = name.replace('|','_')
+    name = name.replace('__','_')
+    name = name.strip('_')
     if len(metadata) > 2:
         family = metadata[2]
     else:
         family = name
     
     if len(metadata) > 3:
-        refseq = metadata[3]
+        geneName = metadata[3]
     else:
-        refseq = 'None'
+        geneName = 'None'
 
     matrix = []
     for line in data[1:]:
@@ -39,7 +46,7 @@ def readMotifFile(motifPath):
             scores = np.array([float(x) for x in tokens])
             scores= scores/np.sum(scores)
             matrix.append(scores)
-    return (name,np.array(matrix), motif_id, family, refseq)
+    return (name,np.array(matrix), motif_id, family, geneName)
 
 # given two motif objects, aligns the motifs using a needleman wunsch derivative
 # that uses the pearson correlation coefficient to score columns
@@ -102,12 +109,14 @@ def local_align_motifs(motif1, motif2):
 
 # inputs: motif pwm
 # outputs: write position weight matrix file
-def writePWMMatrix(matrix, name, outputPath):
+def writePWMMatrix(matrix, name, outputPath, header_line = None):
     outFile = open(outputPath, "w")
-    outFile.write(">"+name+"\t"+name+"\n")
+    if header_line == None:
+        outFile.write(">"+name+"\t"+name+"\n")
+    else:
+        outFile.write(header_line)
     for freq in matrix:
         normFreq = freq/np.sum(freq)
-        #outFile.write("\t".join(map(str, normFreq))+"\n")
         outFile.write("\t".join([str(x) for x in normFreq])+"\n")
     outFile.close()
 
@@ -129,12 +138,11 @@ def score_column_pearson(freq1, freq2):
 # reverse complements a pwm
 def revCompMotif(motif):
     name = motif[0]
-    sequence = motif[1][::-1]
     scores = []
     for freqs in motif[1]:
         scores.append(freqs[::-1])
     scores = np.array(scores[::-1])
-    toReturn = (name, sequence, scores)
+    toReturn = (name, scores)
     return toReturn
 
 # calculates the distance between two motifs
@@ -175,7 +183,7 @@ def cleanMatrix(matrix):
         freqs = matrix[i]
         ambiguous = True
         for freq in freqs:
-            if freq >= 0.30:
+            if freq >= 0.33:
                 ambiguous = False
         if ambiguous and (i == startIndex + 1 or i==startIndex):
             startIndex = i
