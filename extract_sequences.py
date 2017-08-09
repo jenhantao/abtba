@@ -63,10 +63,11 @@ def extract_sequence(coordinates, genome, out_file_path):
         # chrom_seq dict is 0 indexed, genome coords are 1 indexed
         start = int(coord[1]) - 1
         end = int(coord[2]) - 1
-        seq = chrom_seq_dict[chrom][start:end] 
-        id_line = '>' + str(coord[0]) + ':' +str(coord[1]) + '-' + str(coord[2]) + '\n'
-        out_file.write(id_line)
-        out_file.write(seq + '\n')
+        if chrom in chrom_seq_dict:
+            seq = chrom_seq_dict[chrom][start:end] 
+            id_line = '>' + str(coord[0]) + ':' +str(coord[1]) + '-' + str(coord[2]) + '\n'
+            out_file.write(id_line)
+            out_file.write(seq + '\n')
     out_file.close()
 
 if __name__ == '__main__':
