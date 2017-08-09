@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
 given a path to a score matrix and a directory containing motifs, produces plots
  showing the effect of merging motifs, creates separate folders for each group 
