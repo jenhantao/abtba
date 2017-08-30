@@ -36,7 +36,7 @@ def read_motif_file(motifPath, pseudocount):
     return (name,np.array(matrix))
 
 def read_fasta(file_path):
-    '''
+    ''' 
     reads in a fasta file and returns a list of sequence ids and a list of sequences
     inputs: filepath - path to a fasta file
     outputs: sequence_list - a list of sequences
@@ -47,13 +47,17 @@ def read_fasta(file_path):
     id_list = []
     sequence_list = []
     # loop through each sequence
+    current_seq_tokens = []
     for line in data:
         if '>' in line:
+            if len(current_seq_tokens) > 0:
+                seq = ''.join(current_seq_tokens)
+                id_list.append(seq_id)
+                sequence_list.append(seq)
+                current_seq_tokens = []  
             seq_id = line.strip()[1:]
-            id_list.append(seq_id)
         else:
-            seq = line.strip()
-            sequence_list.append(seq)
+            current_seq_tokens.append(line.strip())
     return sequence_list, id_list
 
 def convert_sequences_to_array(sequences):

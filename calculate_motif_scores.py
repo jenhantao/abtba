@@ -10,6 +10,7 @@ import numpy as np
 import time
 import multiprocessing
 import pandas as pd
+import os
 
 ### functions ###
 def read_motif_file(motifPath, pseudocount):
@@ -45,13 +46,17 @@ def read_fasta(file_path):
     id_list = []
     sequence_list = []
     # loop through each sequence
+    current_seq_tokens = []
     for line in data:
         if '>' in line:
+            if len(current_seq_tokens) > 0:
+                seq = ''.join(current_seq_tokens)
+                id_list.append(seq_id)
+                sequence_list.append(seq)
+                current_seq_tokens = [] 
             seq_id = line.strip()[1:]
-            id_list.append(seq_id)
         else:
-            seq = line.strip()
-            sequence_list.append(seq)
+            current_seq_tokens.append(line.strip())
     return sequence_list, id_list
 
 def convert_sequences_to_array(sequences):
@@ -182,6 +187,9 @@ if __name__ == '__main__':
     motif_files = args.motif_files
     num_processors = args.num_procs
     pseudocount = args.pseudocount
+
+    if not os.path.isdir(output_path):
+        os.mkdir(output_path)
 
     # read in motif files
     all_motifs = []
