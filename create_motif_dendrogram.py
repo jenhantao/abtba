@@ -9,6 +9,7 @@ import os
 import time
 import scipy 
 import matplotlib
+from itertools import combinations
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import seaborn as sns
@@ -65,9 +66,12 @@ if __name__ == '__main__':
         width = len(motif_names)/8
         height = width/2
         plt.figure(figsize=(width, height))
-        Z=scipy.cluster.hierarchy.linkage(correlations, 
-                                          'single', 
-                                          'correlation')
+        dissimilarity = 1-correlations
+        coords = list(combinations(range(len(motif_names)),2))
+        dissimilarity_as_pdist = [dissimilarity[x[0]][x[1]] for x in coords]
+
+        Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist, 
+                                         )
         gs = matplotlib.gridspec.GridSpec(2, len(motif_names), wspace=0.0, hspace=0.0)
         dendrogram_axis = plt.subplot(gs[0,:len(motif_names)])
         sns.despine()
