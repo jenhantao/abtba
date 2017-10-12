@@ -118,7 +118,12 @@ def mergeMotifs(motifArray):
 
     return aligned_motif_array
 
-def thresholdClusterMotifs(scoreArray, threshold, allMotifs, motifNames, outputPath):
+def thresholdClusterMotifs(scoreArray, 
+    threshold, 
+    allMotifs, 
+    motifNames, 
+    outputPath,
+    file_based_name=False):
     '''
     given a score matrix for an array of motifs, merges motifs and writes a new 
     files for the new set of motifs
@@ -179,15 +184,18 @@ def thresholdClusterMotifs(scoreArray, threshold, allMotifs, motifNames, outputP
 
         # create table from merged indices
         mergeNames.sort()
-        #consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
         consensusFamily = toMerge[0][3] # get the TF family of the first motif
         if consensusFamily in family_count_dict:
             family_count_dict[consensusFamily] += 1
         else:
             family_count_dict[consensusFamily] = 1
 
-        consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily]) + '_merged'
-        consensusName = consensusName.replace('/','')
+        if file_based_name:
+            consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
+        else:
+            consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily]) + '_merged'
+            consensusName = consensusName.replace('/','')
+
         
         header_string = '\t'.join(['>'+consensus_id_string, consensusName, consensusFamily, gene_string, '\n'])
 
@@ -389,12 +397,13 @@ if __name__ == "__main__":
         type=str)
     parser.add_argument("threshold",
         help="threshold for clustering motifs",
-        default = 0.8,
+        default = 0.9,
         type=float)
     parser.add_argument("motifFiles",
         help="list of moti files to cluster",
         type=str,
         nargs="+")
+    parser.add_argument('-familyBasedName',action='store_true')
 
     # parse arguments
     args = parser.parse_args()
@@ -403,6 +412,7 @@ if __name__ == "__main__":
     outputPath = args.outputPath
     threshold = args.threshold
     motifFiles = args.motifFiles
+    file_based_name = ! args.familyBasedName
 
     if not os.path.isdir(outputPath):
         os.mkdir(outputPath)
@@ -437,4 +447,9 @@ if __name__ == "__main__":
     if not os.path.exists(outputPath):
         os.makedirs(outputPath)
 
-    thresholdClusterMotifs(scoreArray, threshold, allMotifs, motifNames, outputPath)
+    thresholdClusterMotifs(scoreArray, 
+        threshold, 
+        allMotifs, 
+        motifNames, 
+        outputPath, 
+        file_based_name = file_based_name)
