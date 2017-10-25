@@ -13,6 +13,7 @@ import pandas as pd
 from sklearn import preprocessing
 import sklearn
 from sklearn import linear_model
+from sklearn import cross_validation
 
 ### functions ###
 # split data into GC content matched training and test data
@@ -55,19 +56,31 @@ def train_classifier(features,
                      labels,
                      numIterations=5,
                      test_size=0.5):
+    start = time.time()
     all_rocs = []
     all_precisions = []
     all_coefficients = []
     all_scores = []
     all_testLabels = []
-    start = time.time()
+    scaler = preprocessing.StandardScaler()        
     for i in range(numIterations):  
         iter_start = time.time()
         print('training iteration:', i+1)
+
         # split data into training and test sets
         training_features, test_features, training_labels, test_labels = get_split(
             features, labels, test_size = test_size)
 
+        # standardize training features
+        standardized_training_features = pd.DataFrame(scaler.fit_transform(training_features))
+        standardized_training_features.columns = training_features.columns.values
+        standardized_training_features.index = training_features.index.values
+        
+        # standardize test features
+        standardized_test_features = pd.DataFrame(scaler.fit_transform(test_features))
+        standardized_test_features.columns = test_features.columns.values
+        standardized_test_features.index = test_features.index.values
+        
         #  Train affinity classifier
         classifier = sklearn.linear_model.LogisticRegression(penalty='l1', n_jobs=-1, tol=1e-8)
         classifier.fit(training_features, training_labels)

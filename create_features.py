@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Given a set of negative  sequences and positive sequences (in FASTA format) 
-as well as a list of motifs, calculates standardized motif scores 
+as well as a list of motifs, calculates motif scores 
 and sequence labels suitable for training classifier
 """
 
@@ -11,12 +11,11 @@ import numpy as np
 import os
 import time
 import pandas as pd
-from sklearn import preprocessing
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Given a set of negative \
                 sequences and positive sequences (in FASTA format) as well \
-                as a list of motifs, calculates standardized motif scores \
+                as a list of motifs, calculates motif scores \
                 and sequence labels suitable for training classifier' )
     parser.add_argument("positive_sequences_path",
         help="path to a fasta_file containing positive sequences to score",
@@ -34,7 +33,7 @@ if __name__ == '__main__':
     parser.add_argument("-num_procs", 
         help="number of processor cores to use",
         type=int,
-        default=4)
+        default=8)
     parser.add_argument("-pseudocount", 
         help="pseudocount for calculating motif scores",
         type=float,
@@ -74,8 +73,6 @@ if __name__ == '__main__':
                         '-pseudocount', str(pseudocount), 
                         ]))
 
-    # standardize features
-    print('standardizing features')
     positive_name_root = positive_sequences_path.split('/')[-1].split('.')[0]
     positive_score_path = output_path + '/' + positive_name_root + '_motif_scores.tsv'
 
@@ -88,14 +85,8 @@ if __name__ == '__main__':
     # concatenate data frames
     combined_frame = pd.concat([positive_score_frame, negative_score_frame])
 
-    # standardize motif scores
-    scaler = preprocessing.StandardScaler()
-    standardized_combined_frame = pd.DataFrame(scaler.fit_transform(combined_frame))
-    standardized_combined_frame.columns = combined_frame.columns.values
-    standardized_combined_frame.index = combined_frame.index.values
-    
-    feature_out_path = output_path +  '/'+positive_name_root+'_standardized_features.tsv'
-    standardized_combined_frame.to_csv(feature_out_path, sep='\t')
+    feature_out_path = output_path +  '/'+positive_name_root+'_combined_features.tsv'
+    combined_frame.to_csv(feature_out_path, sep='\t')
     
     # create labels
     print('creating labels')
