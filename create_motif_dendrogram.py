@@ -54,7 +54,7 @@ if __name__ == '__main__':
     for f in motif_files:
         logo_path = output_path + '/logos/' + '.'.join(f.split('/')[-1].split('.')[:-1])
         if not os.path.isfile(logo_path + '.png'):
-            os.system('motif2Logo.pl ' + f + ' -o ' + logo_path)
+            os.system('motif2Logo.pl "' + f + '" -o "' + logo_path+'"')
 
     correlation_data = np.load(similarity_scores_path)
     correlations = correlation_data['arr_0']
@@ -70,8 +70,7 @@ if __name__ == '__main__':
         coords = list(combinations(range(len(motif_names)),2))
         dissimilarity_as_pdist = [dissimilarity[x[0]][x[1]] for x in coords]
 
-        Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist, 
-                                         )
+        Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist)
         gs = matplotlib.gridspec.GridSpec(2, len(motif_names), wspace=0.0, hspace=0.0)
         dendrogram_axis = plt.subplot(gs[0,:len(motif_names)])
         sns.despine()
