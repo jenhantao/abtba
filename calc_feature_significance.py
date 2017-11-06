@@ -94,7 +94,9 @@ def calc_feature_pvals(features,
         standardized_test_features.index = test_features.index.values
             
         #  Train affinity classifier
-        classifier = sklearn.linear_model.LogisticRegression(penalty='l1')
+        classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
+            solver='saga', 
+            n_jobs=-1)
 
         classifier.fit(standardized_training_features, training_labels)
         # score predictions
