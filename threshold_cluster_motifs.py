@@ -412,7 +412,7 @@ if __name__ == "__main__":
     outputPath = args.outputPath
     threshold = args.threshold
     motifFiles = args.motifFiles
-    file_based_name = ! args.familyBasedName
+    file_based_name = not args.familyBasedName
 
     if not os.path.isdir(outputPath):
         os.mkdir(outputPath)
@@ -434,7 +434,8 @@ if __name__ == "__main__":
     allMotifs = []
     motifNames = []
     for mf in sorted(motifFiles):
-        motif = readMotifFile(mf) # (name, PWM)
+        motif = readMotifFile(mf, 
+            file_based_name = file_based_name)
         allMotifs.append(motif)
         motif_name = motif[0]
         motifNames.append(motif_name)

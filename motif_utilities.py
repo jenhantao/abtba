@@ -14,21 +14,23 @@ gapPenalty = -100.0
 # reads all motif files in a directory 
 # inputs: path to a directory containing homer motif files
 # outputs: an array of tuples representing each motif
-def readMotifFile(motifPath):
+def readMotifFile(motifPath, file_based_name = False):
     #motifCounter = np.random.random_integers(0,10000,1)[0]
     name_metadata_dict = {}
     with open(motifPath) as f:
         data = f.readlines()
     metadata = data[0].strip().split()
     motif_id = metadata[0]
-    name = metadata[1]
-
-    name = name.replace('/','_')
-    name = name.replace(')','_')
-    name = name.replace('(','_')
-    name = name.replace('|','_')
-    name = name.replace('__','_')
-    name = name.strip('_')
+    if file_based_name:
+        name = motifPath.split('/')[-1].split('.')[0]
+    else:
+        name = metadata[1]
+        name = name.replace('/','_')
+        name = name.replace(')','_')
+        name = name.replace('(','_')
+        name = name.replace('|','_')
+        name = name.replace('__','_')
+        name = name.strip('_')
     if len(metadata) > 2:
         family = metadata[2]
     else:
@@ -46,6 +48,7 @@ def readMotifFile(motifPath):
             scores = np.array([float(x) for x in tokens])
             scores= scores/np.sum(scores)
             matrix.append(scores)
+        
     return (name,np.array(matrix), motif_id, family, geneName)
 
 # given two motif objects, aligns the motifs using a needleman wunsch derivative
