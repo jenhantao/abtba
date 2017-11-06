@@ -95,8 +95,7 @@ def calc_feature_pvals(features,
             
         #  Train affinity classifier
         classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
-            solver='saga', 
-            n_jobs=-1)
+            solver='liblinear') 
 
         classifier.fit(standardized_training_features, training_labels)
         # score predictions
@@ -104,12 +103,13 @@ def calc_feature_pvals(features,
         probas = classifier.predict_proba(standardized_features) # [[p_false, p_true]...] 
         overall_log_likelihood = calc_model_log_likelihood(probas, labels)
         iter_pvals = []
+
+        current_classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
+            solver='liblinear')
         for motif in features.columns.values:
+            print('testing', motif)
             current_features = standardized_features.drop(motif, axis=1, inplace=False)
             current_training_features = standardized_training_features.drop(motif, axis=1, inplace = False)
-            current_classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
-                solver='saga',
-                n_jobs=-1)
             current_classifier.fit(current_training_features, training_labels)
             current_probas = current_classifier.predict_proba(current_features)
             current_log_likelihood = calc_model_log_likelihood(current_probas, labels)

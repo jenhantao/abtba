@@ -82,7 +82,7 @@ def train_classifier(features,
         standardized_test_features.index = test_features.index.values
         
         #  Train affinity classifier
-        classifier = sklearn.linear_model.LogisticRegression(penalty='l1', n_jobs=-1, tol=1e-8, solver = 'saga')
+        classifier = sklearn.linear_model.LogisticRegression(penalty='l1', tol=1e-8, solver = 'liblinear')
         classifier.fit(training_features, training_labels)
 
         # score predictions
