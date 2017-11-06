@@ -107,7 +107,9 @@ def calc_feature_pvals(features,
         for motif in features.columns.values:
             current_features = standardized_features.drop(motif, axis=1, inplace=False)
             current_training_features = standardized_training_features.drop(motif, axis=1, inplace = False)
-            current_classifier = sklearn.linear_model.LogisticRegression(penalty='l1')
+            current_classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
+                solver='saga',
+                n_jobs=-1)
             current_classifier.fit(current_training_features, training_labels)
             current_probas = current_classifier.predict_proba(current_features)
             current_log_likelihood = calc_model_log_likelihood(current_probas, labels)
