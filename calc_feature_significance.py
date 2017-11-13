@@ -118,7 +118,8 @@ def calc_feature_pvals(features,
             p = scipy.stats.chisqprob(stat, df=1)
 
             iter_pvals.append(p)
-    pvals.append(iter_pvals)
+
+        pvals.append(iter_pvals)
     return pvals
             
 
