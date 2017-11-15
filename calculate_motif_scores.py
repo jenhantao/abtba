@@ -57,6 +57,8 @@ def read_fasta(file_path):
             seq_id = line.strip()[1:]
         else:
             current_seq_tokens.append(line.strip())
+    sequence_list.append(seq)
+    id_list.append(seq_id)
     return sequence_list, id_list
 
 def convert_sequences_to_array(sequences):
