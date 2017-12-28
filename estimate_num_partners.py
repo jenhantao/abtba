@@ -60,9 +60,7 @@ def train_classifier(features,
     all_coefficients = []
     all_scores = []
     all_testLabels = []
-    start = time.time()
     for i in range(numIterations):  
-        iter_start = time.time()
         # split data into training and test sets
         training_features, test_features, training_labels, test_labels = get_split(
             features, labels, test_size = test_size)
@@ -89,14 +87,9 @@ def train_classifier(features,
         all_scores.append(probas)
         all_testLabels.append(test_labels)
         
-        iter_end = time.time()
-        
-    end = time.time()
-    
     # convert coefficients into data frame
     all_coefficients = pd.DataFrame(np.array(all_coefficients)).T
     all_coefficients.index = features.columns.values
-    print('Total time:', end - start)
     
     results = (all_rocs, 
                all_precisions, 
@@ -181,8 +174,10 @@ if __name__ == '__main__':
     labels = read_labels(label_path)
 
     # train classifier on each feature
+    print('training individual classifiers')
     feature_performance_tuples = []
     for feature in feature_frame.columns.values:
+        start = time.time()
         sub_features = feature_frame[[feature]]
         sub_results = train_classifier(sub_features,
                          labels,
@@ -191,6 +186,8 @@ if __name__ == '__main__':
         sub_roc = np.mean(sub_results[0])
         sub_precision = np.mean(sub_results[1])
         feature_performance_tuples.append((feature, sub_roc, sub_precision))
+        end = time.time()
+        print('classifier using feature', feature, 'ROC:', sub_roc, 'Precision:', sub_precision, 'Training Time:', end-start)
     # use performance to sort individual features
     feature_performance_tuples.sort(key=lambda x:x[1], reverse=True)
     sorted_features = [x[0] for x in feature_performance_tuples]
@@ -201,7 +198,8 @@ if __name__ == '__main__':
     for t in feature_performance_tuples:
         ind_performance_file.write('\t'.join([str(x) for x in t]) + '\n')
     ind_performance_file.close()
-
+    
+    print('Performing feed forward selection')
     # train classifier on increasingly large subsets of features
     numFeatures_performance_tuples = []
     for i in range(len(sorted_features)):
