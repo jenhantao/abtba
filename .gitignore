@@ -91,4 +91,6 @@ ENV/
 .ropeproject
 
 # genome directory
-mm10/
+model_training/mm10/
+model_training/hg38/
+
