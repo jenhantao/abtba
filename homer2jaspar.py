@@ -32,16 +32,16 @@ if __name__ == '__main__':
     
     for line in data[1:]:
         tokens = line.strip().split('\t')
-        A_freqs.append(tokens[0])
-        C_freqs.append(tokens[1])
-        G_freqs.append(tokens[2])
-        T_freqs.append(tokens[3])
+        A_freqs.append(str(int(float(tokens[0])*10000)))
+        C_freqs.append(str(int(float(tokens[1])*10000)))
+        G_freqs.append(str(int(float(tokens[2])*10000)))
+        T_freqs.append(str(int(float(tokens[3])*10000)))
     
     out_file = open(output_path, 'w')
 
     out_file.write('>'+motif_id + '\t' + motif_name + '\n')
     out_file.write('A [ ' + ' '.join(A_freqs) + ' ]\n') 
-    out_file.write('c [ ' + ' '.join(C_freqs) + ' ]\n') 
+    out_file.write('C [ ' + ' '.join(C_freqs) + ' ]\n') 
     out_file.write('G [ ' + ' '.join(G_freqs) + ' ]\n') 
     out_file.write('T [ ' + ' '.join(T_freqs) + ' ]\n') 
     out_file.close()

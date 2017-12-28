@@ -24,7 +24,7 @@ if __name__ == '__main__':
     with open(homer_path) as f:
         data = f.readlines()
     motif_name = data[0].split()[1]
-    motif_id = data[0].split()[0]
+    motif_id = data[0].split()[0][1:]
     out_file.write('MEME version 4.4\n\nALPHABET= ACGT\n\nstrands: + -\n\n' +
                    'Background letter frequencies (from uniform background):\nA 0.25000 C 0.25000 G 0.25000 T 0.25000\n' +
                    'MOTIF '+ motif_name + ' ' + motif_id  + '\n')
