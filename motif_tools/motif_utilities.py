@@ -243,23 +243,19 @@ def global_align_motifs(motif1, motif2):
             j -= 1
         elif i > 0 and scoreMatrix[i][j] == scoreMatrix[i-1][j] + gapPenalty:
             alignMatrix1.append(motif1[1][i-1])
-            #alignMatrix2.append([0.25,0.25,0.25,0.25])
-            alignMatrix2.append([0.0,0.0,0.0,0.0])
+            alignMatrix2.append([0.25,0.25,0.25,0.25])
             i -= 1
         elif j > 0 and scoreMatrix[i][j] == scoreMatrix[i][j-1] + gapPenalty:
-            #alignMatrix1.append([0.25,0.25,0.25,0.25])
-            alignMatrix1.append([0.0,0.0,0.0,0.0])
+            alignMatrix1.append([0.25,0.25,0.25,0.25])
             alignMatrix2.append(motif2[1][j-1])
             j -= 1
         else:
             if i > 0:
                 alignMatrix1.append(motif1[1][i-1])
-                #alignMatrix2.append([0.25,0.25,0.25,0.25])
-                alignMatrix2.append([0.0,0.0,0.0,0.0])
+                alignMatrix2.append([0.25,0.25,0.25,0.25])
                 i -= 1
             elif j > 0:
-                #alignMatrix1.append([0.25,0.25,0.25,0.25])
-                alignMatrix1.append([0.0,0.0,0.0,0.0])
+                alignMatrix1.append([0.25,0.25,0.25,0.25])
                 alignMatrix2.append(motif2[1][j-1])
                 j -= 1
     alignMatrix1 = np.array(alignMatrix1[::-1])
