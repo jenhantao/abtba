@@ -57,7 +57,7 @@ if __name__ == '__main__':
     
     print('computing features for positive sequences')
     os.system(' '.join(['python', 
-                        script_path+'/calculate_motif_scores.py', 
+                        script_path+'/calculate_motif_scores_biopython.py', 
                         positive_sequences_path, 
                         output_path, ' '.join(motif_files),
                         '-num_procs', str(num_processors),
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     print('computing features for negative sequences')
     os.system(' '.join(['python', 
-                        script_path+'/calculate_motif_scores.py', 
+                        script_path+'/calculate_motif_scores_biopython.py', 
                         negative_sequences_path, 
                         output_path, ' '.join(motif_files),
                         '-num_procs', str(num_processors),
