@@ -40,11 +40,11 @@ def read_jaspar_motif_file(motifPath, pseudocount):
     inputs: path to a jaspar motif file
     outputs: a tuple representing a motif
     '''
-    with open(motif_dir + '/' + mf) as f:
+    with open(motifPath) as f:
         m = motifs.read(f, 'jaspar')
         m.pseudocounts = pseudocount
-        m.name = mf.split('.')[0]
-    return (n.name, m)
+        print(m.name)
+    return (m.name, m)
 
 def read_fasta(file_path):
     '''
@@ -60,7 +60,6 @@ def read_fasta(file_path):
     alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
     for seq_record in SeqIO.parse(file_path, "fasta"):
         seq_record.seq.alphabet = alphabet
-        id_seq_dict[seq_record.id] = seq_record.seq
 
         id_list.append(seq_record.id)
         sequence_list.append(seq_record.seq)
@@ -106,7 +105,7 @@ def calculate_top_motif_matches_async(sequence_list,
                 top_starts.append(str(np.argmax(rev_scores)) + ' -') 
         else:
             top_scores.append(0)
-            top_starts.append(-1 ?)
+            top_starts.append('-1 ?')
 
     motif_score_dict[motif_name] = top_scores
     motif_start_dict[motif_name] = top_starts
