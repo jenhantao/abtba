@@ -67,66 +67,47 @@ def read_fasta(file_path):
     return sequence_list, id_list
 
 
-def calculate_top_motif_matches_async(sequence_array_list, 
-                                      pwm, 
+def calculate_top_motif_matches_async(sequence_list, 
+                                      pssm, 
                                       motif_name, 
                                       motif_score_dict, 
                                       motif_start_dict,
                                      ):
     '''
-    identifies the highest scoring match to pwm for each sequence
+    identifies the highest scoring match to pssm for each sequence
     inputs:    
     outputs: top_scores - a list of the best motif scores in each sequence
              top_starts - a list of the start position of the best motif match in each sequence
     '''
     start = time.time()
     
-    background_frequency = 0.25
+    fwd_pssm = pssm
+    rev_pssm = fwd_pssm.reverse_complement()
     
     top_scores = [] # motif score of best match for each sequence
     top_starts = [] # start position of best match for each sequence
     
-    pwm_length = pwm.shape[0]
     # calculate scores for each motif at each position
-    for seq_array in sequence_array_list:
-        seq_length = seq_array.shape[0]
-        scores = []
-        for i in range(seq_length - pwm_length + 1):
-            # get substring represented as matrix
-            subseq_array = seq_array[i: i + pwm_length] 
-            # get corresponding pwm frequencies
-            frequencies = (pwm * subseq_array).sum(axis=1) 
-            # 0.25 background freq
-            ratios = (frequencies)/(background_frequency) 
-            # calculate log likelihood ratios
-            llr = np.log2(ratios) 
-            # sum to calculate motif score
-            score = np.sum(llr) 
-            scores.append((score, i, '+'))
-            
-        # calculate reverse complement and scores for reverse complement
-        rc_seq_array = seq_array[::-1, ::-1]
-        for i in range(seq_length - pwm_length + 1):
-            # get substring represented as matrix
-            subseq_array = rc_seq_array[i: i + pwm_length] 
-            # get corresponding pwm frequencies
-            frequencies = (pwm  * subseq_array).sum(axis=1) 
-            # 0.25 background freq
-            ratios = (frequencies)/(background_frequency) 
-            # calculate log likelihood ratios
-            llr = np.log2(ratios) 
-            # sum to calculate motif score
-            score = np.sum(llr) 
-            scores.append((score, seq_length - i, '-')) 
-            
-        scores.sort(key = lambda x:x[0], reverse = True)
-        top_hit = scores[0]
-        if top_hit[0] > 0:
-            top_scores.append(top_hit[0])
-            top_starts.append(str(top_hit[1]) + ' ' + top_hit[2])
+    for seq in sequence_list:
+        seq_length = seq.shape[0]
+
+        fwd_scores = fwd_pssm.calculate(seq)
+        rev_scores = rev_pssm.calculate(seq)
+        
+        max_fwd_score = np.max(fwd_scores)
+        max_rev_score = np.max(rev_scores)
+        
+        if max_fwd_score > 0 or max_rev_score > 0:
+            if max_fwd_score > max_rev_score:
+                top_scores.append(max_fwd_score)
+                top_starts.append(str(np.argmax(fwd_scores)) + ' +')
+            else:
+                top_scores.append(max_rev_score)
+                top_starts.append(str(np.argmax(rev_scores)) + ' -') 
         else:
             top_scores.append(0)
-            top_starts.append('-1 ?')
+            top_starts.append(-1 ?)
+
     motif_score_dict[motif_name] = top_scores
     motif_start_dict[motif_name] = top_starts
     end = time.time()
@@ -193,12 +174,12 @@ if __name__ == '__main__':
     motif_start_dict = manager.dict() # {motif_name:[motif_start_pos]}
        
     for motif in all_motifs:
-        pwm = motif[1]
+        pssm = motif[1].pssm
         motif_name = motif[0]
         
         pool.apply_async(
-        calculate_top_motif_matches_async,args=(sequence_array_list, 
-                                                pwm, 
+        calculate_top_motif_matches_async,args=(sequence_list, 
+                                                pssm, 
                                                 motif_name, 
                                                 motif_score_dict, 
                                                 motif_start_dict
