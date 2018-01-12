@@ -11,6 +11,9 @@ import time
 import multiprocessing
 import pandas as pd
 import os
+import Bio
+from Bio import motifs
+from Bio import SeqIO
 
 ### functions ###
 def read_motif_file(motifPath, pseudocount):
@@ -41,23 +44,14 @@ def read_fasta(file_path):
     outputs: sequence_list - a list of sequences
              id_list - a list of ids
     '''
-    with open(file_path) as f:
-        data = f.readlines()
-    id_list = []
-    sequence_list = []
-    # loop through each sequence
-    current_seq_tokens = []
-    for line in data:
-        if '>' in line:
-            if len(current_seq_tokens) > 0:
-                seq = ''.join(current_seq_tokens)
-                id_list.append(seq_id)
-                sequence_list.append(seq)
-                current_seq_tokens = [] 
-            seq_id = line.strip()[1:]
-        else:
-            current_seq_tokens.append(line.strip())
-    return sequence_list, id_list
+    # read in sequences
+    id_seq_dict = {}
+    alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
+    for seq_record in SeqIO.parse(file_path, "fasta"):
+        seq_record.seq.alphabet = alphabet
+        id_seq_dict[seq_record.id] = seq_record.seq
+    return id_seq_dict
+
 
 def convert_sequences_to_array(sequences):
     '''
