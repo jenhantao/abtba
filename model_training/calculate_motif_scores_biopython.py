@@ -16,26 +16,35 @@ from Bio import motifs
 from Bio import SeqIO
 
 ### functions ###
-def read_motif_file(motifPath, pseudocount):
+#def read_motif_file(motifPath, pseudocount):
+#    '''
+#    '''
+#    name_metadata_dict = {}
+#    with open(motifPath) as f:
+#        data = f.readlines()
+#    name = '.'.join(motifPath.split('/')[-1].split('.')[:-1])
+#    matrix = []
+#    metadata = data[0].strip()
+#    for line in data[1:]:
+#        tokens = line.strip().split("\t")
+#        if len(tokens) > 1:
+#            scores = np.array([float(x) for x in tokens])
+#            scores = scores + pseudocount
+#            scores= scores/np.sum(scores)
+#            matrix.append(scores)
+#    return (name,np.array(matrix))
+
+def read_jaspar_motif_file(motifPath, pseudocount):
     '''
-    reads all motif files in a directory 
-    inputs: path to a directory containing homer motif files
-    outputs: an array of tuples representing each motif
+    reads jaspar motif file
+    inputs: path to a jaspar motif file
+    outputs: a tuple representing a motif
     '''
-    name_metadata_dict = {}
-    with open(motifPath) as f:
-        data = f.readlines()
-    name = '.'.join(motifPath.split('/')[-1].split('.')[:-1])
-    matrix = []
-    metadata = data[0].strip()
-    for line in data[1:]:
-        tokens = line.strip().split("\t")
-        if len(tokens) > 1:
-            scores = np.array([float(x) for x in tokens])
-            scores = scores + pseudocount
-            scores= scores/np.sum(scores)
-            matrix.append(scores)
-    return (name,np.array(matrix))
+    with open(motif_dir + '/' + mf) as f:
+        m = motifs.read(f, 'jaspar')
+        m.pseudocounts = pseudocount
+        m.name = mf.split('.')[0]
+    return (n.name, m)
 
 def read_fasta(file_path):
     '''
@@ -45,37 +54,18 @@ def read_fasta(file_path):
              id_list - a list of ids
     '''
     # read in sequences
-    id_seq_dict = {}
+    id_list = []
+    sequence_list = []
+
     alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
     for seq_record in SeqIO.parse(file_path, "fasta"):
         seq_record.seq.alphabet = alphabet
         id_seq_dict[seq_record.id] = seq_record.seq
-    return id_seq_dict
 
+        id_list.append(seq_record.id)
+        sequence_list.append(seq_record.seq)
+    return sequence_list, id_list
 
-def convert_sequences_to_array(sequences):
-    '''
-    inputs: sequence of nucleotides represented as a string composed of A, C, G, T
-    outputs: a list of numpy array representations of a sequence with:
-             A = [1, 0, 0, 0]
-             C = [0, 1, 0, 0]
-             G = [0, 0, 1, 0]
-             T = [0, 0, 0, 1]
-             
-    '''
-    nucleotide_array_dict = {'A': [1, 0, 0, 0],
-                             'C': [0, 1, 0, 0],
-                             'G': [0, 0, 1, 0],
-                             'T': [0, 0, 0, 1],
-                             'N': [0, 0, 0, 0]}
-    sequence_array_list = []
-    for seq in sequences:
-        seq_array = []
-        for nuc in seq:
-            seq_array.append(nucleotide_array_dict[nuc])
-        seq_array = np.array(seq_array)
-        sequence_array_list.append(seq_array)
-    return sequence_array_list
 
 def calculate_top_motif_matches_async(sequence_array_list, 
                                       pwm, 
@@ -85,12 +75,7 @@ def calculate_top_motif_matches_async(sequence_array_list,
                                      ):
     '''
     identifies the highest scoring match to pwm for each sequence
-    inputs: pwm - a numpy array representing a pwm
-            sequence_array_list - a list of numpy array representations of a sequence with:
-                                 A = [1, 0, 0, 0]
-                                 C = [0, 1, 0, 0]
-                                 G = [0, 0, 1, 0]
-                                 T = [0, 0, 0, 1]
+    inputs:    
     outputs: top_scores - a list of the best motif scores in each sequence
              top_starts - a list of the start position of the best motif match in each sequence
     '''
@@ -188,7 +173,8 @@ if __name__ == '__main__':
     # read in motif files
     all_motifs = []
     for m in motif_files:
-        motif = read_motif_file(m, pseudocount)
+        #motif = read_motif_file(m, pseudocount)
+        motif = read_jaspar_motif_file(m, pseudocount)
         all_motifs.append(motif)
     # sort motifs by name
     all_motifs.sort(key=lambda x:x[0])
@@ -198,7 +184,7 @@ if __name__ == '__main__':
     sequence_list, id_list = read_fasta(fasta_path)
 
     # convert strings to arrays
-    sequence_array_list = convert_sequences_to_array(sequence_list)
+    #sequence_array_list = convert_sequences_to_array(sequence_list)
     
     # calculate motif scores
     pool = multiprocessing.Pool(processes=num_processors)
