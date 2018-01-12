@@ -16,24 +16,6 @@ from Bio import motifs
 from Bio import SeqIO
 
 ### functions ###
-#def read_motif_file(motifPath, pseudocount):
-#    '''
-#    '''
-#    name_metadata_dict = {}
-#    with open(motifPath) as f:
-#        data = f.readlines()
-#    name = '.'.join(motifPath.split('/')[-1].split('.')[:-1])
-#    matrix = []
-#    metadata = data[0].strip()
-#    for line in data[1:]:
-#        tokens = line.strip().split("\t")
-#        if len(tokens) > 1:
-#            scores = np.array([float(x) for x in tokens])
-#            scores = scores + pseudocount
-#            scores= scores/np.sum(scores)
-#            matrix.append(scores)
-#    return (name,np.array(matrix))
-
 def read_jaspar_motif_file(motifPath, pseudocount):
     '''
     reads jaspar motif file
