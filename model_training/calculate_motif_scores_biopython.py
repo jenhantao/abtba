@@ -70,8 +70,6 @@ def calculate_top_motif_matches_async(sequence_list,
     
     # calculate scores for each motif at each position
     for seq in sequence_list:
-        seq_length = seq.shape[0]
-
         fwd_scores = fwd_pssm.calculate(seq)
         rev_scores = rev_pssm.calculate(seq)
         
