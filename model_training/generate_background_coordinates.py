@@ -171,7 +171,7 @@ def get_random_positions_with_gc(target_positions,
         target_gc_count += seq.count('G')
         target_gc_count += seq.count('C')
         target_length_count += len(seq)
-    target_gc_content = target_gc_count/(target_length_count+0.0000001) # GC content of target sequences
+    target_gc_content = (target_gc_count + 0.1)/(target_length_count+0.1) # GC content of target sequences
     
     ### select random genomic loci such that they do no overlap target sequences
     numSelected = 0
