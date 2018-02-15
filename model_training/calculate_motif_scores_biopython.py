@@ -24,8 +24,9 @@ def read_jaspar_motif_file(motifPath, pseudocount):
     '''
     with open(motifPath) as f:
         m = motifs.read(f, 'jaspar')
-        m.pseudocounts = pseudocount
-        print(m.name)
+        default_pseudocount = motifs.jaspar.calculate_pseudocounts(m)
+        scaled_pseudocount = pseudocount/0.01 * default_pseudocount
+        m.pseudocounts = scaled_pseudocount
     return (m.name, m)
 
 def read_fasta(file_path):
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     parser.add_argument("-pseudocount", 
         help="pseudocount for calculating motif scores",
         type=float,
-        default=0.1)
+        default=0.01)
 
     # parse arguments
     args = parser.parse_args()
