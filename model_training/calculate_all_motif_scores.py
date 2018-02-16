@@ -12,80 +12,45 @@ import time
 import multiprocessing
 import pickle
 import pandas as pd
+import Bio
+from Bio import motifs
+from Bio import SeqIO
 
 ### functions ###
-def read_motif_file(motifPath, pseudocount):
+def read_jaspar_motif_file(motifPath, pseudocount):
+    ''' 
+    reads jaspar motif file
+    inputs: path to a jaspar motif file
+    outputs: a tuple representing a motif
     '''
-    reads all motif files in a directory 
-    inputs: path to a directory containing homer motif files
-    outputs: an array of tuples representing each motif
-    '''
-    name_metadata_dict = {}
     with open(motifPath) as f:
-        data = f.readlines()
-    name = '.'.join(motifPath.split('/')[-1].split('.')[:-1])
-    matrix = []
-    metadata = data[0].strip()
-    for line in data[1:]:
-        tokens = line.strip().split("\t")
-        if len(tokens) > 1:
-            scores = np.array([float(x) for x in tokens])
-            scores = scores + pseudocount
-            scores= scores/np.sum(scores)
-            matrix.append(scores)
-    return (name,np.array(matrix))
+        m = motifs.read(f, 'jaspar')
+        default_pseudocount = motifs.jaspar.calculate_pseudocounts(m)
+        scaled_pseudocount = pseudocount/0.01 * default_pseudocount['A']
+        m.pseudocounts = int(scaled_pseudocount)
+    return (m.name, m)
 
 def read_fasta(file_path):
-    ''' 
+    '''
     reads in a fasta file and returns a list of sequence ids and a list of sequences
     inputs: filepath - path to a fasta file
     outputs: sequence_list - a list of sequences
              id_list - a list of ids
     '''
-    with open(file_path) as f:
-        data = f.readlines()
+    # read in sequences
     id_list = []
     sequence_list = []
-    # loop through each sequence
-    current_seq_tokens = []
-    for line in data:
-        if '>' in line:
-            if len(current_seq_tokens) > 0:
-                seq = ''.join(current_seq_tokens)
-                id_list.append(seq_id)
-                sequence_list.append(seq)
-                current_seq_tokens = []  
-            seq_id = line.strip()[1:]
-        else:
-            current_seq_tokens.append(line.strip())
+
+    alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
+    for seq_record in SeqIO.parse(file_path, "fasta"):
+        seq_record.seq.alphabet = alphabet
+
+        id_list.append(seq_record.id)
+        sequence_list.append(seq_record.seq)
     return sequence_list, id_list
 
-def convert_sequences_to_array(sequences):
-    '''
-    inputs: sequence of nucleotides represented as a string composed of A, C, G, T
-    outputs: a list of numpy array representations of a sequence with:
-             A = [1, 0, 0, 0]
-             C = [0, 1, 0, 0]
-             G = [0, 0, 1, 0]
-             T = [0, 0, 0, 1]
-             
-    '''
-    nucleotide_array_dict = {'A': [1, 0, 0, 0],
-                             'C': [0, 1, 0, 0],
-                             'G': [0, 0, 1, 0],
-                             'T': [0, 0, 0, 1],
-                             'N': [0, 0, 0, 0]}
-    sequence_array_list = []
-    for seq in sequences:
-        seq_array = []
-        for nuc in seq:
-            seq_array.append(nucleotide_array_dict[nuc])
-        seq_array = np.array(seq_array)
-        sequence_array_list.append(seq_array)
-    return sequence_array_list
-
-def calculate_all_motif_scores_async(sequence_array_list,
-                                 pwm,
+def calculate_all_motif_scores_async(sequence_list,
+                                 pssm,
                                  motif_name,
                                  output_path
                                  ):
@@ -99,54 +64,26 @@ def calculate_all_motif_scores_async(sequence_array_list,
                                  T = [0, 0, 0, 1]
     outputs: top_scores - a list of the best motif scores in each sequence
     '''
+
+    fwd_pssm = pssm
+    rev_pssm = fwd_pssm.reverse_complement()
+
+    all_fwd_scores = [] 
+    all_rev_scores = []
+
     start = time.time()
 
-    background_frequency = 0.25
+    for seq in sequence_list:
+        fwd_scores = fwd_pssm.calculate(seq)
+        rev_scores = rev_pssm.calculate(seq)
 
-    all_scores = [] # motif score of best match for each sequence
-    all_rc_scores = []
-    pwm_length = pwm.shape[0]
-    # calculate scores for each motif at each position
-    for seq_array in sequence_array_list:
-        seq_length = seq_array.shape[0]
-        scores = []
-        for i in range(seq_length - pwm_length + 1):
-            # get substring represented as matrix
-            subseq_array = seq_array[i: i + pwm_length]
-            # get corresponding pwm frequencies
-            frequencies = (pwm * subseq_array).sum(axis=1)
-            # 0.25 background freq
-            ratios = (frequencies)/(background_frequency)
-            # calculate log likelihood ratios
-            llr = np.log2(ratios)
-            # sum to calculate motif score
-            score = np.sum(llr)
-            scores.append(score)
-        
-        # calculate reverse complement and scores for reverse complement
-        rc_seq_array = seq_array[::-1, ::-1]
-        rc_scores = []
-        for i in range(seq_length - pwm_length + 1):
-            # get substring represented as matrix
-            subseq_array = rc_seq_array[i: i + pwm_length]
-            # get corresponding pwm frequencies
-            frequencies = (pwm  * subseq_array).sum(axis=1)
-            # 0.25 background freq
-            ratios = (frequencies)/(background_frequency)
-            # calculate log likelihood ratios
-            llr = np.log2(ratios)
-            # sum to calculate motif score
-            score = np.sum(llr)
-            rc_scores.append(score)
-            
-        rc_scores=rc_scores[::-1]
-        all_scores.append(scores)
-        all_rc_scores.append(rc_scores)
+        all_fwd_scores.append(fwd_scores)
+        all_rev_scores.append(rev_scores)
 
-    pickle.dump(all_scores,
-                open(output_path+'/'+motif_name+'.pickle','wb'))
-    pickle.dump(all_rc_scores,
-                open(output_path+'/'+motif_name+'.rc.pickle','wb'))
+    pickle.dump(all_fwd_scores,
+                open(output_path+'/'+motif_name+'_fwd.pickle','wb'))
+    pickle.dump(all_rev_scores,
+                open(output_path+'/'+motif_name+'_rev.pickle','wb'))
 
     end = time.time()
     print(motif_name, 'calculation time:', end-start)
@@ -174,7 +111,7 @@ if __name__ == '__main__':
     parser.add_argument("-pseudocount", 
         help="pseudocount for calculating motif scores",
         type=float,
-        default=0.1)
+        default=0.01)
 
     # parse arguments
     args = parser.parse_args()
@@ -191,7 +128,7 @@ if __name__ == '__main__':
     # read in motif files
     all_motifs = []
     for m in motif_files:
-        motif = read_motif_file(m, pseudocount)
+        motif = read_jaspar_motif_file(m, pseudocount)
         all_motifs.append(motif)
     # sort motifs by name
     all_motifs.sort(key=lambda x:x[0])
@@ -201,19 +138,19 @@ if __name__ == '__main__':
     sequence_list, id_list = read_fasta(fasta_path)
 
     # convert strings to arrays
-    sequence_array_list = convert_sequences_to_array(sequence_list)
+    #sequence_array_list = convert_sequences_to_array(sequence_list)
     
     # calculate motif scores
     pool = multiprocessing.Pool(processes=num_processors)
     manager = multiprocessing.Manager()
        
     for motif in all_motifs:
-        pwm = motif[1]
         motif_name = motif[0]
+        pssm = motif[1].pssm
         
         pool.apply_async(
-        calculate_all_motif_scores_async ,args=(sequence_array_list, 
-                                                pwm, 
+        calculate_all_motif_scores_async ,args=(sequence_list, 
+                                                pssm, 
                                                 motif_name, 
                                                 output_path
                                            )
