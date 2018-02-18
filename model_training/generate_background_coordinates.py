@@ -25,6 +25,8 @@ def read_target_positions(file_path, filter_chromosomes):
         data = f.readlines()
     filter_chromosomes = set(filter_chromosomes)
     positions = []
+    if data[0][0] == '#':
+        data = data[1:]
     for line in data:
         tokens = line.strip().split()
         chrom = tokens[0]
@@ -248,6 +250,10 @@ if __name__ == '__main__':
     parser.add_argument("inputPath",
         help="path to a bed file containing a chr, start, end, and end column",
         type = str)
+    parser.add_argument("-genome",
+        help="genome from which to construct background regions",
+        default='mm10',
+        type=str)
     parser.add_argument("outputPath",
         help="directory where output files should be written",
         default="./", type=str)
@@ -262,13 +268,10 @@ if __name__ == '__main__':
         help="maximum fraction of background sequences that can be N",
         default = 0.1,
         type=float)
-    parser.add_argument("-genome",
-        help="genome from which to construct background regions",
-        default = "mm10",
-        type=str)
     parser.add_argument("-filterChromosomes",
         help="chromosomes to ignore",
         type=str,
+        default=['chrM', 'chrY'],
         nargs='+')
 
     # parse arguments

@@ -25,8 +25,8 @@ def read_jaspar_motif_file(motifPath, pseudocount):
     with open(motifPath) as f:
         m = motifs.read(f, 'jaspar')
         default_pseudocount = motifs.jaspar.calculate_pseudocounts(m)
-        scaled_pseudocount = pseudocount/0.01 * default_pseudocount
-        m.pseudocounts = scaled_pseudocount
+        scaled_pseudocount = pseudocount/0.01 * default_pseudocount['A']
+        m.pseudocounts = int(scaled_pseudocount)
     return (m.name, m)
 
 def read_fasta(file_path):
@@ -134,7 +134,6 @@ if __name__ == '__main__':
     # read in motif files
     all_motifs = []
     for m in motif_files:
-        #motif = read_motif_file(m, pseudocount)
         motif = read_jaspar_motif_file(m, pseudocount)
         all_motifs.append(motif)
     # sort motifs by name
