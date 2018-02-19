@@ -13,6 +13,7 @@ import os
 import sys
 import numpy as np
 import argparse
+import inspect
 
 
 def read_target_positions(file_path, filter_chromosomes):
@@ -21,6 +22,8 @@ def read_target_positions(file_path, filter_chromosomes):
     """
     if filter_chromosomes==None:
         filter_chromosomes = []
+    else:
+        print('filtering out: ' + ' '.join(filter_chromosomes))
     with open(file_path) as f:
         data = f.readlines()
     filter_chromosomes = set(filter_chromosomes)
@@ -69,16 +72,15 @@ def get_random_background(target_positions,
     # index target positions
     # {chr:[]}, value is chromosome length boolean array
     # largest chromosome has 200 million bps 
-
-
+    script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     if genome == 'mm10':
-        genome_path = os.path.dirname(__file__) + '/mm10/'
+        genome_path = script_path + '/mm10/'
         chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
                         'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
                         'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
                         'chr16', 'chr17', 'chr18', 'chr19', 'chrX']
     elif genome == 'hg38':
-        genome_path = os.path.dirname(__file__) + '/hg38/'
+        genome_path = script_path + '/hg38/'
         chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
                         'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
                         'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
