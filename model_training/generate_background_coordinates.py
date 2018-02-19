@@ -195,7 +195,7 @@ def get_random_positions_with_gc(target_positions,
             counter += 1
             randStart = np.random.randint(randChromSize)
             randEnd = randStart + mean_target_length
-            overlap_sum = np.sum(target_chr_position_dict[randChrom][randStart:(randEnd + 1)])
+            overlap_sum = np.sum(target_chr_position_dict[randChrom][randStart:(randEnd)])
             
             if not overlap_sum > 0:
                 randSeq = chrom_seq_dict[randChrom][randStart:(randEnd+1)]
