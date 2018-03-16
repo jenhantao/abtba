@@ -65,6 +65,8 @@ if __name__ == '__main__':
     with sns.axes_style('white'):
         width = len(motif_names)/8
         height = width/2
+        width = np.max([width, 4])
+        height = np.max([height, 4])
         plt.figure(figsize=(width, height))
         dissimilarity = 1-correlations
         coords = list(combinations(range(len(motif_names)),2))
@@ -74,21 +76,25 @@ if __name__ == '__main__':
         gs = matplotlib.gridspec.GridSpec(2, len(motif_names), wspace=0.0, hspace=0.0)
         dendrogram_axis = plt.subplot(gs[0,:len(motif_names)])
         sns.despine()
-        scipy.cluster.hierarchy.dendrogram(Z, 
+        scipy.cluster.hierarchy.dendrogram(Z,
                                            color_threshold=0.1,
                                            ax=dendrogram_axis,
-                                           labels=motif_names)
+                                           labels=motif_names,)
         plt.axhline(0.1, linestyle='--', color='grey')
         plt.ylabel('Correlation Difference')
         
         sorted_motif_names = [x.get_text() for x in  dendrogram_axis.get_xticklabels()]
+        dendrogram_axis.set_xticklabels([])
+
         for i in range(len(motif_names)):
             current_axis = plt.subplot(gs[1, i])
             mn = sorted_motif_names[i]
             img = plt.imread(motif_path + '/' + mn + '.png')
             rotated_img = scipy.ndimage.rotate(img, 90)
-            current_axis.imshow(rotated_img)
+            print(current_axis.get_xlim(), current_axis.get_ylim())
+            current_axis.imshow(rotated_img, origin = 'upper', extent=[0.0, 1.0, 0.0, 4.0])
             current_axis.set_xticks([])
             current_axis.set_yticks([])
-            current_axis.axis('off')
+            current_axis.set_xlabel(mn, rotation=90)
+    plt.tight_layout()
     plt.savefig(output_path + '/motif_clustering_dendrogram.pdf', bbox_inches='tight')
