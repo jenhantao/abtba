@@ -252,9 +252,8 @@ if __name__ == '__main__':
     parser.add_argument("inputPath",
         help="path to a bed file containing a chr, start, end, and end column",
         type = str)
-    parser.add_argument("-genome",
+    parser.add_argument("genome",
         help="genome from which to construct background regions",
-        default='mm10',
         type=str)
     parser.add_argument("outputPath",
         help="directory where output files should be written",
