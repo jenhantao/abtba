@@ -91,7 +91,7 @@ if __name__ == '__main__':
             mn = sorted_motif_names[i]
             img = plt.imread(motif_path + '/' + mn + '.png')
             rotated_img = scipy.ndimage.rotate(img, 90)
-            print(current_axis.get_xlim(), current_axis.get_ylim())
+
             current_axis.imshow(rotated_img, origin = 'upper', extent=[0.0, 1.0, 0.0, 4.0])
             current_axis.set_xticks([])
             current_axis.set_yticks([])

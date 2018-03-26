@@ -37,7 +37,7 @@ def read_target_positions(file_path, filter_chromosomes):
         end = int(tokens[2])
         name = tokens[3]
         if not chrom in filter_chromosomes:
-            if not 'chrUn' in chrom and not 'random' in chrom:
+            if not 'chrUn' in chrom and not 'random' in chrom and not 'alt' in chrom:
                 positions.append([chrom, start, end, name])
     return positions 
 
