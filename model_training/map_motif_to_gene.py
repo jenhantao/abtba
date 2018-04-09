@@ -30,7 +30,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     result_path = args.result_path
-    label_path = args.label_path
+    motif_files = args.motif_files
     output_path = args.output_path
     
     motif_genes_dict = {}
@@ -40,5 +40,17 @@ if __name__ == '__main__':
         gene_names = data[0].split()[0][1:].split('|')
         motif_name = data[0].strip().split()[1]
         motif_genes_dict[motif_name] = gene_names
- 
     
+    with open(result_path) as f:
+        results = f.readlines()
+    
+    out_file = open(output_path, 'w')
+    out_file.write(results[0])
+    
+    for line in results[1:]:
+        motif_name = line.split()[0]
+        motif_genes = motif_genes_dict[motif_name]
+        for g in motif_genes:
+            out_file.write(line.replace(motif_name,g))
+    
+    out_file.close()
