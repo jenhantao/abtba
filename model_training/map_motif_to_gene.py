@@ -8,9 +8,7 @@ motif names to gene names
 ### imports ###
 import argparse
 import numpy as np
-import os
-import pandas as pd
-    
+import os    
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Given a TBA coefficients file or \
