@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 """
 Given a TBA coefficients file or a TBA significance file, maps the 
