@@ -34,7 +34,7 @@ if __name__ == '__main__':
     for mf in motif_files:
         with open(mf) as f:
             data = f.readlines()
-        gene_names = data[0].split()[0][1:].split('|')
+        gene_names = data[0].replace('_var.2','').split()[0][1:].split('|')
         motif_name = data[0].strip().split()[1]
         motif_genes_dict[motif_name] = gene_names
     
