@@ -87,9 +87,11 @@ def local_align_motifs(motif1, motif2):
         elif i > 0 and scoreMatrix[i][j] == scoreMatrix[i-1][j] + gapPenalty:
             alignMatrix1.append(motif1[1][i-1])
             alignMatrix2.append([0.25,0.25,0.25,0.25])
+            #alignMatrix2.append([0.0,0.0,0.0,0.0])
             i -= 1
         elif j > 0 and scoreMatrix[i][j] == scoreMatrix[i][j-1] + gapPenalty:
             alignMatrix1.append([0.25,0.25,0.25,0.25])
+            #alignMatrix1.append([0.0,0.0,0.0,0.0])
             alignMatrix2.append(motif2[1][j-1])
             j -= 1
         else:   
@@ -101,9 +103,11 @@ def local_align_motifs(motif1, motif2):
             elif i > 0:
                 alignMatrix1.append(motif1[1][i-1])
                 alignMatrix2.append([0.25,0.25,0.25,0.25])
+                #alignMatrix2.append([0.0,0.0,0.0,0.0])
                 i -= 1
             elif j > 0:
                 alignMatrix1.append([0.25,0.25,0.25,0.25])
+                #alignMatrix1.append([0.0,0.0,0.0,0.0])
                 alignMatrix2.append(motif2[1][j-1])
                 j -= 1
     alignMatrix1 = np.array(alignMatrix1[::-1])
@@ -186,7 +190,7 @@ def cleanMatrix(matrix):
         freqs = matrix[i]
         ambiguous = True
         for freq in freqs:
-            if freq >= 0.33:
+            if freq > 0.4:
                 ambiguous = False
         if ambiguous and (i == startIndex + 1 or i==startIndex):
             startIndex = i
@@ -196,7 +200,7 @@ def cleanMatrix(matrix):
         freqs = matrix[i]
         ambiguous = True
         for freq in freqs:
-            if freq > 0.30:
+            if freq > 0.4:
                 ambiguous = False
         if ambiguous and (i == endIndex - 1 or i==endIndex):
             endIndex = i
@@ -252,11 +256,13 @@ def global_align_motifs(motif1, motif2):
         else:
             if i > 0:
                 alignMatrix1.append(motif1[1][i-1])
-                alignMatrix2.append([0.25,0.25,0.25,0.25])
+                #alignMatrix2.append([0.25,0.25,0.25,0.25])
+                alignMatrix2.append([0.0,0.0,0.0,0.0])
                 i -= 1
             elif j > 0:
-                alignMatrix1.append([0.25,0.25,0.25,0.25])
                 alignMatrix2.append(motif2[1][j-1])
+                #alignMatrix1.append([0.25,0.25,0.25,0.25])
+                alignMatrix1.append([0.0,0.0,0.0,0.0])
                 j -= 1
     alignMatrix1 = np.array(alignMatrix1[::-1])
     alignMatrix2 = np.array(alignMatrix2[::-1])
