@@ -28,7 +28,7 @@ def read_target_positions(file_path, filter_chromosomes):
         data = f.readlines()
     filter_chromosomes = set(filter_chromosomes)
     positions = []
-    if data[0][0] == '#':
+    if data[0].strip()[0] == '#':
         data = data[1:]
     for line in data:
         tokens = line.strip().split()
