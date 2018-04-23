@@ -19,7 +19,7 @@ def read_bed_file(input_path):
     with open(input_path) as f:
         data = f.readlines()
     coordinates = []
-    if data[0][0] == '#':
+    if data[0].strip()[0] == '#':
         data = data[1:]
     for line in data:
         tokens = line.strip().split()
