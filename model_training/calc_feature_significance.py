@@ -15,9 +15,10 @@ import sklearn
 from sklearn import linear_model
 from sklearn import cross_validation
 import scipy
+from joblib import Parallel, delayed
 
 ### functions ###
-# split data into GC content matched training and test data
+# split data into training and test data
 def get_split(features, labels, test_size):
     '''
     feature: 2D array (samples x features)
@@ -25,7 +26,6 @@ def get_split(features, labels, test_size):
     test_size: fraction of data to test on 
     '''
     
-    ### match GC content of samples labelled True with those labelled False by thowing out False samples 
     # retrieve sequences using index of labels
     index_label_tuples = tuple(zip(labels.index.values, labels.values))
     
@@ -65,10 +65,13 @@ def calc_model_log_likelihood(probas, labels):
         log_likelihood += log_prod
     return log_likelihood
 
-def calc_feature_pvals(features,
-                       labels,
-                       test_size=0.2,
-                       num_iterations=5):
+def calc_feature_pvals(
+    features,
+    labels,
+    test_size=0.2,
+    num_iterations=5,
+    num_procs=4
+    ):
     pvals = []
     num_motifs = features.shape[1]
     # split data into training and test sets
@@ -87,11 +90,6 @@ def calc_feature_pvals(features,
         standardized_training_features = pd.DataFrame(scaler.fit_transform(training_features))
         standardized_training_features.columns = training_features.columns.values
         standardized_training_features.index = training_features.index.values
-
-        # standardize test features
-        standardized_test_features = pd.DataFrame(scaler.fit_transform(test_features))
-        standardized_test_features.columns = test_features.columns.values
-        standardized_test_features.index = test_features.index.values
             
         #  Train affinity classifier
         classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
@@ -104,24 +102,41 @@ def calc_feature_pvals(features,
         overall_log_likelihood = calc_model_log_likelihood(probas, labels)
         iter_pvals = []
 
-        current_classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
-            solver='liblinear')
-        for motif in features.columns.values:
-            print('testing', motif)
-            current_features = standardized_features.drop(motif, axis=1, inplace=False)
-            current_training_features = standardized_training_features.drop(motif, axis=1, inplace = False)
-            current_classifier.fit(current_training_features, training_labels)
-            current_probas = current_classifier.predict_proba(current_features)
-            current_log_likelihood = calc_model_log_likelihood(current_probas, labels)
-
-            stat = -2*(current_log_likelihood - overall_log_likelihood)
-            p = scipy.stats.chisqprob(stat, df=1)
-
-            iter_pvals.append(p)
+        iter_pvals = Parallel(n_jobs=num_procs)(
+            delayed(train_perturbed_classifier)(
+                standardized_features, 
+                labels, 
+                standardized_training_features, 
+                training_labels, 
+                motif_to_drop,
+                overall_log_likelihood) for motif_to_drop in features.columns.values)
 
         pvals.append(iter_pvals)
+
     return pvals
-            
+
+           
+
+def train_perturbed_classifier(features, 
+    labels, 
+    training_features, 
+    training_labels, 
+    motif_to_drop, 
+    overall_log_likelihood):
+
+    start = time.time()
+    current_features = features.drop(motif_to_drop, axis=1, inplace=False)
+    current_training_features = training_features.drop(motif_to_drop, axis=1, inplace=False)
+    current_classifier = sklearn.linear_model.LogisticRegression(penalty='l1', 
+        solver='liblinear')
+    current_classifier.fit(current_training_features, training_labels)
+
+    current_probas = current_classifier.predict_proba(current_features)
+    current_log_likelihood = calc_model_log_likelihood(current_probas, labels)
+    stat = -2*(current_log_likelihood - overall_log_likelihood)
+    p = scipy.stats.chisqprob(stat, df=1)
+    print('tested', motif_to_drop, time.time() - start)
+    return p
 
     
 def read_labels(label_path):
@@ -170,7 +185,11 @@ if __name__ == '__main__':
     parser.add_argument("-test_fraction", 
         help="fraction of data to use for testing classifier",
         type=float,
-        default=0.5)
+        default=0.2)
+    parser.add_argument("-num_procs", 
+        help="number of processors to use",
+        type=int,
+        default=4)
 
     # parse arguments
     args = parser.parse_args()
@@ -180,6 +199,7 @@ if __name__ == '__main__':
     output_path = args.output_path
     num_iterations = args.num_iterations
     test_fraction = args.test_fraction
+    num_procs = args.num_procs
 
     if not os.path.isdir(output_path):
         os.mkdir(output_path)
@@ -195,6 +215,7 @@ if __name__ == '__main__':
     pvals = calc_feature_pvals(feature_frame,
                             labels,
                             num_iterations=num_iterations,
-                            test_size=0.2)
+                            num_procs = num_procs,
+                            test_size=test_fraction)
     print('writing results')
     write_test_results(feature_frame, pvals, output_path) 
