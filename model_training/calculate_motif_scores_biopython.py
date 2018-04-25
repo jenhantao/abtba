@@ -166,6 +166,7 @@ if __name__ == '__main__':
                         )
     pool.close()
     pool.join()
+
     motif_score_dict = dict(motif_score_dict)
     motif_start_dict = dict(motif_start_dict)
     motif_score_frame = pd.DataFrame(motif_score_dict, 

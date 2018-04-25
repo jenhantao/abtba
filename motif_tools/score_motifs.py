@@ -7,6 +7,7 @@ import sys
 import numpy as np
 import os
 import matplotlib 
+import pandas as pd
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import argparse
@@ -32,32 +33,23 @@ def score_motif_against_others(motifs,
         r_rev = calcCorrelation(alignment_rev[0], alignment_rev[1])
         # select largest score
         r = np.max([r_fwd, r_rev])
-#        print(motif1[0], motif2[0], r_fwd, r_rev, r)
-#        print('fwd alignment')
-#        print(alignment_fwd)
-#        print('rev alignment')
-#        print(alignment_rev)
-#        print('motif2')
-#        print(cleaned_motif2)
-#        print(revCompMotif(cleaned_motif2))
         result_dict[str(index) + '_' + str(j)] = r
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='calculates pairwise \
                                       scores between pairs of motifs')
-    parser.add_argument("outputPath",
-        help="path to output directory",
+    parser.add_argument('outputPath',
+        help='path to output directory',
         type = str)
-    parser.add_argument("motifFiles",
-        help="space separated list of motif files",
+    parser.add_argument('motifFiles',
+        help='space separated list of motif files',
         type=str,
-        nargs="+")
+        nargs='+')
 
-    parser.add_argument("-num_procs", 
-        help="number of cores to use",
+    parser.add_argument('-num_procs', 
+        help='number of cores to use',
         type=int,
         default=8)
-    parser.add_argument('-familyBasedName',action='store_true')
 
     # parse arguments
     args = parser.parse_args()
@@ -65,7 +57,6 @@ if __name__ == "__main__":
     outputPath = args.outputPath
     motifFiles = args.motifFiles
     num_procs = args.num_procs
-    file_based_name = not args.familyBasedName
 
     # make output directory if it doesn't est
     if not os.path.isdir(outputPath):
@@ -79,7 +70,7 @@ if __name__ == "__main__":
     print('Reading motif files...')
     counter = 0
     for mf in sorted(motifFiles):
-        motif = readMotifFile(mf, file_based_name=file_based_name) # (name, PWM)
+        motif = readMotifFile(mf) # (name, PWM)
         allMotifs.append(motif)
         motif_name = motif[0]
         motifNames.append(motif_name)
@@ -126,11 +117,18 @@ if __name__ == "__main__":
     plt.hist(pearson_array, bins = 20)
     plt.ylabel('Frequency (KDE)')
     plt.xlabel('PCC')
-    plt.title("PCC Distribution")
-    plt.savefig(outputPath + "/correlation_distribution.png")
+    plt.title('PCC Distribution')
+    plt.savefig(outputPath + '/correlation_distribution.pdf')
     plt.close()
             
     # save matrix
     print('Serializing scores... \ncorrelation should be used for clustering.')
     # pearson correlation for each pair of motifs
-    np.savez_compressed(outputPath+"/correlation", result_matrix, motifNames)
+    np.savez_compressed(outputPath+'/correlation', result_matrix, motifNames)
+
+    # save spreadsheet
+    frame = pd.DataFrame(data = result_matrix,
+        index=motifNames,
+        columns=motifNames)
+    frame.to_csv(outputPath+'/correlation.tsv', sep='\t')
+
