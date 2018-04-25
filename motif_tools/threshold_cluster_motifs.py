@@ -191,13 +191,14 @@ def thresholdClusterMotifs(scoreArray,
     alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
 
     mergeDict = {} # key: motif index, value: set of motifs that should be merged together
-    # copy heatmap.js file
-    heatmap_script_path = os.path.dirname(__file__) + '/heatMap.js'
-    shutil.copy(heatmap_script_path, outputPath +'/html_files/heatMap.js')
     # create list page 
     motifListFile = open(outputPath+"/motifList.txt", "w")
     motifGeneFile = open(outputPath + '/motifGene.txt', 'w')
     if create_html:
+        # copy heatmap.js file
+        heatmap_script_path = os.path.dirname(__file__) + '/heatMap.js'
+        shutil.copy(heatmap_script_path, outputPath +'/html_files/heatMap.js')
+
         listFileLines = []
         listFile = open(outputPath+"/allList.html", "w")
         listFile.write("<html><head><style>table, th, tr, td {border: 1px solid black;} .nameCol{word-wrap: break-word;max-width: 250px;} table {border-collapse:collapse;}</style></head><body>\n")
