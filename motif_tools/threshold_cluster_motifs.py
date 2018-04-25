@@ -136,8 +136,8 @@ def thresholdClusterMotifs(scoreArray,
     allMotifs, 
     motifNames, 
     outputPath,
-    file_based_name=False
-    create_html):
+    file_based_name=False,
+    create_html=False):
     '''
     given a score matrix for an array of motifs, merges motifs and writes a new 
     files for the new set of motifs
@@ -197,10 +197,11 @@ def thresholdClusterMotifs(scoreArray,
     # create list page 
     motifListFile = open(outputPath+"/motifList.txt", "w")
     motifGeneFile = open(outputPath + '/motifGene.txt', 'w')
-    listFileLines = []
-    listFile = open(outputPath+"/allList.html", "w")
-    listFile.write("<html><head><style>table, th, tr, td {border: 1px solid black;} .nameCol{word-wrap: break-word;max-width: 250px;} table {border-collapse:collapse;}</style></head><body>\n")
-    listFile.write('<table><thead><tr><th>Motif Number</th><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n')
+    if create_html:
+        listFileLines = []
+        listFile = open(outputPath+"/allList.html", "w")
+        listFile.write("<html><head><style>table, th, tr, td {border: 1px solid black;} .nameCol{word-wrap: break-word;max-width: 250px;} table {border-collapse:collapse;}</style></head><body>\n")
+        listFile.write('<table><thead><tr><th>Motif Number</th><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n')
     
     # based on table, compute which motifs to merge
     for i in range(scoreArray.shape[0] - 1):
@@ -235,10 +236,11 @@ def thresholdClusterMotifs(scoreArray,
         for ind in ms:
             toMerge.append(allMotifs[ind])
             mergeNames.append(motifNames[ind])
+
+            gene = 'unknown'
             if allMotifs[ind][0] in index_uniprot_dict:
-                gene = uniprot_gene_dict[index_uniprot_dict[ind]]
-            else:
-                gene = 'Unknown'
+                if index_uniprot_dict[ind] in uniprot_gene_dict:
+                    gene = uniprot_gene_dict[index_uniprot_dict[ind]]
             geneNames.append(gene)
             
         # merged motif doesn't have JASPAR id - use space to track merging instead
@@ -260,7 +262,7 @@ def thresholdClusterMotifs(scoreArray,
                 else:
                     consensusFamily = index_class_dict[toMerge_index]
             else:
-                consensusFamily = 'Unknown'
+                consensusFamily = 'unknown'
             if consensusFamily in family_count_dict:
                 family_count_dict[consensusFamily] += 1
             else:
@@ -269,8 +271,6 @@ def thresholdClusterMotifs(scoreArray,
             consensusName = consensusName.replace('/','')
 
         
-        header_string = '\t'.join(['>'+consensus_id_string, consensusName, consensusFamily, gene_string, '\n'])
-
         if not consensusName in seenNames:
             # don't add repeats
             seenNames.add(consensusName)
@@ -285,86 +285,88 @@ def thresholdClusterMotifs(scoreArray,
                 counts = counts_dict, 
                 name = consensusMotif[0],
                 matrix_id = consensus_id_string)
-            
-            pwm_file = open(outputPath+"/html_files/"+consensusName+".motif", "w")
-            pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
-            pwm_file.close()
 
             pwm_file = open(outputPath+"/clustered_motifs/"+consensusName+".motif", "w")
             pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
             pwm_file.close()
 
             # call weblogo to create logos
-            create_logo(bio_motif, 
-                outputPath+'/html_files/'+consensusName+'.motif.svg')
+            if create_html:
+                create_logo(bio_motif, 
+                    outputPath+'/html_files/'+consensusName+'.motif.svg')
 
-                # create merged motif page
-            mergedMotifFile = open(outputPath+"/html_files/"+consensusName+".html", "w")
-            mergedMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
-            mergedMotifFile.write("<h1>"+consensusName+"</h2>\n")
-            # show logo
-            mergedMotifFile.write("<h2>Logo</h2>\n")
-            mergedMotifFile.write("<img width='500px' src = '" + consensusName +".motif.svg'>\n")
-            # show pwm
-            mergedMotifFile.write("<h2>Position Weight Matrix</h2>\n")
-            mergedMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
-            for i in range(motifs[0][1].shape[0]):
-                mergedMotifFile.write("<tr><td>"+str(i+1)+"</td>")
-                for j in range(motifs[0][1].shape[1]):
-                    mergedMotifFile.write("<td>"+str(np.round(motifs[0][1][i][j], 3))+"</td>")
-                mergedMotifFile.write("</tr>\n")
-            mergedMotifFile.write("</tbody></table>\n")
-                    
-            # show download link for pwm
-            mergedMotifFile.write("<a href='"+consensusName+".motif'>Download Position Weight Matrix</a>")
-            
-            # list merged motifs in table
-            mergedMotifFile.write("<h2>Contributing Motifs</h2>\n")    
-            mergedMotifFile.write("<table><thead><tr><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n")
-            for motif in motifs[1:]:
-                # write position weight matrix
-                counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
-                    motif[1].T)}
-                bio_motif = Bio.motifs.jaspar.Motif(alphabet = alphabet, 
-                    counts = counts_dict, 
-                    name = motif[0],
-                    matrix_id = motif[2]
-                ) 
-
-                pwm_file = open(outputPath+"/html_files/"+bio_motif.name+".motif", "w")
+                pwm_file = open(outputPath+"/html_files/"+consensusName+".motif", "w")
                 pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
                 pwm_file.close()
 
-                # call weblogo to create logos
-                create_logo(bio_motif,
-                    outputPath+'/html_files/'+bio_motif.name+'.motif.svg')
+                # create merged motif page
+                mergedMotifFile = open(outputPath+"/html_files/"+consensusName+".html", "w")
+                mergedMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
+                mergedMotifFile.write("<h1>"+consensusName+"</h2>\n")
+                # show logo
+                mergedMotifFile.write("<h2>Logo</h2>\n")
+                mergedMotifFile.write("<img width='500px' src = '" + consensusName +".motif.svg'>\n")
+                # show pwm
+                mergedMotifFile.write("<h2>Position Weight Matrix</h2>\n")
+                mergedMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
+                for i in range(motifs[0][1].shape[0]):
+                    mergedMotifFile.write("<tr><td>"+str(i+1)+"</td>")
+                    for j in range(motifs[0][1].shape[1]):
+                        mergedMotifFile.write("<td>"+str(np.round(motifs[0][1][i][j], 3))+"</td>")
+                    mergedMotifFile.write("</tr>\n")
+                mergedMotifFile.write("</tbody></table>\n")
+                        
+                # show download link for pwm
+                mergedMotifFile.write("<a href='"+consensusName+".motif'>Download Position Weight Matrix</a>")
+                
+                # list merged motifs in table
+                mergedMotifFile.write("<h2>Contributing Motifs</h2>\n")    
+                mergedMotifFile.write("<table><thead><tr><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n")
+                for motif in motifs[1:]:
+                    # write position weight matrix
+                    counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
+                        motif[1].T)}
+                    bio_motif = Bio.motifs.jaspar.Motif(alphabet = alphabet, 
+                        counts = counts_dict, 
+                        name = motif[0],
+                        matrix_id = motif[2]
+                    ) 
+
+                    pwm_file = open(outputPath+"/html_files/"+bio_motif.name+".motif", "w")
+                    pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
+                    pwm_file.close()
+
+                    # call weblogo to create logos
+                    create_logo(bio_motif,
+                        outputPath+'/html_files/'+bio_motif.name+'.motif.svg')
 
 
-                mergedMotifFile.write("<tr><td><a href='"+motif[0]+".html'>" +motif[0]+"</a></td><td>"+motif[0]+"</td><td><img src = '" + motif[0]+".motif.svg'></td><td><a href='"+motif[0]+".motif' target='_blank'>Download</a></tr>\n")
-            mergedMotifFile.write("</tbody></table>\n")
-            # find related motifs
-            mergedMotifFile.write("<h2>Related Motifs</h2>\n")
-            relatedScores = scoreArray[list(ms)[0]]
-            rankings = sorted(range(len(relatedScores)), key=lambda x: relatedScores[x])
-            start = np.min([len(ms), len(relatedScores)])
-            relatedIndices = rankings[start: np.min([start+10, len(relatedScores)])]
-            mergedMotifFile.write("<br><br><br><br>\n")
-            mergedMotifFile.write("<table class='heat-map'><thead><tr><th></th>")
-            for ri in relatedIndices:
-                mergedMotifFile.write("<th><span class='rotate'><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
-            mergedMotifFile.write("</tr></thead>\n<tbody>")
-            for i in range(len(relatedIndices)):
-                mergedMotifFile.write("<tr class='stats-row'><th class='stats-title'><a href='"+allMotifs[relatedIndices[i]][0]+".html'>"+allMotifs[relatedIndices[i]][0]+"</a></th>")
-                for j in range(len(relatedIndices)):
-                    mergedMotifFile.write("<td>"+str(int(np.round(scoreArray[relatedIndices[i]][relatedIndices[j]]*100,3)))+"</td>")
-                mergedMotifFile.write("</tr>\n")
-            mergedMotifFile.write("</tbody></table>")
+                    mergedMotifFile.write("<tr><td><a href='"+motif[0]+".html'>" +motif[0]+"</a></td><td>"+motif[0]+"</td><td><img src = '" + motif[0]+".motif.svg'></td><td><a href='"+motif[0]+".motif' target='_blank'>Download</a></tr>\n")
+                mergedMotifFile.write("</tbody></table>\n")
+                # find related motifs
+                mergedMotifFile.write("<h2>Related Motifs</h2>\n")
+                relatedScores = scoreArray[list(ms)[0]]
+                rankings = sorted(range(len(relatedScores)), key=lambda x: relatedScores[x])
+                start = np.min([len(ms), len(relatedScores)])
+                relatedIndices = rankings[start: np.min([start+10, len(relatedScores)])]
+                mergedMotifFile.write("<br><br><br><br>\n")
+                mergedMotifFile.write("<table class='heat-map'><thead><tr><th></th>")
+                for ri in relatedIndices:
+                    mergedMotifFile.write("<th><span class='rotate'><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
+                mergedMotifFile.write("</tr></thead>\n<tbody>")
+                for i in range(len(relatedIndices)):
+                    mergedMotifFile.write("<tr class='stats-row'><th class='stats-title'><a href='"+allMotifs[relatedIndices[i]][0]+".html'>"+allMotifs[relatedIndices[i]][0]+"</a></th>")
+                    for j in range(len(relatedIndices)):
+                        mergedMotifFile.write("<td>"+str(int(np.round(scoreArray[relatedIndices[i]][relatedIndices[j]]*100,3)))+"</td>")
+                    mergedMotifFile.write("</tr>\n")
+                mergedMotifFile.write("</tbody></table>")
 
-            mergedMotifFile.write("<script>$(function(){$('table th').height('10px');$('.rotate').width('10px');});</script>")
-            mergedMotifFile.write("</body></html>")
-            mergedMotifFile.close()
-            # add merged motif to list page
-            listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
+                mergedMotifFile.write("<script>$(function(){$('table th').height('10px');$('.rotate').width('10px');});</script>")
+                mergedMotifFile.write("</body></html>")
+                mergedMotifFile.close()
+                # add merged motif to list page
+                listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
+
             motifListFile.write(consensusName + '\t' + consensus_id_string + '\n')
             motifGeneFile.write(consensusName + '\t' + gene_string + '\n')
 
@@ -378,16 +380,18 @@ def thresholdClusterMotifs(scoreArray,
     for ind in unmergedMotifIndices_sorted:
         motif_count+=1
         motif_name = allMotifs[ind][0]
-        motif_index = motif_index_dict[motif_name]
-        uniprot = index_uniprot_dict[motif_index]
-        geneName = uniprot_geneName_dict[uniprot]
+        geneName = 'unknown'
+        if motif_name in motif_index_dict:
+            motif_index = motif_index_dict[motif_name]
+            if motif_index in index_uniprot_dict:
+                uniprot = index_uniprot_dict[motif_index]
+                if uniprot in uniprot_geneName_dict:
+                    geneName = uniprot_geneName_dict[uniprot]
 
-        listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.svg'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
         motifListFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][0] +'\n' )
         motifGeneFile.write(allMotifs[ind][0] + '\t' + geneName +'\n' )
-#        writePWMMatrix(cleanMatrix(allMotifs[ind][1]), 
-#                       allMotifs[ind][0], 
-#                       outputPath+"/clustered_motifs/"+allMotifs[ind][0]+".motif")
+        if create_html:
+            listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.svg'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
         counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
             cleanMatrix(allMotifs[ind][1]).T)}
         bio_motif = Bio.motifs.jaspar.Motif(alphabet = alphabet, 
@@ -412,94 +416,89 @@ def thresholdClusterMotifs(scoreArray,
             matrix_id = allMotifs[ind][2]
             )
         
-        pwm_file = open(outputPath+"/html_files/"+bio_motif.name+".motif", "w")
-        pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
-        pwm_file.close()
+        if create_html:
+            pwm_file = open(outputPath+"/html_files/"+bio_motif.name+".motif", "w")
+            pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
+            pwm_file.close()
 
-        # call weblogo to create logos
-        create_logo(bio_motif, 
-            outputPath+'/html_files/'+bio_motif.name+'.motif.svg')
+            # call weblogo to create logos
+            create_logo(bio_motif, 
+                outputPath+'/html_files/'+bio_motif.name+'.motif.svg')
 
-        # write html file
-        indMotifFile = open(outputPath+"/html_files/"+allMotifs[ind][0]+".html", "w")
-        indMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='html_files/heatMap.js'></script></head><body>\n")
-        indMotifFile.write("<h1>"+allMotifs[ind][0]+"</h1>\n")
-        # show logo
-        indMotifFile.write("<h2>Logo</h2>\n")
-        indMotifFile.write("<img src = '" + allMotifs[ind][0]+".motif.svg'>\n")
-        # show pwm
-        indMotifFile.write("<h2>Position Weight Matrix</h2>\n")
-        indMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
-        for i in range(allMotifs[ind][1].shape[0]):
-            indMotifFile.write("<tr><td>"+str(i+1)+"</td>")
-            for j in range(allMotifs[ind][1].shape[1]):
-                indMotifFile.write("<td>"+str(np.round(allMotifs[ind][1][i][j], 3))+"</td>")
-            indMotifFile.write("</tr>\n")
-        indMotifFile.write("</tbody></table>\n")
-        indMotifFile.write("<a href='"+allMotifs[ind][0]+".motif'>Download Position Weight Matrix</a>")
+            # write html file
+            indMotifFile = open(outputPath+"/html_files/"+allMotifs[ind][0]+".html", "w")
+            indMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='html_files/heatMap.js'></script></head><body>\n")
+            indMotifFile.write("<h1>"+allMotifs[ind][0]+"</h1>\n")
+            # show logo
+            indMotifFile.write("<h2>Logo</h2>\n")
+            indMotifFile.write("<img src = '" + allMotifs[ind][0]+".motif.svg'>\n")
+            # show pwm
+            indMotifFile.write("<h2>Position Weight Matrix</h2>\n")
+            indMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
+            for i in range(allMotifs[ind][1].shape[0]):
+                indMotifFile.write("<tr><td>"+str(i+1)+"</td>")
+                for j in range(allMotifs[ind][1].shape[1]):
+                    indMotifFile.write("<td>"+str(np.round(allMotifs[ind][1][i][j], 3))+"</td>")
+                indMotifFile.write("</tr>\n")
+            indMotifFile.write("</tbody></table>\n")
+            indMotifFile.write("<a href='"+allMotifs[ind][0]+".motif'>Download Position Weight Matrix</a>")
 
-        # find related motifs
-        indMotifFile.write("<h2>Related Motifs</h2>\n")
-        relatedScores = scoreArray[ind]
-        rankings = sorted(range(len(relatedScores)), key=lambda x: relatedScores[x], reverse=True)
-        start = 0
-        relatedIndices = rankings[start: np.min([start+10, len(relatedScores)])]
-        indMotifFile.write("<br><br><br><br>\n")
-        indMotifFile.write("<table class='heat-map'><thead><tr><th></th>")
-        for ri in relatedIndices:
-            indMotifFile.write("<th><span class='rotate'><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
-        indMotifFile.write("</tr></thead>\n<tbody>")
-        for i in range(len(relatedIndices)):
-            indMotifFile.write("<tr class='stats-row'><th class='stats-title'><a href='"+allMotifs[relatedIndices[i]][0]+".html'>"+allMotifs[relatedIndices[i]][0]+"</a></th>")
-            for j in range(len(relatedIndices)):
-                indMotifFile.write("<td>"+str(int(np.round(scoreArray[relatedIndices[i]][relatedIndices[j]]*100,3)))+"</td>")
-            indMotifFile.write("</tr>\n")
-        indMotifFile.write("</tbody></table>")
-        # add script to fix heights
-        indMotifFile.write("<script>$(function(){$('table th').height('10px');$('.rotate').width('10px');});</script>")
-        indMotifFile.close()
+            # find related motifs
+            indMotifFile.write("<h2>Related Motifs</h2>\n")
+            relatedScores = scoreArray[ind]
+            rankings = sorted(range(len(relatedScores)), key=lambda x: relatedScores[x], reverse=True)
+            start = 0
+            relatedIndices = rankings[start: np.min([start+10, len(relatedScores)])]
+            indMotifFile.write("<br><br><br><br>\n")
+            indMotifFile.write("<table class='heat-map'><thead><tr><th></th>")
+            for ri in relatedIndices:
+                indMotifFile.write("<th><span class='rotate'><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
+            indMotifFile.write("</tr></thead>\n<tbody>")
+            for i in range(len(relatedIndices)):
+                indMotifFile.write("<tr class='stats-row'><th class='stats-title'><a href='"+allMotifs[relatedIndices[i]][0]+".html'>"+allMotifs[relatedIndices[i]][0]+"</a></th>")
+                for j in range(len(relatedIndices)):
+                    indMotifFile.write("<td>"+str(int(np.round(scoreArray[relatedIndices[i]][relatedIndices[j]]*100,3)))+"</td>")
+                indMotifFile.write("</tr>\n")
+            indMotifFile.write("</tbody></table>")
+            # add script to fix heights
+            indMotifFile.write("<script>$(function(){$('table th').height('10px');$('.rotate').width('10px');});</script>")
+            indMotifFile.close()
 
     # create index file
-    scoreFile = open(outputPath+"/allScores.html", "w")
-    scoreTsvFile = open(outputPath+"/allScores.tsv", "w")
-    scoreFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
-    # add in some blank spaces
-    scoreFile.write("<br><br><br><br>\n")
-    # write score array as a matrix
-    scoreFile.write("<table class='heat-map'><thead><tr><td></td>")
-    for name in motifNames:
-        scoreFile.write("<th class='stats-title'><span class='rotate'><a href='html_files/"+name+".html'>" + name + "</a></span></th>")
-        scoreTsvFile.write("\t"+name)
-    scoreTsvFile.write("\n")
-    scoreFile.write("</tr></thead>")
-    scoreFile.write("<tbody>\n")
-    for i in range(scoreArray.shape[0]):
-        scoreFile.write("<tr class='stats-row'><th class='stats-title'><a href='html_files/"+motifNames[i]+".html'>" + motifNames[i] + "</a></th>")
-        scoreTsvFile.write(motifNames[i])
-        for j in range(scoreArray.shape[0]):
-            scoreFile.write("<td>" + str(int(np.round(scoreArray[i][j]*100, 3))) + "</td>")
-            scoreTsvFile.write("\t"+str(scoreArray[i][j]))
-        scoreFile.write("</tr>\n")
-        scoreTsvFile.write("\n")
-    scoreFile.write("</tbody></table>\n")
-    # add script to fix heights
-    scoreFile.write("<script>$(function(){$('table th').height('10px');$('.rotate').width('10px');});</script>")
-    scoreFile.write("</body></html>")
+    if create_html:
+        scoreFile = open(outputPath+"/allScores.html", "w")
+        scoreFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
+        # add in some blank spaces
+        scoreFile.write("<br><br><br><br>\n")
+        # write score array as a matrix
+        scoreFile.write("<table class='heat-map'><thead><tr><td></td>")
+        for name in motifNames:
+            scoreFile.write("<th class='stats-title'><span class='rotate'><a href='html_files/"+name+".html'>" + name + "</a></span></th>")
+        scoreFile.write("</tr></thead>")
+        scoreFile.write("<tbody>\n")
+        for i in range(scoreArray.shape[0]):
+            scoreFile.write("<tr class='stats-row'><th class='stats-title'><a href='html_files/"+motifNames[i]+".html'>" + motifNames[i] + "</a></th>")
+            for j in range(scoreArray.shape[0]):
+                scoreFile.write("<td>" + str(int(np.round(scoreArray[i][j]*100, 3))) + "</td>")
+            scoreFile.write("</tr>\n")
+        scoreFile.write("</tbody></table>\n")
+        # add script to fix heights
+        scoreFile.write("<script>$(function(){$('table th').height('10px');$('.rotate').width('10px');});</script>")
+        scoreFile.write("</body></html>")
 
-    # sort list file lines
-    listFileLines = sorted(listFileLines, key = lambda x:x[0])
-    for i in range(len(listFileLines)):
-        count = str(i+1)
-        line = listFileLines[i][1].replace('MOTIF_COUNT', count)
-        listFile.write(line)
-    
-    listFile.write("</tbody></table>\n")
-    listFile.write("</body></html>")
+        # sort list file lines
+        listFileLines = sorted(listFileLines, key = lambda x:x[0])
+        for i in range(len(listFileLines)):
+            count = str(i+1)
+            line = listFileLines[i][1].replace('MOTIF_COUNT', count)
+            listFile.write(line)
+        
+        listFile.write("</tbody></table>\n")
+        listFile.write("</body></html>")
+        listFile.close()
+        scoreFile.close()
     motifListFile.close()
     motifGeneFile.close()
-    listFile.close()
-    scoreFile.close()
-    scoreTsvFile.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='using scores calculated by \
@@ -522,7 +521,7 @@ if __name__ == "__main__":
         type=str,
         nargs="+")
     parser.add_argument('-familyBasedName',action='store_true', default=True)
-    parser.add_argument('-createHTML',action='store_true', default=)
+    parser.add_argument('-createHTML',action='store_true', default=False)
 
     # parse arguments
     args = parser.parse_args()
@@ -537,7 +536,7 @@ if __name__ == "__main__":
     if not os.path.isdir(outputPath):
         os.mkdir(outputPath)
 
-    if not os.path.isdir(outputPath + '/html_files/'):
+    if not os.path.isdir(outputPath + '/html_files/') and create_html:
         os.mkdir(outputPath + '/html_files')
     else:
         for f in os.listdir(outputPath + '/html_files'):
@@ -570,5 +569,5 @@ if __name__ == "__main__":
         allMotifs, 
         motifNames, 
         outputPath, 
-        file_based_name = file_based_name
+        file_based_name = file_based_name,
         create_html = create_html)
