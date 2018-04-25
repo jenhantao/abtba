@@ -6,7 +6,6 @@ of motifs
 '''
 
 ### NOTES ###
-## HOMER MUST BE INSTALLED http://homer.salk.edu/homer/ ###
 
 ### imports ###
 import sys
@@ -17,6 +16,19 @@ from os.path import isfile, join
 import argparse
 from motif_utilities import *
 import shutil
+import inspect
+import Bio
+
+def create_logo(motif, output_path):
+    motif.weblogo(output_path, 
+        format = 'svg',
+        show_errorbars = False,
+        show_xaxis= False,
+        show_yaxis= False,
+        show_ends = False,
+        show_fineprint = False,
+        units='probability'
+        )
 
 
 def mergeMotifs(motifArray):
@@ -109,8 +121,9 @@ def mergeMotifs(motifArray):
     aligned_motif_array = []
     for i in range(len(motifArray)):
         mn = motifArray[i][0]
+        m_id = motifArray[i][2]
         names.append(mn)
-        aligned_motif_array.append((mn, cleanMatrix(oriented_alignment_array[i])))
+        aligned_motif_array.append((mn, cleanMatrix(oriented_alignment_array[i]), m_id))
     name = "_".join(sorted(list(set(names)))[:10])+"_merged"
 
     consensus = (name, merged_motif)
@@ -123,13 +136,59 @@ def thresholdClusterMotifs(scoreArray,
     allMotifs, 
     motifNames, 
     outputPath,
-    file_based_name=False):
+    file_based_name=False
+    create_html):
     '''
     given a score matrix for an array of motifs, merges motifs and writes a new 
     files for the new set of motifs
     inputs: score matrix, array of motifs, threshold, outputPath
     '''
-    family_count_dict = {}
+
+    metadata_path= os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))).replace('motif_tools', 'motif_metadata')
+    if not file_based_name:
+        family_count_dict = {}
+        with open(metadata_path + '/MATRIX_2016.txt') as f:
+            data = f.readlines()
+        motif_index_dict = {}
+        for line in data:
+            tokens = line.strip().split()
+            index = tokens[0]
+            #motif_id = tokens[2]
+            name = tokens[4]
+            motif_index_dict[name] = index
+
+        with open(metadata_path + '/MATRIX_PROTEIN_2016.txt') as f:
+            data = f.readlines()
+        index_uniprot_dict = {}
+        for line in data:
+            tokens = line.strip().split()
+            index = tokens[0]
+            uniprot = tokens[1]
+            index_uniprot_dict[index] = uniprot
+        with open(metadata_path + '/MATRIX_ANNOTATION_2016.txt') as f:
+            data = f.readlines()
+        index_family_dict = {}
+        index_class_dict = {}
+        for line in data:
+            tokens = line.strip().split()
+            if tokens[1] == 'family':
+                index = tokens[0]
+                family = tokens[2]
+                index_family_dict[index] = family
+            if tokens[1] == 'class':
+                index = tokens[0]
+                motif_class = tokens[2]
+                index_class_dict[index] = motif_class
+
+        uniprot_geneName_dict = {}
+        with open(metadata_path + '/uniprot_gene_mapping.txt') as f:
+            data = f.readlines()
+        for line in data:
+            tokens = line.strip().split()
+            uniprot = tokens[0]
+            geneName = tokens[1]
+            uniprot_geneName_dict[uniprot] = geneName
+    alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
 
     mergeDict = {} # key: motif index, value: set of motifs that should be merged together
     # copy heatmap.js file
@@ -176,7 +235,11 @@ def thresholdClusterMotifs(scoreArray,
         for ind in ms:
             toMerge.append(allMotifs[ind])
             mergeNames.append(motifNames[ind])
-            geneNames.append(allMotifs[ind][4])
+            if allMotifs[ind][0] in index_uniprot_dict:
+                gene = uniprot_gene_dict[index_uniprot_dict[ind]]
+            else:
+                gene = 'Unknown'
+            geneNames.append(gene)
             
         # merged motif doesn't have JASPAR id - use space to track merging instead
         consensus_id_string = '|'.join(mergeNames)
@@ -184,15 +247,24 @@ def thresholdClusterMotifs(scoreArray,
 
         # create table from merged indices
         mergeNames.sort()
-        consensusFamily = toMerge[0][3] # get the TF family of the first motif
-        if consensusFamily in family_count_dict:
-            family_count_dict[consensusFamily] += 1
-        else:
-            family_count_dict[consensusFamily] = 1
 
         if file_based_name:
             consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
         else:
+            toMerge_id = toMerge[0][0]
+            if toMerge_id in motif_index_dict:
+                toMerge_index = motif_index_dict[toMerge_id]
+                # get the TF family of the first motif
+                if toMerge_index in index_family_dict:
+                    consensusFamily = index_family_dict[toMerge_index]
+                else:
+                    consensusFamily = index_class_dict[toMerge_index]
+            else:
+                consensusFamily = 'Unknown'
+            if consensusFamily in family_count_dict:
+                family_count_dict[consensusFamily] += 1
+            else:
+                family_count_dict[consensusFamily] = 1
             consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily]) + '_merged'
             consensusName = consensusName.replace('/','')
 
@@ -207,26 +279,32 @@ def thresholdClusterMotifs(scoreArray,
             consensusMotif = (consensusName, motifs[0][1])
 
             # write position weight matrix
-            writePWMMatrix(consensusMotif[1], 
-                           consensusMotif[0], 
-                           outputPath+"/html_files/"+consensusName+".motif",
-                           header_line = header_string
-                           )
-            writePWMMatrix(consensusMotif[1], 
-                           consensusMotif[0], 
-                           outputPath+"/clustered_motifs/"+consensusName+".motif",
-                           header_line = header_string
-                           )
-            # call homer to create logos
-            os.system('motif2Logo.pl "'+outputPath+'/html_files/'+consensusName+'.motif"')
+            counts_dict = {x[0]:x[1] for x in zip(list('ACGT'), 
+                consensusMotif[1].T)}
+            bio_motif = Bio.motifs.jaspar.Motif(alphabet = alphabet, 
+                counts = counts_dict, 
+                name = consensusMotif[0],
+                matrix_id = consensus_id_string)
+            
+            pwm_file = open(outputPath+"/html_files/"+consensusName+".motif", "w")
+            pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
+            pwm_file.close()
 
-            # create merged motif page
+            pwm_file = open(outputPath+"/clustered_motifs/"+consensusName+".motif", "w")
+            pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
+            pwm_file.close()
+
+            # call weblogo to create logos
+            create_logo(bio_motif, 
+                outputPath+'/html_files/'+consensusName+'.motif.svg')
+
+                # create merged motif page
             mergedMotifFile = open(outputPath+"/html_files/"+consensusName+".html", "w")
             mergedMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
             mergedMotifFile.write("<h1>"+consensusName+"</h2>\n")
             # show logo
             mergedMotifFile.write("<h2>Logo</h2>\n")
-            mergedMotifFile.write("<img src = '" + consensusName +".motif.png'>\n")
+            mergedMotifFile.write("<img width='500px' src = '" + consensusName +".motif.svg'>\n")
             # show pwm
             mergedMotifFile.write("<h2>Position Weight Matrix</h2>\n")
             mergedMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
@@ -245,11 +323,24 @@ def thresholdClusterMotifs(scoreArray,
             mergedMotifFile.write("<table><thead><tr><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n")
             for motif in motifs[1:]:
                 # write position weight matrix
-                writePWMMatrix(motif[1], motif[0], outputPath+"/html_files/"+motif[0]+".motif")
-                # call homer to create logos
-                os.system('motif2Logo.pl "'+outputPath+'/html_files/'+motif[0]+'.motif"')
+                counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
+                    motif[1].T)}
+                bio_motif = Bio.motifs.jaspar.Motif(alphabet = alphabet, 
+                    counts = counts_dict, 
+                    name = motif[0],
+                    matrix_id = motif[2]
+                ) 
 
-                mergedMotifFile.write("<tr><td><a href='"+motif[0]+".html'>" +motif[0]+"</a></td><td>"+motif[0]+"</td><td><img src = '" + motif[0]+".motif.png'></td><td><a href='"+motif[0]+".motif' target='_blank'>Download</a></tr>\n")
+                pwm_file = open(outputPath+"/html_files/"+bio_motif.name+".motif", "w")
+                pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
+                pwm_file.close()
+
+                # call weblogo to create logos
+                create_logo(bio_motif,
+                    outputPath+'/html_files/'+bio_motif.name+'.motif.svg')
+
+
+                mergedMotifFile.write("<tr><td><a href='"+motif[0]+".html'>" +motif[0]+"</a></td><td>"+motif[0]+"</td><td><img src = '" + motif[0]+".motif.svg'></td><td><a href='"+motif[0]+".motif' target='_blank'>Download</a></tr>\n")
             mergedMotifFile.write("</tbody></table>\n")
             # find related motifs
             mergedMotifFile.write("<h2>Related Motifs</h2>\n")
@@ -273,8 +364,7 @@ def thresholdClusterMotifs(scoreArray,
             mergedMotifFile.write("</body></html>")
             mergedMotifFile.close()
             # add merged motif to list page
-            #listFile.write("<tr><td>"+str(motif_count) + "</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.png'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n")
-            listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.png'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
+            listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
             motifListFile.write(consensusName + '\t' + consensus_id_string + '\n')
             motifGeneFile.write(consensusName + '\t' + gene_string + '\n')
 
@@ -287,28 +377,56 @@ def thresholdClusterMotifs(scoreArray,
     
     for ind in unmergedMotifIndices_sorted:
         motif_count+=1
-        #listFile.write("<tr><td>" + str(motif_count) + "</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.png'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n")
-        listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.png'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
+        motif_name = allMotifs[ind][0]
+        motif_index = motif_index_dict[motif_name]
+        uniprot = index_uniprot_dict[motif_index]
+        geneName = uniprot_geneName_dict[uniprot]
+
+        listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.svg'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
         motifListFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][0] +'\n' )
-        motifGeneFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][4] +'\n' )
-        writePWMMatrix(cleanMatrix(allMotifs[ind][1]), 
-                       allMotifs[ind][0], 
-                       outputPath+"/clustered_motifs/"+allMotifs[ind][0]+".motif")
+        motifGeneFile.write(allMotifs[ind][0] + '\t' + geneName +'\n' )
+#        writePWMMatrix(cleanMatrix(allMotifs[ind][1]), 
+#                       allMotifs[ind][0], 
+#                       outputPath+"/clustered_motifs/"+allMotifs[ind][0]+".motif")
+        counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
+            cleanMatrix(allMotifs[ind][1]).T)}
+        bio_motif = Bio.motifs.jaspar.Motif(alphabet = alphabet, 
+            counts = counts_dict, 
+            name = allMotifs[ind][0],
+            matrix_id = allMotifs[ind][2]
+            )
+        pwm_file = open(outputPath+"/clustered_motifs/"+allMotifs[ind][0]+".motif", 'w')
+        pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
+        pwm_file.close()
         
 
     # write files for all individual motifs
     for ind in range(len(allMotifs)):
+
         # write pwm matrix file
-        writePWMMatrix(allMotifs[ind][1], allMotifs[ind][0], outputPath+"/html_files/"+allMotifs[ind][0]+".motif")
-        # call homer to create logos
-        os.system('motif2Logo.pl "'+outputPath+'/html_files/'+allMotifs[ind][0]+'.motif"')
+        counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
+            allMotifs[ind][1].T)}
+        bio_motif = Bio.motifs.jaspar.Motif(alphabet = alphabet, 
+            counts = counts_dict, 
+            name = allMotifs[ind][0],
+            matrix_id = allMotifs[ind][2]
+            )
+        
+        pwm_file = open(outputPath+"/html_files/"+bio_motif.name+".motif", "w")
+        pwm_file.write(Bio.motifs.write([bio_motif], format='jaspar'))
+        pwm_file.close()
+
+        # call weblogo to create logos
+        create_logo(bio_motif, 
+            outputPath+'/html_files/'+bio_motif.name+'.motif.svg')
+
         # write html file
         indMotifFile = open(outputPath+"/html_files/"+allMotifs[ind][0]+".html", "w")
         indMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='html_files/heatMap.js'></script></head><body>\n")
         indMotifFile.write("<h1>"+allMotifs[ind][0]+"</h1>\n")
         # show logo
         indMotifFile.write("<h2>Logo</h2>\n")
-        indMotifFile.write("<img src = '" + allMotifs[ind][0]+".motif.png'>\n")
+        indMotifFile.write("<img src = '" + allMotifs[ind][0]+".motif.svg'>\n")
         # show pwm
         indMotifFile.write("<h2>Position Weight Matrix</h2>\n")
         indMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
@@ -403,7 +521,8 @@ if __name__ == "__main__":
         help="list of moti files to cluster",
         type=str,
         nargs="+")
-    parser.add_argument('-familyBasedName',action='store_true')
+    parser.add_argument('-familyBasedName',action='store_true', default=True)
+    parser.add_argument('-createHTML',action='store_true', default=)
 
     # parse arguments
     args = parser.parse_args()
@@ -413,6 +532,7 @@ if __name__ == "__main__":
     threshold = args.threshold
     motifFiles = args.motifFiles
     file_based_name = not args.familyBasedName
+    create_html = args.createHTML
 
     if not os.path.isdir(outputPath):
         os.mkdir(outputPath)
@@ -434,12 +554,9 @@ if __name__ == "__main__":
     allMotifs = []
     motifNames = []
     for mf in sorted(motifFiles):
-        motif = readMotifFile(mf, 
-            file_based_name = file_based_name)
-        allMotifs.append(motif)
-        motif_name = motif[0]
+        (motif_name, motif, motif_id) = readMotifFile(mf)
+        allMotifs.append((motif_name, motif, motif_id))
         motifNames.append(motif_name)
-
 
     # read in scores
     scoreArray = np.load(scorePath)['arr_0']
@@ -453,4 +570,5 @@ if __name__ == "__main__":
         allMotifs, 
         motifNames, 
         outputPath, 
-        file_based_name = file_based_name)
+        file_based_name = file_based_name
+        create_html = create_html)
