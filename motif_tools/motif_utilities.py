@@ -13,58 +13,29 @@ from Bio import motifs
 scoringMatrix = np.array([[5.0,-5.0,-5.0,-5.0], [-5.0,5.0,-5.0,-5.0], [-5.0,-5.0,5.0,-5.0], [-5.0,-5.0,-5.0,5.0]]) # favor matches and mismatches equally
 gapPenalty = -100.0
 
+def create_logo(motif, output_path, fmt='svg'): 
+    motif.weblogo(output_path,  
+        format = fmt, 
+        show_errorbars = False, 
+        show_xaxis= False, 
+        show_yaxis= False, 
+        show_ends = False, 
+        show_fineprint = False, 
+        unit_name='probability',
+        color_scheme = 'color_classic',
+        ) 
+
 # reads all motif files in a directory 
 # inputs: path to a directory containing homer motif files
 # outputs: an array of tuples representing each motif
-#def readMotifFile(motifPath, file_based_name = False):
-#    #motifCounter = np.random.random_integers(0,10000,1)[0]
-#    with open(motifPath) as f:
-#        data = f.readlines()
-#    metadata = data[0].strip().split()
-#    motif_id = metadata[0]
-#    if file_based_name:
-#        name = motifPath.split('/')[-1].split('.')[0]
-#    else:
-#        name = metadata[1]
-#        name = name.replace('/','_')
-#        name = name.replace(')','_')
-#        name = name.replace('(','_')
-#        name = name.replace('|','_')
-#        name = name.replace('__','_')
-#        name = name.strip('_')
-#    if len(metadata) > 2:
-#        family = metadata[2]
-#    else:
-#        family = name
-#    
-#    if len(metadata) > 3:
-#        geneName = metadata[3]
-#    else:
-#        geneName = 'None'
-#
-#    matrix = []
-#    for line in data[1:]:
-#        tokens = line.strip().split("\t")
-#        if len(tokens) > 1:
-#            scores = np.array([float(x) for x in tokens])
-#            scores= scores/np.sum(scores)
-#            matrix.append(scores)
-#        
-#    return (name,np.array(matrix), motif_id, family, geneName)
-
-def readMotifFile(motifPath, file_based_name = False):
+def readMotifFile(motifPath):
     with open(motifPath) as f:
         m = motifs.read(f, 'jaspar')
-
-    if file_based_name:
-        name = motifPath.split('/')[-1].split('.')[0]
-    else:
-        name = m.name
-
+    name = m.name
     matrix = [m.pwm['A'], m.pwm['C'], m.pwm['G'], m.pwm['T']]
     matrix = np.array(matrix).T
         
-    return (name,np.array(matrix))
+    return (name,np.array(matrix), m.matrix_id)
 
 
 # given two motif objects, aligns the motifs using a needleman wunsch derivative
