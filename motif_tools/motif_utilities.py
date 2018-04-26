@@ -36,10 +36,6 @@ def readMotifFile(motifPath):
     matrix = np.array(matrix).T
         
     return (name,np.array(matrix), m.matrix_id)
-
-
-# given two motif objects, aligns the motifs using a needleman wunsch derivative
-# that uses the pearson correlation coefficient to score columns
 # inputs: two motif data objects
 # outputs: an alignment data object
 def local_align_motifs(motif1, motif2):
