@@ -133,50 +133,25 @@ def thresholdClusterMotifs(scoreArray,
     inputs: score matrix, array of motifs, threshold, outputPath
     '''
 
-    metadata_path= os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))).replace('motif_tools', 'motif_metadata')
+    metadata_path= os.path.dirname(
+        os.path.abspath(
+        inspect.getfile(
+        inspect.currentframe()))).replace('motif_tools', 'motif_metadata.tsv')
+
     if not file_based_name:
+        metadata_frame = pd.read_csv(metadata_path, sep='\t')
         family_count_dict = {}
-        with open(metadata_path + '/MATRIX_2016.txt') as f:
-            data = f.readlines()
-        motif_index_dict = {}
-        for line in data:
-            tokens = line.strip().split()
-            index = tokens[0]
-            #motif_id = tokens[2]
-            name = tokens[4]
-            motif_index_dict[name] = index
+#        motif_index_dict = {}
+#        index_uniprot_dict = {}
+#        index_family_dict = {}
+#        index_class_dict = {}
+        motifName_family_dict = dict(zip(metadata_frame['Name'].values, 
+            metadata_frame['Family'].values))
+        motifName_class_dict = dict(zip(metadata_frame['Name'].values, 
+            metadata_frame['Class'].values))
+        motifName_gene_dict = dict(zip(metadata_frame['Name'].values, 
+            metadata_frame['Gene'].values))
 
-        with open(metadata_path + '/MATRIX_PROTEIN_2016.txt') as f:
-            data = f.readlines()
-        index_uniprot_dict = {}
-        for line in data:
-            tokens = line.strip().split()
-            index = tokens[0]
-            uniprot = tokens[1]
-            index_uniprot_dict[index] = uniprot
-        with open(metadata_path + '/MATRIX_ANNOTATION_2016.txt') as f:
-            data = f.readlines()
-        index_family_dict = {}
-        index_class_dict = {}
-        for line in data:
-            tokens = line.strip().split()
-            if tokens[1] == 'family':
-                index = tokens[0]
-                family = tokens[2]
-                index_family_dict[index] = family
-            if tokens[1] == 'class':
-                index = tokens[0]
-                motif_class = tokens[2]
-                index_class_dict[index] = motif_class
-
-        uniprot_geneName_dict = {}
-        with open(metadata_path + '/uniprot_gene_mapping.txt') as f:
-            data = f.readlines()
-        for line in data:
-            tokens = line.strip().split()
-            uniprot = tokens[0]
-            geneName = tokens[1]
-            uniprot_geneName_dict[uniprot] = geneName
     alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
 
     mergeDict = {} # key: motif index, value: set of motifs that should be merged together
@@ -227,10 +202,10 @@ def thresholdClusterMotifs(scoreArray,
             toMerge.append(allMotifs[ind])
             mergeNames.append(motifNames[ind])
 
-            gene = 'unknown'
-            if allMotifs[ind][0] in index_uniprot_dict:
-                if index_uniprot_dict[ind] in uniprot_gene_dict:
-                    gene = uniprot_gene_dict[index_uniprot_dict[ind]]
+            if allMotifs[ind][0] in motifName_gene_dict:
+                gene = motifName_gene_dict[allMotifs[ind][0]]
+            else:
+                gene = 'unknown'
             geneNames.append(gene)
             
         # merged motif doesn't have JASPAR id - use space to track merging instead
@@ -243,16 +218,15 @@ def thresholdClusterMotifs(scoreArray,
         if file_based_name:
             consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
         else:
-            toMerge_id = toMerge[0][0]
-            if toMerge_id in motif_index_dict:
-                toMerge_index = motif_index_dict[toMerge_id]
-                # get the TF family of the first motif
-                if toMerge_index in index_family_dict:
-                    consensusFamily = index_family_dict[toMerge_index]
-                else:
-                    consensusFamily = index_class_dict[toMerge_index]
-            else:
-                consensusFamily = 'unknown'
+            toMerge_name = toMerge[0][0]
+
+            # get the TF family of the first motif
+            if toMerge_name in motifName_family_dict:
+                consensusFamily = motifName_family_dict[toMerge_name]
+            if consensusFamily == 'unknown':
+                if toMerge_name in motifName_class_dict:
+                    consensusFamily = motifName_class_dict[toMerge_name]
+    
             if consensusFamily in family_count_dict:
                 family_count_dict[consensusFamily] += 1
             else:
@@ -371,12 +345,8 @@ def thresholdClusterMotifs(scoreArray,
         motif_count+=1
         motif_name = allMotifs[ind][0]
         geneName = 'unknown'
-        if motif_name in motif_index_dict:
-            motif_index = motif_index_dict[motif_name]
-            if motif_index in index_uniprot_dict:
-                uniprot = index_uniprot_dict[motif_index]
-                if uniprot in uniprot_geneName_dict:
-                    geneName = uniprot_geneName_dict[uniprot]
+        if motif_name in motifName_gene_dict:
+            geneName = motifName_gene_dict[motif_name]
 
         motifListFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][0] +'\n' )
         motifGeneFile.write(allMotifs[ind][0] + '\t' + geneName +'\n' )
