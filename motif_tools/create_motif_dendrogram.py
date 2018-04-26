@@ -14,12 +14,14 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import seaborn as sns
 from scipy import ndimage
+import pandas as pd
 import Bio
 from Bio import motifs
 from motif_utilities import *
 matplotlib.rcParams['savefig.dpi'] = 400
 
-
+import warnings
+warnings.filterwarnings("ignore")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Given a list of motifs and \
@@ -50,6 +52,10 @@ if __name__ == '__main__':
     if not os.path.isdir(output_path):
         os.mkdir(output_path)
 
+    score_frame = pd.read_csv(similarity_scores_path, sep='\t',index_col=0)
+    correlations = score_frame.values
+    motif_names = score_frame.columns.values
+
     # create directory to hold logos
     if not os.path.isdir(output_path + '/logos'):
         os.mkdir(output_path + '/logos')
@@ -59,10 +65,6 @@ if __name__ == '__main__':
         with open(f) as mf:
             m = Bio.motifs.read(mf, 'jaspar')
         create_logo(m, logo_path, fmt='PNG')
-        
-    correlation_data = np.load(similarity_scores_path)
-    correlations = correlation_data['arr_0']
-    motif_names = correlation_data['arr_1']
 
     motif_path = output_path + '/logos/'
     sns.set_style('white')

@@ -121,12 +121,7 @@ if __name__ == '__main__':
     plt.savefig(outputPath + '/correlation_distribution.pdf')
     plt.close()
             
-    # save matrix
-    print('Serializing scores... \ncorrelation should be used for clustering.')
-    # pearson correlation for each pair of motifs
-    np.savez_compressed(outputPath+'/correlation', result_matrix, motifNames)
-
-    # save spreadsheet
+    # save matrix as spreadsheet
     frame = pd.DataFrame(data = result_matrix,
         index=motifNames,
         columns=motifNames)
