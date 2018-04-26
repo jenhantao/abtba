@@ -14,6 +14,9 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import seaborn as sns
 from scipy import ndimage
+import Bio
+from Bio import motifs
+from motif_utilities import *
 matplotlib.rcParams['savefig.dpi'] = 400
 
 
@@ -52,10 +55,11 @@ if __name__ == '__main__':
         os.mkdir(output_path + '/logos')
     # create logos
     for f in motif_files:
-        logo_path = output_path + '/logos/' + '.'.join(f.split('/')[-1].split('.')[:-1])
-        if not os.path.isfile(logo_path + '.png'):
-            os.system('motif2Logo.pl "' + f + '" -o "' + logo_path+'"')
-
+        logo_path = output_path + '/logos/' + '.'.join(f.split('/')[-1].split('.')[:-1])+'.png'
+        with open(f) as mf:
+            m = Bio.motifs.read(mf, 'jaspar')
+        create_logo(m, logo_path, fmt='PNG')
+        
     correlation_data = np.load(similarity_scores_path)
     correlations = correlation_data['arr_0']
     motif_names = correlation_data['arr_1']
