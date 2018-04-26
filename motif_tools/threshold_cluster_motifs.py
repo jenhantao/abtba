@@ -18,18 +18,7 @@ from motif_utilities import *
 import shutil
 import inspect
 import Bio
-
-def create_logo(motif, output_path):
-    motif.weblogo(output_path, 
-        format = 'svg',
-        show_errorbars = False,
-        show_xaxis= False,
-        show_yaxis= False,
-        show_ends = False,
-        show_fineprint = False,
-        units='probability'
-        )
-
+import pandas as pd
 
 def mergeMotifs(motifArray):
     '''
@@ -268,7 +257,7 @@ def thresholdClusterMotifs(scoreArray,
                 family_count_dict[consensusFamily] += 1
             else:
                 family_count_dict[consensusFamily] = 1
-            consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily]) + '_merged'
+            consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily])
             consensusName = consensusName.replace('/','')
 
         
@@ -536,12 +525,12 @@ if __name__ == "__main__":
 
     if not os.path.isdir(outputPath):
         os.mkdir(outputPath)
-
-    if not os.path.isdir(outputPath + '/html_files/') and create_html:
-        os.mkdir(outputPath + '/html_files')
-    else:
-        for f in os.listdir(outputPath + '/html_files'):
-            os.remove(outputPath + '/html_files/' + f)
+    if create_html:
+        if not os.path.isdir(outputPath + '/html_files/'):
+            os.mkdir(outputPath + '/html_files')
+        else:
+            for f in os.listdir(outputPath + '/html_files'):
+                os.remove(outputPath + '/html_files/' + f)
     if not os.path.isdir(outputPath + '/clustered_motifs/'):
         os.mkdir(outputPath + '/clustered_motifs')
     else:
@@ -559,7 +548,8 @@ if __name__ == "__main__":
         motifNames.append(motif_name)
 
     # read in scores
-    scoreArray = np.load(scorePath)['arr_0']
+    score_frame = pd.read_csv(scorePath, sep='\t',index_col=0)
+    scoreArray = score_frame.values
 
     # if output directory doesn't exist, create it
     if not os.path.exists(outputPath):
