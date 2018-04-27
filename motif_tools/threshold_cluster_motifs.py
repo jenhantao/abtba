@@ -151,7 +151,7 @@ def thresholdClusterMotifs(scoreArray,
     mergeDict = {} # key: motif index, value: set of motifs that should be merged together
     # create list page 
     motifListFile = open(outputPath+"/motif_list.txt", "w")
-    mergedMetadataFile = open(outputPath + '/motif_metadata.txt', 'w')
+    mergedMetadataFile = open(outputPath + '/motif_metadata.tsv', 'w')
     if create_html:
         # copy heatmap.js file
         heatmap_script_path = os.path.dirname(__file__) + '/heatMap.js'
@@ -229,7 +229,7 @@ def thresholdClusterMotifs(scoreArray,
             nameRoot_count_dict[consensusNameRoot] = 1
 
         # get the TF family of the first motif
-        consensusName = consensusNameRoot+ '_' + str(nameRoot_count_dict[consensusFamily])
+        consensusName = consensusNameRoot+ '_' + str(nameRoot_count_dict[consensusFamily]) + '_merged'
         consensusName = consensusName.replace('/','')
         
         if not consensusName in seenNames:
@@ -329,7 +329,7 @@ def thresholdClusterMotifs(scoreArray,
                 listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
 
             motifListFile.write(consensusName + '\t' + consensus_id_string + '\n')
-            mergedMetadataFile.write('\t'.join([consensusName, consensusFamily, consensusClass, gene_string, '\n']))
+            mergedMetadataFile.write('\t'.join([consensusName, consensusFamily, consensusClass, gene_string])+'\n')
 
     # add unmerged motifs to list file
 
@@ -352,7 +352,7 @@ def thresholdClusterMotifs(scoreArray,
             motif_class = motifName_class_dict[motif_name]
 
         motifListFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][0] +'\n' )
-        mergedMetadataFile.write('\t'.join([motif_name, family, motif_class, geneName, '\n']))
+        mergedMetadataFile.write('\t'.join([motif_name, family, motif_class, geneName])+ '\n')
         if create_html:
             listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.svg'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
         counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
