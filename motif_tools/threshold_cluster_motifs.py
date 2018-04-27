@@ -125,7 +125,6 @@ def thresholdClusterMotifs(scoreArray,
     allMotifs, 
     motifNames, 
     outputPath,
-    file_based_name=False,
     create_html=False):
     '''
     given a score matrix for an array of motifs, merges motifs and writes a new 
@@ -138,26 +137,21 @@ def thresholdClusterMotifs(scoreArray,
         inspect.getfile(
         inspect.currentframe()))).replace('motif_tools', 'motif_metadata.tsv')
 
-    if not file_based_name:
-        metadata_frame = pd.read_csv(metadata_path, sep='\t')
-        family_count_dict = {}
-#        motif_index_dict = {}
-#        index_uniprot_dict = {}
-#        index_family_dict = {}
-#        index_class_dict = {}
-        motifName_family_dict = dict(zip(metadata_frame['Name'].values, 
-            metadata_frame['Family'].values))
-        motifName_class_dict = dict(zip(metadata_frame['Name'].values, 
-            metadata_frame['Class'].values))
-        motifName_gene_dict = dict(zip(metadata_frame['Name'].values, 
-            metadata_frame['Gene'].values))
+    metadata_frame = pd.read_csv(metadata_path, sep='\t')
+    nameRoot_count_dict = {}
+    motifName_family_dict = dict(zip(metadata_frame['Name'].values, 
+        metadata_frame['Family'].values))
+    motifName_class_dict = dict(zip(metadata_frame['Name'].values, 
+        metadata_frame['Class'].values))
+    motifName_gene_dict = dict(zip(metadata_frame['Name'].values, 
+        metadata_frame['Gene'].values))
 
     alphabet = Bio.Seq.IUPAC.Alphabet.IUPAC.IUPACUnambiguousDNA()
 
     mergeDict = {} # key: motif index, value: set of motifs that should be merged together
     # create list page 
-    motifListFile = open(outputPath+"/motifList.txt", "w")
-    motifGeneFile = open(outputPath + '/motifGene.txt', 'w')
+    motifListFile = open(outputPath+"/motif_list.txt", "w")
+    mergedMetadataFile = open(outputPath + '/motif_metadata.txt', 'w')
     if create_html:
         # copy heatmap.js file
         heatmap_script_path = os.path.dirname(__file__) + '/heatMap.js'
@@ -215,25 +209,28 @@ def thresholdClusterMotifs(scoreArray,
         # create table from merged indices
         mergeNames.sort()
 
-        if file_based_name:
-            consensusName = "_".join(sorted(list(set(mergeNames)))[:10])+ "_merged"
+        toMerge_name = toMerge[0][0]
+        if toMerge_name in motifName_class_dict:
+            consensusClass= motifName_class_dict[toMerge_name]
         else:
-            toMerge_name = toMerge[0][0]
+            consensusClass= 'unknown'
 
-            # get the TF family of the first motif
-            if toMerge_name in motifName_family_dict:
-                consensusFamily = motifName_family_dict[toMerge_name]
-            if consensusFamily == 'unknown':
-                if toMerge_name in motifName_class_dict:
-                    consensusFamily = motifName_class_dict[toMerge_name]
-    
-            if consensusFamily in family_count_dict:
-                family_count_dict[consensusFamily] += 1
-            else:
-                family_count_dict[consensusFamily] = 1
-            consensusName = consensusFamily + '_' + str(family_count_dict[consensusFamily])
-            consensusName = consensusName.replace('/','')
+        if toMerge_name in motifName_family_dict:
+            consensusFamily = motifName_family_dict[toMerge_name]
+            consensusNameRoot = consensusFamily
+        else:
+            consensusFamily = 'unknown'
+            consensusNameRoot = consensusClass
 
+        
+        if consensusNameRoot in nameRoot_count_dict:
+            nameRoot_count_dict[consensusNameRoot] += 1
+        else:
+            nameRoot_count_dict[consensusNameRoot] = 1
+
+        # get the TF family of the first motif
+        consensusName = consensusNameRoot+ '_' + str(nameRoot_count_dict[consensusFamily])
+        consensusName = consensusName.replace('/','')
         
         if not consensusName in seenNames:
             # don't add repeats
@@ -332,7 +329,7 @@ def thresholdClusterMotifs(scoreArray,
                 listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
 
             motifListFile.write(consensusName + '\t' + consensus_id_string + '\n')
-            motifGeneFile.write(consensusName + '\t' + gene_string + '\n')
+            mergedMetadataFile.write('\t'.join([consensusName, consensusFamily, consensusClass, gene_string, '\n']))
 
     # add unmerged motifs to list file
 
@@ -345,11 +342,17 @@ def thresholdClusterMotifs(scoreArray,
         motif_count+=1
         motif_name = allMotifs[ind][0]
         geneName = 'unknown'
+        motif_family = 'unknown'
+        motif_class = 'unknown'
         if motif_name in motifName_gene_dict:
             geneName = motifName_gene_dict[motif_name]
+        if motif_name in motifName_family_dict:
+            family = motifName_family_dict[motif_name]
+        if motif_name in motifName_class_dict:
+            motif_class = motifName_class_dict[motif_name]
 
         motifListFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][0] +'\n' )
-        motifGeneFile.write(allMotifs[ind][0] + '\t' + geneName +'\n' )
+        mergedMetadataFile.write('\t'.join([motif_name, family, motif_class, geneName, '\n']))
         if create_html:
             listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.svg'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
         counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
@@ -458,7 +461,7 @@ def thresholdClusterMotifs(scoreArray,
         listFile.close()
         scoreFile.close()
     motifListFile.close()
-    motifGeneFile.close()
+    mergedMetadataFile.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='using scores calculated by \
@@ -490,7 +493,6 @@ if __name__ == "__main__":
     outputPath = args.outputPath
     threshold = args.threshold
     motifFiles = args.motifFiles
-    file_based_name = not args.familyBasedName
     create_html = args.createHTML
 
     if not os.path.isdir(outputPath):
@@ -530,5 +532,4 @@ if __name__ == "__main__":
         allMotifs, 
         motifNames, 
         outputPath, 
-        file_based_name = file_based_name,
         create_html = create_html)
