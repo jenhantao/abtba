@@ -31,7 +31,7 @@ if __name__ == '__main__':
         os.path.abspath(
         inspect.getfile(
         inspect.currentframe()))).replace('model_training', 'motif_metadata.tsv')
-
+    
     metadata_frame = pd.read_csv(metadata_path, sep='\t')
     motifName_gene_dict = dict(zip(metadata_frame['Name'].values, 
         metadata_frame['Gene'].values))

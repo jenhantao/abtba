@@ -518,153 +518,78 @@ Hoxd3	Hoxd3	HOX-related	Homeo
 Hoxd9	Hoxd9	HOX-related	Homeo
 ISL2	ISL2	HD-LIM	Homeo
 Hes1	Hes1	Hairy-related	Basic
-More_1	ZBTB7A|GLI2|ZBTB7C|ZBTB7B
-Nuclear_1	NFIA|NFIC|NFIX
-Hairy-related_1	Hes1|HIF1A|Npas2|MLX|MLXIPL|MNT|Arnt|Arntl|Mitf|Mlxip|Id2|Mycn|BHLHE40|BHLHE41|TFE3|TFEB|TFEC|HEY1|HEY2|CLOCK|SREBF2|USF1|Creb3l2|MAX|Srebf1
-Forkhead_1	FOXP2|Foxj2|Foxj3|Foxk1|FOXB1|FOXC1|FOXC2|FOXP1
-POU_1	POU4F1|POU4F2|POU4F3
-TEF-1-related_1	TEAD1|TEAD3|TEAD4
-SOX-related_1	Sox11|Sox1|SOX21|SOX4|SOX8
-HOX-related_1	CDX1|CDX2|HOXB13|HOXD13|Hoxd9|HOXA10|HOXA13
-GCM_1	GCM2|GCM1
-AP-2_1	TFAP2A|TFAP2A|TFAP2B|TFAP2B|TFAP2C|TFAP2C
-RFX-related_1	RFX4|RFX5|Rfx1|RFX2|RFX3
-HSF_1	HSF1|HSF2|HSF4
-HD-CUT_1	CUX1|CUX2
-Tal-related_1	OLIG1|OLIG2|OLIG3|Twist2|Atoh1|BHLHE22|BHLHE23|Neurog1|NEUROD2|NEUROG2|Bhlha15
-More_2	GLIS1|GLIS2|GLIS3
-HD-CUT_2	ONECUT1|ONECUT2|ONECUT3
-NK-related_1	Hmx1|Hmx2|Hmx3
-Three-zinc_1	KLF14|KLF16|SP8|SP4|SP3|KLF13
-CEBP-related_1	HLF|DBP|NFIL3|TEF
-TCF-7-related_1	LEF1|TCF7L2|Tcf7
-Three-zinc_2	KLF5|Klf1|Klf4|SP1|SP2
-NF-kappaB-related_1	NFKB2|NFKB1
-Paired-related_1	RHOXF1|PITX3|OTX1|OTX2|Pitx1|Crx|GSC|GSC2|Dmbx1
-E2F-related_1	E2F4|E2F6
-Three-zinc_3	EGR2|EGR3|EGR4
-Steroid_1	ESR1|ESR2
-Paired-related_2	Alx1|Alx4|POU6F1|mix-a|LHX2|LHX6|VAX1|Arx|LMX1A|VAX2|Lhx4|NOTO|VSX1|VSX2|EMX2
-RXR-related_1	RXRA|Rxra|Nr2f6|RXRB
-More_3	SNAI2|TCF3|TCF4|FIGLA|ID4
-RXR-related_2	Nr2f6|Nr2f6|RXRB|RXRG|Rarb|Rarb|Rarg|Rarg|Rxra|NR2C2|Rxra|RARA|RARA|RXRA
-Paired_1	PAX3|PROP1|PAX7|PHOX2B|PHOX2A
-Jun-related_1	NFE2|ATF7|CREB1|Creb5|Crem|BATF3|JDP2|JDP2|JUN|JUN|JUNB|JUND|JUND
-Ets-related_1	SPI1|SPIC
-Paired_2	PAX9|PAX1
-E2F-related_2	E2F2|E2F3
-TBrain-related_1	TBR1|TBX1|MGA|TBX15|TBX2|TBX20|TBX21|TBX4|TBX5|EOMES
-CP2-related_1	TFCP2|GRHL1
-Paired-related_3	ALX3|MEOX1|MEOX2|MIXL1|mix-a|MNX1|MSX1|MSX2|GBX1|GBX2|POU6F1|BARX1|Msx3|SHOX|GSX1|GSX2|BSX|LHX6|Barhl1|HESX1|Shox2|HOXA2|NKX6-2|NOTO|HOXB2|DLX6|HOXB3|NKX6-1|Dlx1|Dlx2|Dlx3|Dlx4|unknown|Hoxb5|Hoxd3|PAX4|EMX1|EMX2|EN1|EN2|ISX|PDX1|ESX1|EVX1|EVX2|LBX1|LBX2|LHX2|UNCX|LHX9|VAX1|LMX1A|LMX1B|PRRX1|Lhx4|Lhx8|VAX2|VSX1|VSX2|Prrx2|VENTX|RAX|RAX2
-NK-related_2	Nkx3-1|NKX2-8|NKX2-3|ISL2|NKX3-2
-Jun-related_2	NFE2|FOS|JUN|FOSL1|FOSL2|JUN|JDP2|JUN|JUNB|JUND|JUND
-CEBP-related_2	CEBPB|CEBPD|CEBPE|CEBPG
-POU_2	POU3F2|POU3F3|POU3F4|POU5F1B|Pou2f3|POU1F1|POU2F1|POU2F2|POU3F1
-Paired-related_4	DUX4|DUXA
-SOX-related_2	SRY|SOX9|Sox5
-SOX-related_3	Sox2|Sox3|Sox6
-TALE-type_1	PKNOX1|PKNOX2|TGIF1|TGIF2
-MybSANT_1	MYBL1|MYBL2
-Steroid_2	NR3C1|NR3C2|Ar
-Ets-related_2	EHF|ELF1|ELF3|ELF4|ELF5|ELK1|ELK3|ELK4|ERF|ERG|ETS1|ETV1|ETV2|ETV3|ETV4|ETV5|ETV6|FEV|FLI1
-CREB-related_1	CREB3|CREB3L1
-GATA-type_1	Gata1|GATA2|GATA3|GATA5|Gata4
-HOX-related_2	Hoxa9|Hoxc9
-Brachyury-related_1	TBX19|T
-AP-2_2	TFAP2A|TFAP2B|TFAP2C
-Regulators_1	MEF2A|MEF2B|MEF2C|MEF2D
-TALE-type_2	MEIS1|MEIS2|MEIS3
-More_4	ZIC1|ZIC3|ZIC4
-Interferon-regulatory_1	IRF7|IRF8|IRF9
-MyoD_1	Myog|NHLH1|Tcf12|Ascl2
-Steroid_3	Esrra|Esrrg|ESRRB
-HOX-related_3	HOXD11|HOXC10|HOXC11|HOXA11|HOXC12|HOXD12
-Factors_1	Hic1|HIC2
-CREB-related_2	Crem|Atf1
-STAT_1	Stat6|Stat4|Stat5b|STAT1|STAT3
-POU_3	HNF1A|HNF1B
-REL_1	unknown|RELA
-Runt-related_1	RUNX3|RUNX2
-Tal-related_2	MSC|TFAP4|Tcf12|Tcf21|MYF6
-Maf-related_1	Mafb|MAFF|MAFK|NRL
-More_5	SCRT1|SCRT2
-Forkhead_2	FOXP2|FOXP3|Foxa2|Foxj2|Foxj3|Foxk1|Foxo1|Foxq1|FOXA1|FOXD1|FOXD2|FOXF2|FOXG1|FOXI1|FOXL1|FOXO3|FOXO4|FOXO6|FOXP1
-NFAT-related_1	NFATC3|unknown|NFATC1|NFATC2
-Hairy-related_2	Hes1|Hes2|Npas2|MLX|MLXIPL|MNT|Mitf|Mlxip|Myc|Mycn|Id2|TFE3|TFEB|TFEC|HES5|HES7|HEY1|HEY2|Tcfl5|SREBF2|USF1|USF2|MAX|MYC|Srebf1
-bHLH-ZIP_1	SREBF2|SREBF1
-E2F-related_3	E2F7|E2F8
-More_1	More	C2H2	ZBTB7A|GLI2|ZBTB7C|ZBTB7B	
-Nuclear_1	Nuclear	SMAD/NF-1	NFIA|NFIC|NFIX	
-Hairy-related_1	Hairy-related	Basic	Hes1|HIF1A|Npas2|MLX|MLXIPL|MNT|Arnt|Arntl|Mitf|Mlxip|Id2|Mycn|BHLHE40|BHLHE41|TFE3|TFEB|TFEC|HEY1|HEY2|CLOCK|SREBF2|USF1|Creb3l2|MAX|Srebf1	
-Forkhead_1	Forkhead	Fork	FOXP2|Foxj2|Foxj3|Foxk1|FOXB1|FOXC1|FOXC2|FOXP1	
-POU_1	POU	Homeo	POU4F1|POU4F2|POU4F3	
-TEF-1-related_1	TEF-1-related	TEA	TEAD1|TEAD3|TEAD4	
-SOX-related_1	SOX-related	High-mobility	Sox11|Sox1|SOX21|SOX4|SOX8	
-HOX-related_1	HOX-related	Homeo	CDX1|CDX2|HOXB13|HOXD13|Hoxd9|HOXA10|HOXA13	
-GCM_1	GCM	GCM	GCM2|GCM1	
-AP-2_1	AP-2	Basic	TFAP2A|TFAP2A|TFAP2B|TFAP2B|TFAP2C|TFAP2C	
-RFX-related_1	RFX-related	Fork	RFX4|RFX5|Rfx1|RFX2|RFX3	
-HSF_1	HSF	Heat	HSF1|HSF2|HSF4	
-HD-CUT_1	HD-CUT	Homeo	CUX1|CUX2	
-Tal-related_1	Tal-related	Basic	OLIG1|OLIG2|OLIG3|Twist2|Atoh1|BHLHE22|BHLHE23|Neurog1|NEUROD2|NEUROG2|Bhlha15	
-More_2	More	C2H2	GLIS1|GLIS2|GLIS3	
-HD-CUT_2	HD-CUT	Homeo	ONECUT1|ONECUT2|ONECUT3	
-NK-related_1	NK-related	Homeo	Hmx1|Hmx2|Hmx3	
-Three-zinc_1	Three-zinc	C2H2	KLF14|KLF16|SP8|SP4|SP3|KLF13	
-CEBP-related_1	C/EBP-related	Basic	HLF|DBP|NFIL3|TEF	
-TCF-7-related_1	TCF-7-related	High-mobility	LEF1|TCF7L2|Tcf7	
-Three-zinc_2	Three-zinc	C2H2	KLF5|Klf1|Klf4|SP1|SP2	
-NF-kappaB-related_1	NF-kappaB-related	Rel	NFKB2|NFKB1	
-Paired-related_1	Paired-related	Homeo	RHOXF1|PITX3|OTX1|OTX2|Pitx1|Crx|GSC|GSC2|Dmbx1	
-E2F-related_1	E2F-related	Fork	E2F4|E2F6	
-Three-zinc_3	Three-zinc	C2H2	EGR2|EGR3|EGR4	
-Steroid_1	Steroid	Nuclear	ESR1|ESR2	
-Paired-related_2	Paired-related	Homeo	Alx1|Alx4|POU6F1|mix-a|LHX2|LHX6|VAX1|Arx|LMX1A|VAX2|Lhx4|NOTO|VSX1|VSX2|EMX2	
-RXR-related_1	RXR-related	Nuclear	RXRA|Rxra|Nr2f6|RXRB	
-More_3	More	C2H2	SNAI2|TCF3|TCF4|FIGLA|ID4	
-RXR-related_2	RXR-related	Nuclear	Nr2f6|Nr2f6|RXRB|RXRG|Rarb|Rarb|Rarg|Rarg|Rxra|NR2C2|Rxra|RARA|RARA|RXRA	
-Paired_1	Paired	Paired	PAX3|PROP1|PAX7|PHOX2B|PHOX2A	
-Jun-related_1	Jun-related	Basic	NFE2|ATF7|CREB1|Creb5|Crem|BATF3|JDP2|JDP2|JUN|JUN|JUNB|JUND|JUND	
-Ets-related_1	Ets-related	Tryptophan	SPI1|SPIC	
-Paired_2	Paired	Paired	PAX9|PAX1	
-E2F-related_2	E2F-related	Fork	E2F2|E2F3	
-TBrain-related_1	TBrain-related	T-Box	TBR1|TBX1|MGA|TBX15|TBX2|TBX20|TBX21|TBX4|TBX5|EOMES	
-CP2-related_1	CP2-related	Grainyhead	TFCP2|GRHL1	
-Paired-related_3	Paired-related	Homeo	ALX3|MEOX1|MEOX2|MIXL1|mix-a|MNX1|MSX1|MSX2|GBX1|GBX2|POU6F1|BARX1|Msx3|SHOX|GSX1|GSX2|BSX|LHX6|Barhl1|HESX1|Shox2|HOXA2|NKX6-2|NOTO|HOXB2|DLX6|HOXB3|NKX6-1|Dlx1|Dlx2|Dlx3|Dlx4|unknown|Hoxb5|Hoxd3|PAX4|EMX1|EMX2|EN1|EN2|ISX|PDX1|ESX1|EVX1|EVX2|LBX1|LBX2|LHX2|UNCX|LHX9|VAX1|LMX1A|LMX1B|PRRX1|Lhx4|Lhx8|VAX2|VSX1|VSX2|Prrx2|VENTX|RAX|RAX2	
-NK-related_2	NK-related	Homeo	Nkx3-1|NKX2-8|NKX2-3|ISL2|NKX3-2	
-Jun-related_2	Jun-related	Basic	NFE2|FOS|JUN|FOSL1|FOSL2|JUN|JDP2|JUN|JUNB|JUND|JUND	
-CEBP-related_2	C/EBP-related	Basic	CEBPB|CEBPD|CEBPE|CEBPG	
-POU_2	POU	Homeo	POU3F2|POU3F3|POU3F4|POU5F1B|Pou2f3|POU1F1|POU2F1|POU2F2|POU3F1	
-Paired-related_4	Paired-related	Homeo	DUX4|DUXA	
-SOX-related_2	SOX-related	High-mobility	SRY|SOX9|Sox5	
-SOX-related_3	SOX-related	High-mobility	Sox2|Sox3|Sox6	
-TALE-type_1	TALE-type	Homeo	PKNOX1|PKNOX2|TGIF1|TGIF2	
-MybSANT_1	Myb/SANT	Tryptophan	MYBL1|MYBL2	
-Steroid_2	Steroid	Nuclear	NR3C1|NR3C2|Ar	
-Ets-related_2	Ets-related	Tryptophan	EHF|ELF1|ELF3|ELF4|ELF5|ELK1|ELK3|ELK4|ERF|ERG|ETS1|ETV1|ETV2|ETV3|ETV4|ETV5|ETV6|FEV|FLI1	
-CREB-related_1	CREB-related	Basic	CREB3|CREB3L1	
-GATA-type_1	GATA-type	Other	Gata1|GATA2|GATA3|GATA5|Gata4	
-HOX-related_2	HOX-related	Homeo	Hoxa9|Hoxc9	
-Brachyury-related_1	Brachyury-related	T-Box	TBX19|T	
-AP-2_2	AP-2	Basic	TFAP2A|TFAP2B|TFAP2C	
-Regulators_1	Regulators	MADS	MEF2A|MEF2B|MEF2C|MEF2D	
-TALE-type_2	TALE-type	Homeo	MEIS1|MEIS2|MEIS3	
-More_4	More	C2H2	ZIC1|ZIC3|ZIC4	
-Interferon-regulatory_1	Interferon-regulatory	Tryptophan	IRF7|IRF8|IRF9	
-MyoD_1	MyoD	Basic	Myog|NHLH1|Tcf12|Ascl2	
-Steroid_3	Steroid	Nuclear	Esrra|Esrrg|ESRRB	
-HOX-related_3	HOX-related	Homeo	HOXD11|HOXC10|HOXC11|HOXA11|HOXC12|HOXD12	
-Factors_1	Factors	C2H2	Hic1|HIC2	
-CREB-related_2	CREB-related	Basic	Crem|Atf1	
-STAT_1	STAT	STAT	Stat6|Stat4|Stat5b|STAT1|STAT3	
-POU_3	POU	Homeo	HNF1A|HNF1B	
-unknown_1	unknown	REL	unknown|RELA	
-Runt-related_1	Runt-related	Runt	RUNX3|RUNX2	
-Tal-related_2	Tal-related	Basic	MSC|TFAP4|Tcf12|Tcf21|MYF6	
-Maf-related_1	Maf-related	Basic	Mafb|MAFF|MAFK|NRL	
-More_5	More	C2H2	SCRT1|SCRT2	
-Forkhead_2	Forkhead	Fork	FOXP2|FOXP3|Foxa2|Foxj2|Foxj3|Foxk1|Foxo1|Foxq1|FOXA1|FOXD1|FOXD2|FOXF2|FOXG1|FOXI1|FOXL1|FOXO3|FOXO4|FOXO6|FOXP1	
-NFAT-related_1	NFAT-related	Rel	NFATC3|unknown|NFATC1|NFATC2	
-Hairy-related_2	Hairy-related	Basic	Hes1|Hes2|Npas2|MLX|MLXIPL|MNT|Mitf|Mlxip|Myc|Mycn|Id2|TFE3|TFEB|TFEC|HES5|HES7|HEY1|HEY2|Tcfl5|SREBF2|USF1|USF2|MAX|MYC|Srebf1	
-bHLH-ZIP_1	bHLH-ZIP	Basic	SREBF2|SREBF1	
-E2F-related_3	E2F-related	Fork	E2F7|E2F8	
+More_1_merged	More	C2H2	ZBTB7A|GLI2|ZBTB7C|ZBTB7B
+Nuclear_1_merged	Nuclear	SMAD/NF-1	NFIA|NFIC|NFIX
+Hairy-related_1_merged	Hairy-related	Basic	Hes1|HIF1A|Npas2|MLX|MLXIPL|MNT|Arnt|Arntl|Mitf|Mlxip|Id2|Mycn|BHLHE40|BHLHE41|TFE3|TFEB|TFEC|HEY1|HEY2|CLOCK|SREBF2|USF1|Creb3l2|MAX|Srebf1
+Forkhead_1_merged	Forkhead	Fork	FOXP2|Foxj2|Foxj3|Foxk1|FOXB1|FOXC1|FOXC2|FOXP1
+POU_1_merged	POU	Homeo	POU4F1|POU4F2|POU4F3
+TEF-1-related_1_merged	TEF-1-related	TEA	TEAD1|TEAD3|TEAD4
+SOX-related_1_merged	SOX-related	High-mobility	Sox11|Sox1|SOX21|SOX4|SOX8
+HOX-related_1_merged	HOX-related	Homeo	CDX1|CDX2|HOXB13|HOXD13|Hoxd9|HOXA10|HOXA13
+GCM_1_merged	GCM	GCM	GCM2|GCM1
+AP-2_1_merged	AP-2	Basic	TFAP2A|TFAP2A|TFAP2B|TFAP2B|TFAP2C|TFAP2C
+RFX-related_1_merged	RFX-related	Fork	RFX4|RFX5|Rfx1|RFX2|RFX3
+HSF_1_merged	HSF	Heat	HSF1|HSF2|HSF4
+HD-CUT_1_merged	HD-CUT	Homeo	CUX1|CUX2
+Tal-related_1_merged	Tal-related	Basic	OLIG1|OLIG2|OLIG3|Twist2|Atoh1|BHLHE22|BHLHE23|Neurog1|NEUROD2|NEUROG2|Bhlha15
+More_2_merged	More	C2H2	GLIS1|GLIS2|GLIS3
+HD-CUT_2_merged	HD-CUT	Homeo	ONECUT1|ONECUT2|ONECUT3
+NK-related_1_merged	NK-related	Homeo	Hmx1|Hmx2|Hmx3
+Three-zinc_1_merged	Three-zinc	C2H2	KLF14|KLF16|SP8|SP4|SP3|KLF13
+CEBP-related_1_merged	C/EBP-related	Basic	HLF|DBP|NFIL3|TEF
+TCF-7-related_1_merged	TCF-7-related	High-mobility	LEF1|TCF7L2|Tcf7
+Three-zinc_2_merged	Three-zinc	C2H2	KLF5|Klf1|Klf4|SP1|SP2
+NF-kappaB-related_1_merged	NF-kappaB-related	Rel	NFKB2|NFKB1
+Paired-related_1_merged	Paired-related	Homeo	RHOXF1|PITX3|OTX1|OTX2|Pitx1|Crx|GSC|GSC2|Dmbx1
+E2F-related_1_merged	E2F-related	Fork	E2F4|E2F6
+Three-zinc_3_merged	Three-zinc	C2H2	EGR2|EGR3|EGR4
+Steroid_1_merged	Steroid	Nuclear	ESR1|ESR2
+Paired-related_2_merged	Paired-related	Homeo	Alx1|Alx4|POU6F1|mix-a|LHX2|LHX6|VAX1|Arx|LMX1A|VAX2|Lhx4|NOTO|VSX1|VSX2|EMX2
+RXR-related_1_merged	RXR-related	Nuclear	RXRA|Rxra|Nr2f6|RXRB
+More_3_merged	More	C2H2	SNAI2|TCF3|TCF4|FIGLA|ID4
+RXR-related_2_merged	RXR-related	Nuclear	Nr2f6|Nr2f6|RXRB|RXRG|Rarb|Rarb|Rarg|Rarg|Rxra|NR2C2|Rxra|RARA|RARA|RXRA
+Paired_1_merged	Paired	Paired	PAX3|PROP1|PAX7|PHOX2B|PHOX2A
+Jun-related_1_merged	Jun-related	Basic	NFE2|ATF7|CREB1|Creb5|Crem|BATF3|JDP2|JDP2|JUN|JUN|JUNB|JUND|JUND
+Ets-related_1_merged	Ets-related	Tryptophan	SPI1|SPIC
+Paired_2_merged	Paired	Paired	PAX9|PAX1
+E2F-related_2_merged	E2F-related	Fork	E2F2|E2F3
+TBrain-related_1_merged	TBrain-related	T-Box	TBR1|TBX1|MGA|TBX15|TBX2|TBX20|TBX21|TBX4|TBX5|EOMES
+CP2-related_1_merged	CP2-related	Grainyhead	TFCP2|GRHL1
+Paired-related_3_merged	Paired-related	Homeo	ALX3|MEOX1|MEOX2|MIXL1|mix-a|MNX1|MSX1|MSX2|GBX1|GBX2|POU6F1|BARX1|Msx3|SHOX|GSX1|GSX2|BSX|LHX6|Barhl1|HESX1|Shox2|HOXA2|NKX6-2|NOTO|HOXB2|DLX6|HOXB3|NKX6-1|Dlx1|Dlx2|Dlx3|Dlx4|unknown|Hoxb5|Hoxd3|PAX4|EMX1|EMX2|EN1|EN2|ISX|PDX1|ESX1|EVX1|EVX2|LBX1|LBX2|LHX2|UNCX|LHX9|VAX1|LMX1A|LMX1B|PRRX1|Lhx4|Lhx8|VAX2|VSX1|VSX2|Prrx2|VENTX|RAX|RAX2
+NK-related_2_merged	NK-related	Homeo	Nkx3-1|NKX2-8|NKX2-3|ISL2|NKX3-2
+Jun-related_2_merged	Jun-related	Basic	NFE2|FOS|JUN|FOSL1|FOSL2|JUN|JDP2|JUN|JUNB|JUND|JUND
+CEBP-related_2_merged	C/EBP-related	Basic	CEBPB|CEBPD|CEBPE|CEBPG
+POU_2_merged	POU	Homeo	POU3F2|POU3F3|POU3F4|POU5F1B|Pou2f3|POU1F1|POU2F1|POU2F2|POU3F1
+Paired-related_4_merged	Paired-related	Homeo	DUX4|DUXA
+SOX-related_2_merged	SOX-related	High-mobility	SRY|SOX9|Sox5
+SOX-related_3_merged	SOX-related	High-mobility	Sox2|Sox3|Sox6
+TALE-type_1_merged	TALE-type	Homeo	PKNOX1|PKNOX2|TGIF1|TGIF2
+MybSANT_1_merged	Myb/SANT	Tryptophan	MYBL1|MYBL2
+Steroid_2_merged	Steroid	Nuclear	NR3C1|NR3C2|Ar
+Ets-related_2_merged	Ets-related	Tryptophan	EHF|ELF1|ELF3|ELF4|ELF5|ELK1|ELK3|ELK4|ERF|ERG|ETS1|ETV1|ETV2|ETV3|ETV4|ETV5|ETV6|FEV|FLI1
+CREB-related_1_merged	CREB-related	Basic	CREB3|CREB3L1
+GATA-type_1_merged	GATA-type	Other	Gata1|GATA2|GATA3|GATA5|Gata4
+HOX-related_2_merged	HOX-related	Homeo	Hoxa9|Hoxc9
+Brachyury-related_1_merged	Brachyury-related	T-Box	TBX19|T
+AP-2_2_merged	AP-2	Basic	TFAP2A|TFAP2B|TFAP2C
+Regulators_1_merged	Regulators	MADS	MEF2A|MEF2B|MEF2C|MEF2D
+TALE-type_2_merged	TALE-type	Homeo	MEIS1|MEIS2|MEIS3
+More_4_merged	More	C2H2	ZIC1|ZIC3|ZIC4
+Interferon-regulatory_1_merged	Interferon-regulatory	Tryptophan	IRF7|IRF8|IRF9
+MyoD_1_merged	MyoD	Basic	Myog|NHLH1|Tcf12|Ascl2
+Steroid_3_merged	Steroid	Nuclear	Esrra|Esrrg|ESRRB
+HOX-related_3_merged	HOX-related	Homeo	HOXD11|HOXC10|HOXC11|HOXA11|HOXC12|HOXD12
+Factors_1_merged	Factors	C2H2	Hic1|HIC2
+CREB-related_2_merged	CREB-related	Basic	Crem|Atf1
+STAT_1_merged	STAT	STAT	Stat6|Stat4|Stat5b|STAT1|STAT3
+POU_3_merged	POU	Homeo	HNF1A|HNF1B
+unknown_1_merged	unknown	REL	unknown|RELA
+Runt-related_1_merged	Runt-related	Runt	RUNX3|RUNX2
+Tal-related_2_merged	Tal-related	Basic	MSC|TFAP4|Tcf12|Tcf21|MYF6
+Maf-related_1_merged	Maf-related	Basic	Mafb|MAFF|MAFK|NRL
+More_5_merged	More	C2H2	SCRT1|SCRT2
+Forkhead_2_merged	Forkhead	Fork	FOXP2|FOXP3|Foxa2|Foxj2|Foxj3|Foxk1|Foxo1|Foxq1|FOXA1|FOXD1|FOXD2|FOXF2|FOXG1|FOXI1|FOXL1|FOXO3|FOXO4|FOXO6|FOXP1
+NFAT-related_1_merged	NFAT-related	Rel	NFATC3|unknown|NFATC1|NFATC2
+Hairy-related_2_merged	Hairy-related	Basic	Hes1|Hes2|Npas2|MLX|MLXIPL|MNT|Mitf|Mlxip|Myc|Mycn|Id2|TFE3|TFEB|TFEC|HES5|HES7|HEY1|HEY2|Tcfl5|SREBF2|USF1|USF2|MAX|MYC|Srebf1
+bHLH-ZIP_1_merged	bHLH-ZIP	Basic	SREBF2|SREBF1
+E2F-related_3_merged	E2F-related	Fork	E2F7|E2F8
