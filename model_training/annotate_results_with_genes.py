@@ -39,9 +39,6 @@ if __name__ == '__main__':
     results_frame = pd.read_csv(result_path, sep='\t', index_col=0)
     columns = list(results_frame.columns.values)
     results_frame['genes'] = [motifName_gene_dict[x] for x in results_frame.index.values]
-    columns.insert(1, 'genes')
+    columns.insert(0, 'genes')
     results_frame = results_frame[columns]
-    results_frame.to_csv(output_path)
-    
-    
-    out_file.close()
+    results_frame.to_csv(output_path, sep='\t')

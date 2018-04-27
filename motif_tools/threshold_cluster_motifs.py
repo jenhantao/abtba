@@ -329,7 +329,7 @@ def thresholdClusterMotifs(scoreArray,
                 listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
 
             motifListFile.write(consensusName + '\t' + consensus_id_string + '\n')
-            mergedMetadataFile.write('\t'.join([consensusName, consensusFamily, consensusClass, gene_string])+'\n')
+            mergedMetadataFile.write('\t'.join([consensusName, gene_string, consensusFamily, consensusClass])+'\n')
 
     # add unmerged motifs to list file
 
@@ -352,7 +352,7 @@ def thresholdClusterMotifs(scoreArray,
             motif_class = motifName_class_dict[motif_name]
 
         motifListFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][0] +'\n' )
-        mergedMetadataFile.write('\t'.join([motif_name, family, motif_class, geneName])+ '\n')
+        mergedMetadataFile.write('\t'.join([motif_name, geneName, family, motif_class])+ '\n')
         if create_html:
             listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.svg'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
         counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
