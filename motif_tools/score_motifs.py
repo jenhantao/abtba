@@ -26,10 +26,10 @@ def score_motif_against_others(motifs,
         motif2 = motifs[j]
         cleaned_motif2 = (motif2[0], cleanMatrix(motif2[1]))
         # calc scores for original orientation 
-        alignment_fwd, alignScore_fwd = global_align_motifs(cleaned_motif1, cleaned_motif2)
+        alignment_fwd, alignScore_fwd = local_align_motifs(cleaned_motif1, cleaned_motif2)
         r_fwd = calcCorrelation(alignment_fwd[0], alignment_fwd[1])
         # calc scores for one motif reversed
-        alignment_rev, alignScore_rev = global_align_motifs(cleaned_motif1, revCompMotif(cleaned_motif2))
+        alignment_rev, alignScore_rev = local_align_motifs(cleaned_motif1, revCompMotif(cleaned_motif2))
         r_rev = calcCorrelation(alignment_rev[0], alignment_rev[1])
         # select largest score
         r = np.max([r_fwd, r_rev])
