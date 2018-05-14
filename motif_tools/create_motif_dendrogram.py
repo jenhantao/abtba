@@ -77,7 +77,6 @@ if __name__ == '__main__':
         plt.figure(figsize=(width, height))
         dissimilarity = 1-np.abs(correlations)
         coords = list(combinations(range(len(motif_names)),2))
-        # remove negative distances
         dissimilarity_as_pdist = [dissimilarity[x[0]][x[1]] for x in coords]
 
         Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist, 
