@@ -141,8 +141,6 @@ def thresholdClusterMotifs(scoreArray,
     nameRoot_count_dict = {}
     motifName_family_dict = dict(zip(metadata_frame['Name'].values, 
         metadata_frame['Family'].values))
-    motifName_class_dict = dict(zip(metadata_frame['Name'].values, 
-        metadata_frame['Class'].values))
     motifName_gene_dict = dict(zip(metadata_frame['Name'].values, 
         metadata_frame['Gene'].values))
 
@@ -209,18 +207,14 @@ def thresholdClusterMotifs(scoreArray,
         # create table from merged indices
         mergeNames.sort()
 
-        toMerge_name = toMerge[0][0]
-        if toMerge_name in motifName_class_dict:
-            consensusClass= motifName_class_dict[toMerge_name]
-        else:
-            consensusClass= 'unknown'
 
-        if toMerge_name in motifName_family_dict:
-            consensusFamily = motifName_family_dict[toMerge_name]
-            consensusNameRoot = consensusFamily
-        else:
-            consensusFamily = 'unknown'
-            consensusNameRoot = consensusClass
+        consensusFamily = 'unknown'
+        for tm in toMerge:
+            tm_name = tm[0]
+            if tm_name in motifName_family_dict:
+                consensusFamily = motifName_family_dict[tm_name]
+                break
+        consensusNameRoot = consensusFamily
 
         
         if consensusNameRoot in nameRoot_count_dict:
