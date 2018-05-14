@@ -19,6 +19,8 @@ import shutil
 import inspect
 import Bio
 import pandas as pd
+import scipy.cluster
+from itertools import combinations
 
 def mergeMotifs(motifArray):
     '''
@@ -29,93 +31,41 @@ def mergeMotifs(motifArray):
     if len(motifArray) < 2:
         return None
 
-    #find the longest motif, move it to the front
-    maxLength = -1
-    maxLengthMotif = None
-    for motif in motifArray:
-        if motif[1].shape[0] > maxLength:
-            maxLength = motif[1].shape[0]
-            maxLengthMotif = motif
-    motifArray.remove(maxLengthMotif)
-    motifArray.insert(0, maxLengthMotif)
-
-    oriented_alignment_array = [] # array of aligned motifs in best orientation
-    maxLengthAlignment = None
-    maxAlignmentLength = -1 
-
     # determine the orientation of each motif relative to the longest motif
+    mergedMotifMatrix = motifArray[0][1]
     for motif in motifArray[1:]:
         # align motifs in both orientations
-        alignment_fwd, alignScore_fwd = global_align_motifs(maxLengthMotif, 
+        alignment_fwd, alignScore_fwd = local_align_motifs(('merged_name', mergedMotifMatrix, 'merged_id'), 
                                                             motif)
         rev_comp_motif = revCompMotif(motif)
-        alignment_rev, alignScore_rev = global_align_motifs(maxLengthMotif, 
+        alignment_rev, alignScore_rev = local_align_motifs(('merged_name', mergedMotifMatrix, 'merged_id'), 
                                                             rev_comp_motif)
 
-        longest_motif_alignment_fwd = alignment_fwd[0]
-        longest_motif_alignment_rev = alignment_rev[0]
+        mergedMotif_alignment_fwd = alignment_fwd[0]
+        mergedMotif_alignment_rev = alignment_rev[0]
         compared_motif_alignment_fwd = alignment_fwd[1]
         compared_motif_alignment_rev = alignment_rev[1]
 
         # calc scores for aligned motifs in both orientations
-        pearson_fwd = calcCorrelation(longest_motif_alignment_fwd, 
+        pearson_fwd = calcCorrelation(mergedMotif_alignment_fwd, 
                                       compared_motif_alignment_fwd)
-        pearson_rev = calcCorrelation(longest_motif_alignment_rev, 
+        pearson_rev = calcCorrelation(mergedMotif_alignment_rev, 
                                       compared_motif_alignment_rev)
         if pearson_rev > pearson_fwd:
-            oriented_alignment_array.append(compared_motif_alignment_rev)
+            mergedMotifMatrix = mergedMotif_alignment_rev + compared_motif_alignment_rev
         else:
-            oriented_alignment_array.append(compared_motif_alignment_fwd)
+            mergedMotifMatrix = mergedMotif_alignment_fwd + compared_motif_alignment_fwd
+        mergedMotifMatrix = mergedMotifMatrix/2.0
+        mergedMotifMatrix = cleanMatrix(mergedMotifMatrix)
 
-        # store the longest alignment of the longest motif
-        if len(longest_motif_alignment_fwd) > maxAlignmentLength:
-            maxLengthAlignment = longest_motif_alignment_fwd
-            maxAlignmentLength = len(longest_motif_alignment_fwd)
-        if len(longest_motif_alignment_rev) > maxAlignmentLength:
-            maxLengthAlignment = longest_motif_alignment_rev
-            maxAlignmentLength = len(longest_motif_alignment_rev)
-
-    # merge motifs together
-    merged_motif = maxLengthAlignment.copy()
-    for i in range(len(oriented_alignment_array)):
-        oriented_alignment = oriented_alignment_array[i]
-        if len(oriented_alignment) == len(maxLengthAlignment):
-            merged_motif = merged_motif + oriented_alignment
-        else:
-            oriented_alignment_left = oriented_alignment_array[i].copy()
-            # pad from the left
-            while len(oriented_alignment) < len(maxLengthAlignment):
-                oriented_alignment_left = np.concatentate([[[0.25,0.25,0.25,0.25]],
-                                                      oriented_alignment_left
-                                                     ], axis=0)
-            # pad from the right
-            oriented_alignment_right = oriented_alignment_array[i].copy()
-            while len(oriented_alignment) < len(maxLengthAlignment):
-                oriented_alignment_right = np.concatentate([oriented_alignment_right,
-                                                            [[0.25,0.25,0.25,0.25]]
-                                                           ], axis=0)
-            pearson_left = calcCorrelation(maxLengthAlignment,
-                                           oriented_alignment_left) 
-            pearson_right = calcCorrelation(maxLengthAlignment,
-                                           oriented_alignment_right) 
-            if pearson_left > pearson_right:
-                merged_motif = merged_motif + oriented_alignment_left
-            else:
-                merged_motif = merged_motif + oriented_alignment_right
-    merged_motif = merged_motif / (len(oriented_alignment_array) + 1.0)
-    merged_motif = cleanMatrix(merged_motif)
-
-    oriented_alignment_array.insert(0, maxLengthAlignment)
     names = []    
-    aligned_motif_array = []
+    aligned_motif_array = motifArray
     for i in range(len(motifArray)):
         mn = motifArray[i][0]
-        m_id = motifArray[i][2]
         names.append(mn)
-        aligned_motif_array.append((mn, cleanMatrix(oriented_alignment_array[i]), m_id))
     name = "_".join(sorted(list(set(names)))[:10])+"_merged"
 
-    consensus = (name, merged_motif)
+    consensus = (name, mergedMotifMatrix, name)
     aligned_motif_array.insert(0,consensus)
 
     return aligned_motif_array
@@ -161,24 +111,24 @@ def thresholdClusterMotifs(scoreArray,
         listFile.write('<table><thead><tr><th>Motif Number</th><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n')
     
     # based on table, compute which motifs to merge
-    for i in range(scoreArray.shape[0] - 1):
-        for j in range(i + 1, scoreArray.shape[0]):
-            if scoreArray[i][j] > threshold:
-                mergeSet = None
-                if i in mergeDict:
-                    mergeSet = mergeDict[i]
-                elif j in mergeDict:
-                    mergeSet = mergeDict[j]    
-                else:
-                    mergeSet = set()
-                mergeSet.add(i)
-                mergeSet.add(j)
-                
-                mergeDict[i] = mergeSet
-                mergeDict[j] = mergeSet
-    toMergeSets = set(frozenset(i) for i in mergeDict.values())
-    unmergedMotifIndices = set(range(scoreArray.shape[0]))
-    
+    dissimilarity = 1-np.abs(scoreArray)
+    coords = list(combinations(range(len(motifNames)),2))
+    dissimilarity_as_pdist = [dissimilarity[x[0]][x[1]] for x in coords]
+
+    Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist, 
+        method = 'complete')
+
+    tree_cut = scipy.cluster.hierarchy.cut_tree(Z, height=0.1).flatten()
+    cluster_set_dict = {}
+    for i in range(len(tree_cut)):
+        cluster = tree_cut[i]
+        if cluster in cluster_set_dict:
+            cluster_set_dict[cluster].add(i)
+        else:
+            cluster_set_dict[cluster] = set([i])
+    toMergeSets = [x for x in cluster_set_dict.values() if len(x) > 1]
+
+    unmergedMotifIndices = set(range(scoreArray.shape[0])) # initialize unmerged indices
     seenNames = set()
     motif_count = 0
     for ms in toMergeSets:
@@ -206,7 +156,6 @@ def thresholdClusterMotifs(scoreArray,
 
         # create table from merged indices
         mergeNames.sort()
-
 
         consensusFamily = 'unknown'
         for tm in toMerge:
@@ -323,7 +272,7 @@ def thresholdClusterMotifs(scoreArray,
                 listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
 
             motifListFile.write(consensusName + '\t' + consensus_id_string + '\n')
-            mergedMetadataFile.write('\t'.join([consensusName, gene_string, consensusFamily, consensusClass])+'\n')
+            mergedMetadataFile.write('\t'.join([consensusName, gene_string, consensusFamily])+'\n')
 
     # add unmerged motifs to list file
 
@@ -336,17 +285,14 @@ def thresholdClusterMotifs(scoreArray,
         motif_count+=1
         motif_name = allMotifs[ind][0]
         geneName = 'unknown'
-        motif_family = 'unknown'
-        motif_class = 'unknown'
+        family = 'unknown'
         if motif_name in motifName_gene_dict:
             geneName = motifName_gene_dict[motif_name]
         if motif_name in motifName_family_dict:
             family = motifName_family_dict[motif_name]
-        if motif_name in motifName_class_dict:
-            motif_class = motifName_class_dict[motif_name]
 
         motifListFile.write(allMotifs[ind][0] + '\t' + allMotifs[ind][0] +'\n' )
-        mergedMetadataFile.write('\t'.join([motif_name, geneName, family, motif_class])+ '\n')
+        mergedMetadataFile.write('\t'.join([motif_name, geneName, family])+ '\n')
         if create_html:
             listFileLines.append((allMotifs[ind][0], "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+allMotifs[ind][0]+".html'>" +allMotifs[ind][0]+"</a></td><td class='nameCol'>"+allMotifs[ind][0]+"</td><td><img src = 'html_files/" + allMotifs[ind][0]+".motif.svg'></td><td><a href='html_files/"+allMotifs[ind][0]+".motif' target='_blank'>Download</a></td></tr>\n"))
         counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
