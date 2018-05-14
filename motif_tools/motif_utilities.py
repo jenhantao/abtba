@@ -10,8 +10,8 @@ from Bio import motifs
 # C-1  1 -1 -1
 # G-1 -1  1 -1
 # T-1 -1 -1  1
-scoringMatrix = np.array([[5.0,-5.0,-5.0,-5.0], [-5.0,5.0,-5.0,-5.0], [-5.0,-5.0,5.0,-5.0], [-5.0,-5.0,-5.0,5.0]]) # favor matches and mismatches equally
-gapPenalty = -100.0
+scoringMatrix = np.array([[1.0,-1.0,-1.0,-1.0], [-1.0,1.0,-1.0,-1.0], [-1.0,-1.0,1.0,-1.0], [-1.0,-1.0,-1.0,1.0]]) # favor matches and mismatches equally
+gapPenalty = -5.0
 
 def create_logo(motif, output_path, fmt='svg'): 
     motif.weblogo(output_path,  
@@ -85,16 +85,17 @@ def local_align_motifs(motif1, motif2):
                 j -= 1
             elif i > 0:
                 alignMatrix1.append(motif1[1][i-1])
-                alignMatrix2.append([0.25,0.25,0.25,0.25])
-                #alignMatrix2.append([0.0,0.0,0.0,0.0])
+                #alignMatrix2.append([0.25,0.25,0.25,0.25])
+                alignMatrix2.append([0.0,0.0,0.0,0.0])
                 i -= 1
             elif j > 0:
-                alignMatrix1.append([0.25,0.25,0.25,0.25])
-                #alignMatrix1.append([0.0,0.0,0.0,0.0])
+                #alignMatrix1.append([0.25,0.25,0.25,0.25])
+                alignMatrix1.append([0.0,0.0,0.0,0.0])
                 alignMatrix2.append(motif2[1][j-1])
                 j -= 1
     alignMatrix1 = np.array(alignMatrix1[::-1])
     alignMatrix2 = np.array(alignMatrix2[::-1])
+    
     return (alignMatrix1, alignMatrix2), scoreMatrix[-1][-1]
 
 # inputs: motif pwm
@@ -206,9 +207,9 @@ def global_align_motifs(motif1, motif2):
     # initialize alignment score matrix
     scoreMatrix = np.zeros((length1+1,length2+1))
     for i in range(length1+1):
-        scoreMatrix[i][0] = i * gapPenalty
+        scoreMatrix[i][0] = i * -1.0
     for j in range(length2+1):
-        scoreMatrix[0][j] = j * gapPenalty
+        scoreMatrix[0][j] = j * -1.0
     
     # populate score matrix
     for i in range(1, length1+1):
