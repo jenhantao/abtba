@@ -111,12 +111,13 @@ def thresholdClusterMotifs(scoreArray,
         listFile.write('<table><thead><tr><th>Motif Number</th><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n')
     
     # based on table, compute which motifs to merge
+    scoreArray = np.clip(scoreArray, -1, 1)
     dissimilarity = 1-np.abs(scoreArray)
     coords = list(combinations(range(len(motifNames)),2))
     dissimilarity_as_pdist = [dissimilarity[x[0]][x[1]] for x in coords]
 
     Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist, 
-        method = 'complete')
+        method = 'centroid')
 
     tree_cut = scipy.cluster.hierarchy.cut_tree(Z, height=0.1).flatten()
     cluster_set_dict = {}
@@ -147,7 +148,7 @@ def thresholdClusterMotifs(scoreArray,
             if allMotifs[ind][0] in motifName_gene_dict:
                 gene = motifName_gene_dict[allMotifs[ind][0]]
             else:
-                gene = 'unknown'
+                gene = 'Unknown'
             geneNames.append(gene)
             
         # merged motif doesn't have JASPAR id - use space to track merging instead
@@ -157,12 +158,13 @@ def thresholdClusterMotifs(scoreArray,
         # create table from merged indices
         mergeNames.sort()
 
-        consensusFamily = 'unknown'
+        consensusFamily = 'Unknown'
         for tm in toMerge:
             tm_name = tm[0]
             if tm_name in motifName_family_dict:
                 consensusFamily = motifName_family_dict[tm_name]
-                break
+                if not consensusFamily == 'Unknown':
+                    break
         consensusNameRoot = consensusFamily
 
         
@@ -284,8 +286,8 @@ def thresholdClusterMotifs(scoreArray,
     for ind in unmergedMotifIndices_sorted:
         motif_count+=1
         motif_name = allMotifs[ind][0]
-        geneName = 'unknown'
-        family = 'unknown'
+        geneName = 'Unknown'
+        family = 'Unknown'
         if motif_name in motifName_gene_dict:
             geneName = motifName_gene_dict[motif_name]
         if motif_name in motifName_family_dict:

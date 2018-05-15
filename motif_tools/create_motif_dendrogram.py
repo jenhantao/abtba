@@ -75,13 +75,13 @@ if __name__ == '__main__':
         width = np.max([width, 4])
         height = np.max([height, 4])
         plt.figure(figsize=(width, height))
+        correlations = np.clip(correlations, -1, 1)
         dissimilarity = 1-np.abs(correlations)
         coords = list(combinations(range(len(motif_names)),2))
         dissimilarity_as_pdist = [dissimilarity[x[0]][x[1]] for x in coords]
 
-        Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist, 
-            method = 'complete')
-        print([motif_names[x[0][0]] + '_' + motif_names[x[0][1]] + '_'+ str(x[1]) for x in zip (coords, Z)])
+        Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist,
+            method='centroid')
         
         if plot_logos:
             gs = matplotlib.gridspec.GridSpec(2, len(motif_names), wspace=0.0, hspace=0.0)
@@ -91,10 +91,10 @@ if __name__ == '__main__':
         sns.despine()
         
         scipy.cluster.hierarchy.dendrogram(Z,
-                                           color_threshold=0.1,
+                                           color_threshold=0.2,
                                            ax=dendrogram_axis,
                                            labels=motif_names,)
-        plt.axhline(0.1, linestyle='--', color='grey')
+        plt.axhline(0.2, linestyle='--', color='grey')
         plt.ylabel('Correlation Difference')
         
         sorted_motif_names = [x.get_text() for x in  dendrogram_axis.get_xticklabels()]
