@@ -175,7 +175,7 @@ def thresholdClusterMotifs(scoreArray,
 
         # get the TF family of the first motif
         consensusName = consensusNameRoot+ '_' + str(nameRoot_count_dict[consensusFamily]) + '_merged'
-        consensusName = consensusName.replace('/','')
+        consensusName = consensusName.replace('/','').replace(' ', '_').replace('(','_').replace(')', '_').replace('__', '_')
         
         if not consensusName in seenNames:
             # don't add repeats

@@ -34,7 +34,7 @@ IRF1	IRF1	Interferon-regulatory_factors	JASPAR
 IRF2	IRF2	Interferon-regulatory_factors	JASPAR
 MEF2A	MEF2A	Regulators_of_differentiation	JASPAR
 MZF1	MZF1	More_than_3_adjacent_zinc_finger_factors	JASPAR
-MZF1(var.2)	MZF1	More_than_3_adjacent_zinc_finger_factors	JASPAR
+MZF1_var2	MZF1	More_than_3_adjacent_zinc_finger_factors	JASPAR
 MAX	MAX	bHLH-ZIP_factors	JASPAR
 MAX::MYC	MYC	bHLH-ZIP_factors	JASPAR
 NFYA	NFYA	Heteromeric_CCAAT-binding_factors	JASPAR
@@ -47,7 +47,7 @@ PAX4	PAX4	Paired_plus_homeo_domain	JASPAR
 Pax6	Pax6	Homeo	JASPAR
 PBX1	PBX1	TALE-type_homeo_domain_factors	JASPAR
 RORA	RORA	Thyroid_hormone_receptor-related_factors_(NR1)	JASPAR
-RORA(var.2)	RORA	Thyroid_hormone_receptor-related_factors_(NR1)	JASPAR
+RORA_var2	RORA	Thyroid_hormone_receptor-related_factors_(NR1)	JASPAR
 RREB1	RREB1	Factors_with_multiple_dispersed_zinc_fingers	JASPAR
 RXRA::VDR	VDR	Thyroid_hormone_receptor-related_factors_(NR1)	JASPAR
 Prrx2	Prrx2	Paired-related_HD_factors	JASPAR
@@ -152,10 +152,10 @@ HNF4G	HNF4G	RXR-related_receptors_(NR2)	JASPAR
 Hoxc9	Hoxc9	HOX-related_factors	JASPAR
 HSF1	HSF1	HSF_factors	JASPAR
 JUN	JUN	Jun-related_factors	JASPAR
-JUN(var.2)	JUN	Jun-related_factors	JASPAR
+JUN_var2	JUN	Jun-related_factors	JASPAR
 JUNB	JUNB	Jun-related_factors	JASPAR
 JUND	JUND	Jun-related_factors	JASPAR
-JUND(var.2)	JUND	Jun-related_factors	JASPAR
+JUND_var2	JUND	Jun-related_factors	JASPAR
 Klf1	Klf1	Three-zinc_finger_Kruppel-related_factors	JASPAR
 Nr1h3::Rxra	Rxra	RXR-related_receptors_(NR2)	JASPAR
 MAFF	MAFF	Maf-related_factors	JASPAR
@@ -166,7 +166,7 @@ Myod1	Myod1	MyoD_/_ASC-related_factors	JASPAR
 Myog	Myog	MyoD_/_ASC-related_factors	JASPAR
 MAF::NFE2	NFE2	Jun-related_factors	JASPAR
 NFYB	NFYB	Heteromeric_CCAAT-binding_factors	JASPAR
-Nkx2-5(var.2)	Nkx2-5	NK-related_factors	JASPAR
+Nkx2-5_var2	Nkx2-5	NK-related_factors	JASPAR
 NR2C2	NR2C2	RXR-related_receptors_(NR2)	JASPAR
 Nr5a2	Nr5a2	FTZ-F1-related_receptors_(NR5)	JASPAR
 NRF1	NRF1	Jun-related_factors	JASPAR
@@ -257,7 +257,7 @@ IRF8	IRF8	Interferon-regulatory_factors	JASPAR
 IRF9	IRF9	Interferon-regulatory_factors	JASPAR
 ISX	ISX	Paired-related_HD_factors	JASPAR
 JDP2	JDP2	Fos-related_factors	JASPAR
-JDP2(var.2)	JDP2	Fos-related_factors	JASPAR
+JDP2~var2	JDP2	Fos-related_factors	JASPAR
 KLF13	KLF13	Three-zinc_finger_Kruppel-related_factors	JASPAR
 LHX6	LHX6	HD-LIM_factors	JASPAR
 MAFG	MAFG	Maf-related_factors	JASPAR
@@ -329,9 +329,9 @@ VENTX	VENTX	NK-related_factors	JASPAR
 VSX1	VSX1	Paired-related_HD_factors	JASPAR
 VSX2	VSX2	Paired-related_HD_factors	JASPAR
 NR3C2	NR3C2	Steroid_hormone_receptors_(NR3)	JASPAR
-Nr2f6(var.2)	Nr2f6	RXR-related_receptors_(NR2)	JASPAR
+Nr2f6_var2	Nr2f6	RXR-related_receptors_(NR2)	JASPAR
 RARA	RARA	Thyroid_hormone_receptor-related_factors_(NR1)	JASPAR
-RARA(var.2)	RARA	Thyroid_hormone_receptor-related_factors_(NR1)	JASPAR
+RARA_var2	RARA	Thyroid_hormone_receptor-related_factors_(NR1)	JASPAR
 BCL6B	BCL6B	More_than_3_adjacent_zinc_finger_factors	JASPAR
 EGR3	EGR3	Three-zinc_finger_Kruppel-related_factors	JASPAR
 EGR4	EGR4	Three-zinc_finger_Kruppel-related_factors	JASPAR
