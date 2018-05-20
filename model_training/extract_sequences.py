@@ -36,19 +36,11 @@ def extract_sequence(coordinates, genome, out_file_path):
     outputs: [seq1, seq2, ...seqN]
     '''
     script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    if genome == 'mm10':
-        genome_path = script_path + '/mm10/'
-        chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
-                        'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
-                        'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
-                        'chr16', 'chr17', 'chr18', 'chr19', 'chrX']
-    elif genome == 'hg38':
-        genome_path = script_path + '/hg38/'
-        chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
-                        'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
-                        'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
-                        'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 
-                        'chr21', 'chr22', 'chrX']
+
+    genome_path = script_path + '/' + genome + '/'
+    chromosomes = [x.split('.')[0] for x in os.listdir(genome_path)]
+    chromosomes = [chrom for chrom in chromosomes if not 'chrUn' in chrom and not 'random' in chrom and not 'alt' in chrom]
+
     chrom_size_dict = {}
     chrom_seq_dict = {}
 

@@ -35,10 +35,10 @@ def read_target_positions(file_path, filter_chromosomes):
         chrom = tokens[0]
         start = int(tokens[1])
         end = int(tokens[2])
-        name = tokens[3]
+        #name = tokens[3]
         if not chrom in filter_chromosomes:
             if not 'chrUn' in chrom and not 'random' in chrom and not 'alt' in chrom:
-                positions.append([chrom, start, end, name])
+                positions.append([chrom, start, end])
     return positions 
 
 def calc_gc_content(sequence):
@@ -57,6 +57,7 @@ def get_random_background(target_positions,
                           num_bins = 10,
                           n_threshold = 0.5,
                           genome = 'mm10',
+                          filter_chromosomes = ['chrM', 'chrY']
                           ):
     """
     target_sequences: 2D numpy array, list of genomic coordinates for target 
@@ -73,19 +74,13 @@ def get_random_background(target_positions,
     # {chr:[]}, value is chromosome length boolean array
     # largest chromosome has 200 million bps 
     script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    if genome == 'mm10':
-        genome_path = script_path + '/mm10/'
-        chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
-                        'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
-                        'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
-                        'chr16', 'chr17', 'chr18', 'chr19', 'chrX']
-    elif genome == 'hg38':
-        genome_path = script_path + '/hg38/'
-        chromosomes = ['chr1' , 'chr2' , 'chr3' , 'chr4' , 'chr5' , 
-                        'chr6' , 'chr7' , 'chr8' , 'chr9' , 'chr10', 
-                        'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 
-                        'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 
-                        'chr21', 'chr22', 'chrX']
+    genome_path = script_path + '/' + genome + '/'
+
+    chromosomes = [x.split('.')[0] for x in os.listdir(genome_path)]
+    chromosomes = [chrom for chrom in chromosomes if not 'chrUn' in chrom and not 'random' in chrom and not 'alt' in chrom]
+    filter_chromosomes = set(filter_chromosomes)
+    chromosomes = [chrom for chrom in chromosomes if not chrom in filter_chromosomes] 
+
     chrom_size_dict = {}
     chrom_seq_dict = {}
 
@@ -292,7 +287,8 @@ if __name__ == '__main__':
                                                 size_ratio = size_ratio, 
                                                 num_bins = num_bins, 
                                                 n_threshold = n_threshold,
-                                                genome = genome
+                                                genome = genome,
+                                                filter_chromosomes=filter_chromosomes
                                                 )
     write_background_positions(background_positions, output_path) 
 
