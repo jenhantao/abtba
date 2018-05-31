@@ -85,12 +85,12 @@ if __name__ == '__main__':
     # concatenate data frames
     combined_frame = pd.concat([positive_score_frame, negative_score_frame])
 
-    feature_out_path = output_path +  '/'+positive_name_root+'_combined_features.tsv'
+    feature_out_path = output_path +  '/combined_features.tsv'
     combined_frame.to_csv(feature_out_path, sep='\t')
     
     # create labels
     print('creating labels')
-    label_path = output_path + '/' + positive_name_root + '_labels.txt'
+    label_path = output_path + '/labels.txt'
     label_file = open(label_path, 'w')
     for ind in positive_score_frame.index.values:
         label_file.write(ind + '\t1\n')
