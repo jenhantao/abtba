@@ -81,7 +81,7 @@ if __name__ == '__main__':
         dissimilarity_as_pdist = [dissimilarity[x[0]][x[1]] for x in coords]
 
         Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist,
-            method='centroid')
+            method='single')
         
         if plot_logos:
             gs = matplotlib.gridspec.GridSpec(2, len(motif_names), wspace=0.0, hspace=0.0)
@@ -114,5 +114,5 @@ if __name__ == '__main__':
                 current_axis.set_xticks([])
                 current_axis.set_yticks([])
                 current_axis.set_xlabel(mn, rotation=90)
-    plt.tight_layout()
+    #plt.tight_layout()
     plt.savefig(output_path + '/motif_clustering_dendrogram.pdf', bbox_inches='tight')
