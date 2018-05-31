@@ -13,45 +13,9 @@ import pandas as pd
 from sklearn import preprocessing
 import sklearn
 from sklearn import linear_model
-from sklearn import cross_validation
+from sklearn.model_selection import train_test_split
 
 ### functions ###
-# split data into GC content matched training and test data
-def get_split(features, labels, test_size):
-    '''
-    feature: 2D array (samples x features)
-    labels: 1D boolean array (samples x)
-    test_size: fraction of data to test on
-    '''
-    
-    ### match GC content of samples labelled True with those labelled False by thowing out False samples
-    # retrieve sequences using index of labels
-    index_label_tuples = tuple(zip(labels.index.values, labels.values))
-    
-    true_ids = [x[0] for x in index_label_tuples if x[1]]
-    
-    false_ids = [x[0] for x in index_label_tuples if not x[1]]
-       
-    filtered_ids = true_ids + false_ids
-    filtered_features = features[features.index.isin(filtered_ids)]
-    filtered_labels = labels[labels.index.isin(filtered_ids)]
-
-    if test_size <= 0.5:
-        training_indices, test_indices = next(iter(
-                sklearn.cross_validation.StratifiedKFold(filtered_labels, int(1/test_size), shuffle=True)))
-    else:
-        test_indices, training_indices = next(
-            iter(sklearn.cross_validation.StratifiedKFold(filtered_labels, int(1/(1-test_size)), shuffle=True)))
-    training_ids = [filtered_ids[i] for i in training_indices]
-    test_ids = [filtered_ids[i] for i in test_indices]
-    
-    training_features = filtered_features[filtered_features.index.isin(training_ids)]
-    test_features = filtered_features[filtered_features.index.isin(test_ids)]
-    training_labels = filtered_labels[filtered_labels.index.isin(training_ids)]
-    test_labels = filtered_labels[filtered_labels.index.isin(test_ids)]
-    
-    return training_features, test_features, training_labels, test_labels
-    
 def train_classifier(features,
                      labels,
                      numIterations=5,
@@ -68,7 +32,7 @@ def train_classifier(features,
         print('training iteration:', i+1)
 
         # split data into training and test sets
-        training_features, test_features, training_labels, test_labels = get_split(
+        training_features, test_features, training_labels, test_labels = train_test_split(
             features, labels, test_size = test_size)
 
         # standardize training features
@@ -175,7 +139,7 @@ if __name__ == '__main__':
     parser.add_argument("-test_fraction", 
         help="fraction of data to use for testing classifier",
         type=float,
-        default=0.5)
+        default=0.8)
 
     # parse arguments
     args = parser.parse_args()
