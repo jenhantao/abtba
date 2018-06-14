@@ -7,7 +7,6 @@
 
 
 ### OPTIONS AND ARGUMENTS ###
-# -l map files that are on the TSCC already
 # -t generate qsub scripts but do not execute them
 ### 
 
@@ -67,7 +66,7 @@ echo "$script_directory/extract_sequences.py $bed_file $genome $seq_file">> $out
 ## generate background coordinates
 echo "$script_directory/generate_background_coordinates.py $bed_file $genome $output_dir/">> $output_dir/run.sh
 
-# rename background file
+# calculate motif scores
 echo "$script_directory/create_features.py -num_procs 12 $seq_file $output_dir/background.fasta $output_dir $motif_directory/*">> $output_dir/run.sh
 
 # calculate motif scores for peaks and background
