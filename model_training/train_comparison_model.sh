@@ -70,7 +70,7 @@ echo "$script_directory/extract_sequences.py $bed_file_1 $genome $seq_file_1">> 
 echo "$script_directory/extract_sequences.py $bed_file_2 $genome $seq_file_2">> $output_dir/run.sh
 #
 
-echo "$script_directory/create_features.py -num_procs 12 $seq_file $output_dir/background.fasta $output_dir $motif_directory/*">> $output_dir/run.sh
+echo "$script_directory/create_features.py -num_procs 12 $seq_file_1 $seq_file_2  $output_dir $motif_directory/*">> $output_dir/run.sh
 
 # calculate motif scores for peaks and background
 combined_features=$output_dir/combined_features.tsv
