@@ -207,7 +207,7 @@ def thresholdClusterMotifs(scoreArray,
 
                 # create merged motif page
                 mergedMotifFile = open(outputPath+"/html_files/"+consensusName+".html", "w")
-                mergedMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
+                mergedMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{transform:rotate(270deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
                 mergedMotifFile.write("<h1>"+consensusName+"</h2>\n")
                 # show logo
                 mergedMotifFile.write("<h2>Logo</h2>\n")
@@ -258,7 +258,7 @@ def thresholdClusterMotifs(scoreArray,
                 mergedMotifFile.write("<br><br><br><br>\n")
                 mergedMotifFile.write("<table class='heat-map'><thead><tr><th></th>")
                 for ri in relatedIndices:
-                    mergedMotifFile.write("<th><span class='rotate'><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
+                    mergedMotifFile.write("<th class='rotate'><span><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
                 mergedMotifFile.write("</tr></thead>\n<tbody>")
                 for i in range(len(relatedIndices)):
                     mergedMotifFile.write("<tr class='stats-row'><th class='stats-title'><a href='"+allMotifs[relatedIndices[i]][0]+".html'>"+allMotifs[relatedIndices[i]][0]+"</a></th>")
@@ -357,7 +357,7 @@ def thresholdClusterMotifs(scoreArray,
             indMotifFile.write("<br><br><br><br>\n")
             indMotifFile.write("<table class='heat-map'><thead><tr><th></th>")
             for ri in relatedIndices:
-                indMotifFile.write("<th><span class='rotate'><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
+                indMotifFile.write("<th class='rotate'><span'><a href='"+allMotifs[ri][0]+".html'>"+allMotifs[ri][0]+"</a></span></th>")
             indMotifFile.write("</tr></thead>\n<tbody>")
             for i in range(len(relatedIndices)):
                 indMotifFile.write("<tr class='stats-row'><th class='stats-title'><a href='"+allMotifs[relatedIndices[i]][0]+".html'>"+allMotifs[relatedIndices[i]][0]+"</a></th>")
