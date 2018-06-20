@@ -99,25 +99,33 @@ def get_random_background(target_positions,
     target_chr_position_dict = {x:np.zeros(200000000) for x in chromosomes} 
     ### retrieve target sequences and calculate GC content and mean length
     target_length_count = 0
+    filtered_target_positions = []
     for pos in target_positions:
         chrom = pos[0]        
         start = int(pos[1])
         end = int(pos[2])
         # use 0 indexing of position, versus 1 indexing used in fasta
         target_chr_position_dict[chrom][start-1:end] = 1         
-        seq = chrom_seq_dict[chrom][start:(end)]
-        gc_content = calc_gc_content(seq)
-
-        pos.append(seq)
-        pos.append(gc_content)
-        target_length_count += len(seq)
+        if chrom in chrom_seq_dict:
+            seq = chrom_seq_dict[chrom][start:(end)]
+            if len(seq) > 0:
+                gc_content = calc_gc_content(seq)
+                pos.append(seq)
+                pos.append(gc_content)
+                filtered_target_positions.append(pos)
+                target_length_count += len(seq)
+            else:
+                print(chrom, start, end, 'not found')
+        else:
+            print(chrom, start, end, 'not found')
+            
 
     # average length of target sequences
-    mean_target_length = target_length_count/len(target_positions)     
+    mean_target_length = target_length_count/len(filtered_target_positions)     
     mean_target_length = int(np.floor(mean_target_length))
 
     # sort target_positions by gc_content and bin according to GC content
-    sorted_target_positions = sorted(target_positions, key=lambda x:x[-1])
+    sorted_target_positions = sorted(filtered_target_positions, key=lambda x:x[-1])
     sorted_target_positions = np.array(sorted_target_positions)
 
     target_position_bins = np.array_split(sorted_target_positions, num_bins)
@@ -167,9 +175,10 @@ def get_random_positions_with_gc(target_positions,
     target_length_count = 0
     for pos in target_positions:
         seq = pos[-2]
-        target_gc_count += seq.count('G')
-        target_gc_count += seq.count('C')
-        target_length_count += len(seq)
+        if len(seq) >0:
+            target_gc_count += seq.count('G')
+            target_gc_count += seq.count('C')
+            target_length_count += len(seq)
     target_gc_content = (target_gc_count + 0.1)/(target_length_count+0.1) # GC content of target sequences
     
     ### select random genomic loci such that they do no overlap target sequences
@@ -204,6 +213,8 @@ def get_random_positions_with_gc(target_positions,
                         selectedSequence = True
                         numSelected+=1
                         candidate_positions.append([randChrom, randStart, randEnd, randSeq])
+            if counter > 10000:
+                break
     # calcuate GC content of background samples
     background_gc_count = 0
     background_length = 0
