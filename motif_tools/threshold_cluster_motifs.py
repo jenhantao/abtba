@@ -122,7 +122,7 @@ def thresholdClusterMotifs(scoreArray,
     Z=scipy.cluster.hierarchy.linkage(dissimilarity_as_pdist, 
         method = 'complete')
 
-    tree_cut = scipy.cluster.hierarchy.cut_tree(Z, height=0.1).flatten()
+    tree_cut = scipy.cluster.hierarchy.cut_tree(Z, height=1-threshold).flatten()
     cluster_set_dict = {}
     for i in range(len(tree_cut)):
         cluster = tree_cut[i]
