@@ -216,7 +216,7 @@ def thresholdClusterMotifs(scoreArray,
                 mergedMotifFile.write("<a href='../allScores.html'>Score Matrix</a>\n")
                 # show logo
                 mergedMotifFile.write("<h2>Logo</h2>\n")
-                mergedMotifFile.write("<img width='500px' src = '" + consensusName +".motif.svg'>\n")
+                mergedMotifFile.write("<img width='500px' src = './" + consensusName +".motif.svg'>\n")
                 # show pwm
                 mergedMotifFile.write("<h2>Position Weight Matrix</h2>\n")
                 mergedMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
@@ -344,7 +344,7 @@ def thresholdClusterMotifs(scoreArray,
             indMotifFile.write("<a href='../allScores.html'>Score Matrix</a>\n")
             # show logo
             indMotifFile.write("<h2>Logo</h2>\n")
-            indMotifFile.write("<img src = '" + allMotifs[ind][0]+".motif.svg'>\n")
+            indMotifFile.write("<img src = './" + allMotifs[ind][0]+".motif.svg'>\n")
             # show pwm
             indMotifFile.write("<h2>Position Weight Matrix</h2>\n")
             indMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
