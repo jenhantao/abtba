@@ -251,9 +251,9 @@ def thresholdClusterMotifs(scoreArray,
                 mergedMotifFile.write("</tbody></table>\n")
                 # find related motifs
                 mergedMotifFile.write("<h2>Related Motifs</h2>\n")
-                relatedScores = scoreArray[list(ms)[0]]
-                rankings = sorted(range(len(relatedScores)), key=lambda x: relatedScores[x])
-                start = np.min([len(ms), len(relatedScores)])
+                relatedScores = scoreArray[sorted(ms)[0]]
+                rankings = sorted(range(len(relatedScores)), key=lambda x: relatedScores[x], reverse=True)
+                start = 0
                 relatedIndices = rankings[start: np.min([start+10, len(relatedScores)])]
                 mergedMotifFile.write("<br><br><br><br>\n")
                 mergedMotifFile.write("<table class='heat-map'><thead><tr><th></th>")
@@ -372,7 +372,7 @@ def thresholdClusterMotifs(scoreArray,
     # create index file
     if create_html:
         scoreFile = open(outputPath+"/allScores.html", "w")
-        scoreFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
+        scoreFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='html_files/heatMap.js'></script></head><body>\n")
         # add in some blank spaces
         scoreFile.write("<br><br><br><br>\n")
         # write score array as a matrix
