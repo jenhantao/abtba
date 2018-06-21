@@ -108,7 +108,10 @@ def thresholdClusterMotifs(scoreArray,
         listFileLines = []
         listFile = open(outputPath+"/allList.html", "w")
         listFile.write("<html><head><style>table, th, tr, td {border: 1px solid black;} .nameCol{word-wrap: break-word;max-width: 250px;} table {border-collapse:collapse;}</style></head><body>\n")
-        listFile.write('<table><thead><tr><th>Motif Number</th><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n')
+        listFile.write("<h1>TBA Merged Motifs</h1><br/>\n")
+        listFile.write("<a href='allScores.html'>Score Matrix</a><br/>\n")
+
+        listFile.write('<table><thead><tr><th>Motif Number</th><th>Motif Name</th><th>Merged Motifs</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n')
     
     # based on table, compute which motifs to merge
     scoreArray = np.clip(scoreArray, -1, 1)
@@ -209,6 +212,8 @@ def thresholdClusterMotifs(scoreArray,
                 mergedMotifFile = open(outputPath+"/html_files/"+consensusName+".html", "w")
                 mergedMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{transform:rotate(270deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
                 mergedMotifFile.write("<h1>"+consensusName+"</h2>\n")
+                mergedMotifFile.write("<a href='../allList.html'>All Motif List</a>\n")
+                mergedMotifFile.write("<a href='../allScores.html'>Score Matrix</a>\n")
                 # show logo
                 mergedMotifFile.write("<h2>Logo</h2>\n")
                 mergedMotifFile.write("<img width='500px' src = '" + consensusName +".motif.svg'>\n")
@@ -271,7 +276,8 @@ def thresholdClusterMotifs(scoreArray,
                 mergedMotifFile.write("</body></html>")
                 mergedMotifFile.close()
                 # add merged motif to list page
-                listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+consensusName+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
+                merged_motif_string = ', '.join([x[0] for x in motifs[1:]])
+                listFileLines.append((consensusName, "<tr><td>MOTIF_COUNT</td><td class='nameCol'><a href='html_files/"+consensusName+".html'>" +consensusName+"</a></td><td class='nameCol'>"+merged_motif_string+"</td><td><img src = 'html_files/" + consensusName +".motif.svg'></td><td><a href='html_files/"+consensusName+".motif' target='_blank'>Download</a></td></tr>\n"))
 
             motifListFile.write(consensusName + '\t' + consensus_id_string + '\n')
             mergedMetadataFile.write('\t'.join([consensusName, gene_string, consensusFamily])+'\n')
@@ -334,6 +340,8 @@ def thresholdClusterMotifs(scoreArray,
             indMotifFile = open(outputPath+"/html_files/"+allMotifs[ind][0]+".html", "w")
             indMotifFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='heatMap.js'></script></head><body>\n")
             indMotifFile.write("<h1>"+allMotifs[ind][0]+"</h1>\n")
+            indMotifFile.write("<a href='../allList.html'>All Motif List</a>\n")
+            indMotifFile.write("<a href='../allScores.html'>Score Matrix</a>\n")
             # show logo
             indMotifFile.write("<h2>Logo</h2>\n")
             indMotifFile.write("<img src = '" + allMotifs[ind][0]+".motif.svg'>\n")
@@ -373,6 +381,8 @@ def thresholdClusterMotifs(scoreArray,
     if create_html:
         scoreFile = open(outputPath+"/allScores.html", "w")
         scoreFile.write("<html><head><style> td {border: 1px solid black;} .rotate{-webkit-transform:rotate(-90deg); writing-mode: tb-rl;filter: flipv fliph;white-space:nowrap;display:block} table {border-collapse:collapse;}</style><script src='http://code.jquery.com/jquery-2.1.1.min.js'></script><script src='html_files/heatMap.js'></script></head><body>\n")
+        scoreFile.write("<h1>TBA Merged Motifs Similarity Scores</h1><br/>\n")
+        scoreFile.write("<a href='allList.html'>Motif List</a><br/>\n")
         # add in some blank spaces
         scoreFile.write("<br><br><br><br>\n")
         # write score array as a matrix
