@@ -51,8 +51,8 @@ def local_align_motifs(motif1, motif2):
             matchScore = scoreMatrix[i-1][j-1] + score_column_pearson(motif1[1][i-1], motif2[1][j-1])
             deleteScore = scoreMatrix[i-1][j] + gapPenalty  # penalize deletions
             insertScore = scoreMatrix[i][j-1] + gapPenalty  # penalize insertions
-            #scoreMatrix[i][j] = np.max([0,matchScore, deleteScore, insertScore])
-            scoreMatrix[i][j] = np.max([matchScore, deleteScore, insertScore])
+            scoreMatrix[i][j] = np.max([0,matchScore, deleteScore, insertScore])
+            #scoreMatrix[i][j] = np.max([matchScore, deleteScore, insertScore])
     # perform traceback
     alignMatrix1 = []
     alignMatrix2 = []
@@ -85,12 +85,12 @@ def local_align_motifs(motif1, motif2):
                 j -= 1
             elif i > 0:
                 alignMatrix1.append(motif1[1][i-1])
-                #alignMatrix2.append([0.25,0.25,0.25,0.25])
-                alignMatrix2.append([0.0,0.0,0.0,0.0])
+                alignMatrix2.append([0.25,0.25,0.25,0.25])
+                #alignMatrix2.append([0.0,0.0,0.0,0.0])
                 i -= 1
             elif j > 0:
-                #alignMatrix1.append([0.25,0.25,0.25,0.25])
-                alignMatrix1.append([0.0,0.0,0.0,0.0])
+                alignMatrix1.append([0.25,0.25,0.25,0.25])
+                #alignMatrix1.append([0.0,0.0,0.0,0.0])
                 alignMatrix2.append(motif2[1][j-1])
                 j -= 1
     alignMatrix1 = np.array(alignMatrix1[::-1])
