@@ -40,6 +40,9 @@ if __name__ == '__main__':
     parser.add_argument("-logos", action='store_true', 
         help="generate logos for dendrogram",
         default=False)
+    parser.add_argument("-threshold", action='store_true', 
+        help="threshold for coloring clades",
+        default=0.2)
 
     # parse arguments
     args = parser.parse_args()
@@ -48,6 +51,7 @@ if __name__ == '__main__':
     output_path = args.output_path
     motif_files = args.motif_files
     plot_logos = args.logos
+    threshold = args.threshold
 
     if not os.path.isdir(output_path):
         os.mkdir(output_path)
@@ -91,7 +95,7 @@ if __name__ == '__main__':
         sns.despine()
         
         scipy.cluster.hierarchy.dendrogram(Z,
-                                           color_threshold=0.2,
+                                           color_threshold=threshold,
                                            ax=dendrogram_axis,
                                            labels=motif_names,)
         plt.axhline(0.2, linestyle='--', color='grey')
