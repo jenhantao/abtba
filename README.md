@@ -17,7 +17,11 @@ TBA uses a programatically curated library of motifs to reduce the effects of mu
 Content coming soon - please refer to our BioRxiv manuscript for now.
 
 ## Usage
-Content coming soon - please refer to our BioRxiv manuscript for now.
+TBA is accessible as a series of command line (aka termina) scripts. The easiest way to train a TBA model is to use the train_model_default.sh command. train_model_default.sh will run all TBA commands necessary to train a TBA with default parameters. You can invoke the command like this:
+```bash
+train_model_default.sh mouse_pu1_peaks.bed mm10 path_to_output 
+```
+The script will create a script at path_to_output/run.sh and execute it. run.sh will have correctly formatted TBA commands for each step. Output files will be created at path_to_output
 
 ## Interpreting Results
 Content coming soon - please refer to our BioRxiv manuscript for now.
