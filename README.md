@@ -68,7 +68,7 @@ optional arguments:
 * -num_procs - number of processor cores to use
 * -pseudocount - pseudocount for calculating motif scores
 
-**usage: create_features.py <positive_sequences_path> <negative_sequences_path> <output_path> <motif_file_1> <motif_file_2>... -num_procs 4 -pseudocount 0.01
+**usage: create_features.py <positive_sequences_path> <negative_sequences_path> <output_path> <motif_file_1> <motif_file_2>... -num_procs 4 -pseudocount 0.01**
 
 Given a set of negative sequences and positive sequences (in FASTA format) as
 well as a list of motifs, calculates motif scores and sequence labels suitable
@@ -108,7 +108,7 @@ optional arguments:
 * -nThreshold - maximum fraction of background sequences that can be N
 * -filterChromosomes - chromosomes to ignore
 
-**train_classifier.py  <feature_path> <label_path> <output_path> -num_iterations 5-test_fraction 0.2
+**train_classifier.py  <feature_path> <label_path> <output_path> -num_iterations 5-test_fraction 0.2**
                           
 Given standardized motif features and matching labels trains a classifier and returns performance metrics and model coefficients
 
@@ -133,7 +133,7 @@ arguments:
 optional arguments:
 * -t - generate scripts but do not execute them
 
-**train_comparison_model.sh <bed_file_1> <bed_file_2> <genome> <output directory> **
+**train_comparison_model.sh <bed_file_1> <bed_file_2> <genome> <output directory>**
 
 Wrapper script for training a TBA model to distinguishes sequences in bed_file_1 from bed_file_2 from genomic background with default parameters
 
