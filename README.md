@@ -155,8 +155,9 @@ TBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher
 
 ## Citing TBA
 If you use TBA for research, please cite the following manuscript:
+```
 Fonseca, G. J., Tao, J. Diverse motif ensembles specify non-redundant DNA binding activities of AP-1 family members in macrophages. Preprint at: https://www.biorxiv.org/content/early/2018/06/13/345835 (2018). 
-
+```
 ## License
 ```
 MIT License
