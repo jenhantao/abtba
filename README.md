@@ -41,15 +41,15 @@ If you're ever unsure how to use a TBA command simply run the command without an
 **annotate_results_with_genes.py <result_path> <output_path>**
 
 Given a TBA coefficients file or a TBA significance file, maps the motif names to gene names
-
+```
 arguments:
 * result_path - path to a TBA coefficients or significance file
 * output_path - file path where output should be writtente_results_with_genes.py <result_path>
-
+```
 **calc_feature_significance.py <feature_path> <label_path> <output_path> -num_iterations 5 -test_fraction 0.2 -num_procs 4**
 
 Performs an in silico mutagenesis test to assign significance to each motif
-
+```
 arguments:
 * feature_path - path to a standardized feature set created by create_features.py
 * label_path - path to a fasta_file containing negative sequences to score
@@ -58,11 +58,11 @@ optional arguments:
 * -num_iterations - number of iterations to train classifier
 * -test_fraction - fraction of data to use for testing classifier
 * -num_procs - number of processors to use
-
+```
 **calculate_all_motif_scores.py <fasta_path> <output_path> <motif_file_1> <motif_file_2>... -num_procs 4 -psuedocount 0.01**
 
 given a fasta file and a list and a list of motif files, calculates all matches to each motif for each sequence
-
+```
 arguments:
 * fasta_path - path to a fasta_file containing sequences to score
 * output_path - directory where output file should be written
@@ -71,13 +71,13 @@ arguments:
 optional arguments:
 * -num_procs - number of processor cores to use
 * -pseudocount - pseudocount for calculating motif scores
-
+```
 **usage: create_features.py <positive_sequences_path> <negative_sequences_path> <output_path> <motif_file_1> <motif_file_2>... -num_procs 4 -pseudocount 0.01**
 
 Given a set of negative sequences and positive sequences (in FASTA format) as
 well as a list of motifs, calculates motif scores and sequence labels suitable
 for training classifier
-
+```
 arguments:
 * positive_sequences_path - path to a fasta_file containing positive sequences to score
 * negative_sequences_path - path to a fasta_file containing negative sequences to score
@@ -87,20 +87,20 @@ arguments:
 optional arguments:
 * -num_procs - number of processor cores to use
 * -pseudocount - pseudocount for calculating motif scores
-                     
+```                     
 **extract_sequences.py <bed_file> <genome> <output_file_path>**
 
 Extracts the genomic sequence at positions indicated by input bed file
-
+```
 arguments:
 * bed_file - path to a bed file
 * genome - build of genome to use (eg. hg38, mm10)
 * output_file_path - directory where output file should be written
-
+```
 **generate_background_coordinates.py <inputPath> <genome> <outputPath> -sizeRatio 1 -numBins 10 -nThreshold 0.1 -filterChromosomes chrM chrY**
 
 Constructs random GC matched background regions
-
+```
 arguments:
 * inputPath - path to a bed file containing a chr, start, end, and strand column
 * genome - genome from which to construct background regions
@@ -111,11 +111,11 @@ optional arguments:
 * -numBins - number of bins to use for GC normalization
 * -nThreshold - maximum fraction of background sequences that can be N
 * -filterChromosomes - chromosomes to ignore
-
+```
 **train_classifier.py  <feature_path> <label_path> <output_path> -num_iterations 5-test_fraction 0.2**
                           
 Given standardized motif features and matching labels trains a classifier and returns performance metrics and model coefficients
-
+```
 arguments:
 * feature_path - path to a standardized feature set created by create_features.py
 * label_path - path to a fasta_file containing negative sequences to score
@@ -124,11 +124,11 @@ arguments:
 optional arguments:
 * -num_iterations - number of iterations to train classifier
 * -test_fraction - fraction of data to use for testing classifier
-
+```
 **train_model_default.sh <bed_file> <genome> <output directory>**
 
 Wrapper script for training a TBA model to distinguishes sequences in input bed file from genomic background with default parameters
-
+```
 arguments:
 * bed_file - input bed file
 * genome - genome build
@@ -136,11 +136,11 @@ arguments:
 
 optional arguments:
 * -t - generate scripts but do not execute them
-
+```
 **train_comparison_model.sh <bed_file_1> <bed_file_2> <genome> <output directory>**
 
 Wrapper script for training a TBA model to distinguishes sequences in bed_file_1 from bed_file_2 from genomic background with default parameters
-
+```
 arguments:
 * bed_file_1 - input bed file
 * bed_file_2 - input bed file
@@ -149,7 +149,7 @@ arguments:
   
 optional arguments:
 * -t - generate scripts but do not execute them
-  
+```
 ## Authors
 TBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply TBA to your research problem
 
