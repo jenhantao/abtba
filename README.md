@@ -11,25 +11,32 @@ TBA is a multi-functional machine learning tool for identifying transcription fa
 TBA takes the genomic sequence of sites of interest as input and selects a set of GC-matched background loci. For each locus of interest and background locus, TBA calculates the best match to hundreds of DNA binding motifs, and quantifies the quality of the match as the motif score (aka log likelihood ratio score). To allow for degenerate motifs, all motif matches scoring over zero are considered. The motif scores are then used to train the TBA model to distinguish loci of interest from background loci. TBA scores the probability of observing binding at a sequence by computing a weighted sum over all the motif scores for that sequence. The weight for each motif is learned by iteratively modifying the weights until the model’s ability to differentiate binding sites from background loci no longer improves. The final motif weight measures whether the presence of a motif is correlated with TF binding. 
 
 ## Motif Library
-TBA uses a programatically curated library of motifs to reduce the effects of multiple collinearity, which can be problematic for machine learning models. You can view and download the motif library here: http://homer.ucsd.edu/jtao/merged_motifs/allList.html
+TBA uses a programatically curated library of motifs to reduce the effects of multiple collinearity, which can be problematic for machine learning models. You can view and download the motifs at: homer.ucsd.edu/jtao/merged_motifs/allList.html](http://homer.ucsd.edu/jtao/merged_motifs/allList.html "Motif Library")
 
 ## Installing TBA
+Content coming soon - please refer to our BioRxiv manuscript for now.
 
 ## Usage
+Content coming soon - please refer to our BioRxiv manuscript for now.
 
 ## Interpreting Results
+Content coming soon - please refer to our BioRxiv manuscript for now.
 
 ## Visualizing Results
+Content coming soon - please refer to our BioRxiv manuscript for now.
 
 ## Sample Data
+Content coming soon - please refer to our BioRxiv manuscript for now.
 
 ## Custom Parameters
+Content coming soon - please refer to our BioRxiv manuscript for now.
 
-## Contributors
-TBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner.
+## Authors
+TBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply TBA to your research problem
 
 ## Citing TBA
-If you use TBA for research
+If you use TBA for research, please cite the following manuscript:
+Fonseca, G. J., Tao, J. Diverse motif ensembles specify non-redundant DNA binding activities of AP-1 family members in macrophages. Preprint at: https://www.biorxiv.org/content/early/2018/06/13/345835 (2018). 
 
 ## License
 MIT License
