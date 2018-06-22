@@ -28,8 +28,18 @@ Content coming soon - please refer to our BioRxiv manuscript for now.
 ## Sample Data
 Content coming soon - please refer to our BioRxiv manuscript for now.
 
-## Custom Parameters
+## Example Analysis
 Content coming soon - please refer to our BioRxiv manuscript for now.
+
+## TBA Parameters
+If you're ever unsure how to use a TBA command simply run the command without any parameters and help text should be displayed.
+
+**annotate_results_with_genes.py <result_path> <output_path>**
+
+Given a TBA coefficients file or a TBA significance file, maps the motif names to gene names
+arguments:
+* result_path - path to a TBA coefficients or significance file
+* output_path - file path where output should be writtente_results_with_genes.py <result_path>
 
 ## Authors
 TBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply TBA to your research problem
