@@ -40,8 +40,9 @@ if __name__ == '__main__':
     parser.add_argument("-logos", action='store_true', 
         help="generate logos for dendrogram",
         default=False)
-    parser.add_argument("-threshold", action='store_true', 
+    parser.add_argument("-threshold", 
         help="threshold for coloring clades",
+        type=float,
         default=0.2)
 
     # parse arguments
@@ -98,7 +99,7 @@ if __name__ == '__main__':
                                            color_threshold=threshold,
                                            ax=dendrogram_axis,
                                            labels=motif_names,)
-        plt.axhline(0.2, linestyle='--', color='grey')
+        plt.axhline(threshold, linestyle='--', color='grey')
         plt.ylabel('Correlation Difference')
         
         sorted_motif_names = [x.get_text() for x in  dendrogram_axis.get_xticklabels()]
