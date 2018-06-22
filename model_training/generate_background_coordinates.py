@@ -253,10 +253,10 @@ def write_background_positions(background_positions, output_dir):
     fasta_file.close()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Constructs random GC matched'+
+    parser = argparse.ArgumentParser(description='Constructs random GC matched '+
                                      'background regions')
     parser.add_argument("inputPath",
-        help="path to a bed file containing a chr, start, end, and end column",
+        help="path to a bed file containing a chr, start, end, and strand column",
         type = str)
     parser.add_argument("genome",
         help="genome from which to construct background regions",
