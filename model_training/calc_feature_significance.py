@@ -131,10 +131,7 @@ def write_test_results(features, pvals, output_path):
     
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='given a fasta file and a list \
-                                     and a list of motif files, calculates the \
-                                     the best match to each motif for each \
-                                     sequence' )
+    parser = argparse.ArgumentParser(description='Performs an in silico mutagenesis test to assign significance to each motif' )
     parser.add_argument("feature_path",
         help="path to a standardized feature set created by create_features.py",
         type = str)

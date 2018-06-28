@@ -119,10 +119,7 @@ def write_classifier_results(results, output_path):
     all_coefficients.to_csv(output_path + '/coefficients.tsv', sep='\t')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='given a fasta file and a list \
-                                     and a list of motif files, calculates the \
-                                     the best match to each motif for each \
-                                     sequence' )
+    parser = argparse.ArgumentParser(description='Given standardized motif features and matching labels trains a classifier and returns performance metrics and model coefficients')
     parser.add_argument("feature_path",
         help="path to a standardized feature set created by create_features.py",
         type = str)

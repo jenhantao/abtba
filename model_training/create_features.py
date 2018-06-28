@@ -37,7 +37,7 @@ if __name__ == '__main__':
     parser.add_argument("-pseudocount", 
         help="pseudocount for calculating motif scores",
         type=float,
-        default=0.001)
+        default=0.01)
 
     # parse arguments
     args = parser.parse_args()

@@ -18,7 +18,7 @@ testing=false
 if [ $# -lt 3 ] 
 then
     echo "Usage: "
-    echo "train_model_default.sh <bed_file)> <genome> \
+    echo "train_model_default.sh <bed_file> <genome> \
 <output directory> [optional arguments]"
     echo "Options:
 -t    generate scripts but do not execute them
