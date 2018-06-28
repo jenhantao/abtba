@@ -14,14 +14,45 @@ TBA takes the genomic sequence of sites of interest as input and selects a set o
 TBA uses a programatically curated library of motifs to reduce the effects of multiple collinearity, which can be problematic for machine learning models. You can view and download the motifs at: homer.ucsd.edu/jtao/merged_motifs/allList.html](http://homer.ucsd.edu/jtao/merged_motifs/allList.html "Motif Library")
 
 ## Installing TBA
-Content coming soon - please refer to our BioRxiv manuscript for now.
-
+TBA can be used on most computers running a Unix operating system (eg. macOS and Ubuntu). TBA models can be trained on a data set containing ~30k genomic loci in a reasonable time frame (<1 hour) on a modern laptop (8 GB DDR3 RAM, 2.5 GHz CPU). TBA depends on several publicly available software packages as well as data resources. Please install the following software packages:
+* Required:
+  * Python 3.5.1 (Most versions of Python 3 should work)
+    * [https://www.python.org/downloads/](https://www.python.org/downloads/)
+  * sklearn 0.19.0
+    * [http://scikit-learn.org/stable/index.html](http://scikit-learn.org/stable/index.html)
+  * scipy
+    * [https://www.scipy.org](https://www.scipy.org)
+  * pandas 0.20.3
+    * [https://www.scipy.org](https://www.scipy.org)
+  * pandas 1.14.0
+    * [https://www.scipy.org](https://www.scipy.org)
+  * biopython 0.17
+    * [https://biopython.org](https://www.scipy.org)
+  * joblib 0.11
+    * [https://pythonhosted.org/joblib](https://pythonhosted.org/joblib)
+* Required packages bundled with most Python installations
+  * multiprocessing
+  * os 
+  * time
+  * inspect
+  * argparse
+  * sys
+  * pickle
+* Recommended:
+  * Homer - for processing most types of genomic data
+    * [homer.ucsd.edu](homer.ucsd.edu)
+    * Please see our [manuscript](https://www.biorxiv.org/content/early/2018/06/13/345835) for detail
+  * IDR - for identifying highly reproducible peaks in ChIP-seq and ATAC-seq data
+    * [https://github.com/nboley/idr](https://github.com/nboley/idr)
+    * Please see our [manuscript](https://www.biorxiv.org/content/early/2018/06/13/345835) for detail
+  * Seaborn - for data visualization
+    * [https://seaborn.pydata.org](https://seaborn.pydata.org)
 ## Usage
 TBA is accessible as a series of command line (aka termina) scripts. The easiest way to train a TBA model is to use the train_model_default.sh command. train_model_default.sh will run all TBA commands necessary to train a TBA with default parameters. You can invoke the command like this:
 ```bash
 train_model_default.sh mouse_pu1_peaks.bed mm10 path_to_output 
 ```
-The script will create a script at path_to_output/run.sh and execute it. run.sh will have correctly formatted TBA commands for each step. Output files will be created at path_to_output
+The script will create a script at path_to_output/run.sh and execute it. run.sh will have correctly formatted TBA commands for each step. You can modify this script file with custom parameters if needed. Output files will be created at path_to_output
 
 ## Interpreting Results
 Content coming soon - please refer to our BioRxiv manuscript for now.
