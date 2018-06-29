@@ -77,7 +77,7 @@ Given a TBA coefficients file or a TBA significance file, maps the motif names t
 ```
 arguments:
 * result_path - path to a TBA coefficients or significance file
-* output_path - file path where output should be writtente_results_with_genes.py <result_path>
+* output_path - file path where output should be written
 ```
 **calc_feature_significance.py <feature_path> <label_path> <output_path> -num_iterations 5 -test_fraction 0.2 -num_procs 4**
 
