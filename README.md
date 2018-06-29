@@ -125,11 +125,15 @@ Output file definitions are as follows:
 * **motif_scores.tsv - scores for each motif (columns) at each loci of interest
 * **motif_starts.tsv** - starting position for each motif (columns) at each loci of interest
 * **performance.tsv** - performance of the model as measured by Precision (Column 1) and the area under the Receiver Operating Characteristic curve (Column 2) for each round of cross validation (rows).
-* **coefficients.tsv** - the weight assigned to each motif (rows) for each round of cross validation (columns)
+* **coefficients.tsv** - the weight/coefficient assigned to each motif (rows) for each round of cross validation (columns)
 * **significance.tsv** - the p-value assigned to each motif (rows) for each round of cross validation (columns)
 
+To identify motifs of interest, you just need the **coefficients.tsv** and **significance.tsv** files. The remaining files may be useful for more in-depth customized analysis of your own design. The value of each weight indicates whether the presence of a motif is positively correlated (postive weights) or negatively correlated (negative weights) with your regions of interest. More important motifs tend to have weights with a larger magnitude. For example, if you trained a TBA model on the binding sites of the transcription factor CEBPa, the CEBPa motif should have a large positive weight. You can use the **significance.tsv** file to determine significant motifs. Start with a more stringent p-value threshold before considering more moderately ranked motifs; a p-value threshold of 10e-5 should be appropriate in most cases. Use of the mean value computed for each round of cross validation is recommended (average across the columns).
+
+The outputs of the TBA model (significance, and coefficients) are only reliable if TBA can accurately discriminate regions of interest from background regions. You can assess the quality of a trained TBA model by looking at the **performance.tsv** file. Models that have a mean aucROC of at least 0.85 can be considered to be reasonably reliable.
+
 ## Visualizing Results
-Content coming soon - please refer to our BioRxiv manuscript for now.
+Content coming soon - please refer to our BioRxiv manuscript for now for visualization ideas.
 
 ## Sample Data
 Content coming soon - please refer to our BioRxiv manuscript for now.
