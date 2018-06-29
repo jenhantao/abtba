@@ -97,10 +97,36 @@ train_classifier.py /path/to/output/combined_features.tsv /path/to/output/labels
 
 # Uses the likelihood ratio test to assign a significance level (p-value) to each motif
 calc_feature_significance.py /path/to/output/combined_features.tsv /path/to/output/labels.txt /path/to/output/
+
+# Annotate model output with gene names
+annotate_results_with_genes.py /path/to/output/coefficients.tsv /path/to/output/annotated_coefficients.tsv
+annotate_results_with_genes.py /path/to/output/significance.tsv /path/to/output/annotated_significance.tsv
 ```
 
 ## Interpreting Results
 The final model outputs will be located at /path/to/output/. You should see several files:
+```
+/path/to/output/
+ background.bed
+ background.fasta
+ background_motif_scores.tsv
+ background_motif_starts.tsv
+ motif_scores.tsv
+ motif_starts.tsv
+ performance.tsv
+ coefficients.tsv
+ significance.tsv
+```
+Output file definitions are as follows:
+* **background.bed** - genomic coordinates of background loci
+* **background.fasta** - genomic sequence of background loci
+* **background_motif_scores.tsv** - scores for each motif (columns) at each background loci
+* **background_motif_starts.tsv** - starting position for each motif (columns) at each background loci
+* **motif_scores.tsv - scores for each motif (columns) at each loci of interest
+* **motif_starts.tsv** - starting position for each motif (columns) at each loci of interest
+* **performance.tsv** - performance of the model as measured by Precision (Column 1) and the area under the Receiver Operating Characteristic curve (Column 2) for each round of cross validation (rows).
+* **coefficients.tsv** - the weight assigned to each motif (rows) for each round of cross validation (columns)
+* **significance.tsv** - the p-value assigned to each motif (rows) for each round of cross validation (columns)
 
 ## Visualizing Results
 Content coming soon - please refer to our BioRxiv manuscript for now.
