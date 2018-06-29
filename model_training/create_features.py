@@ -68,7 +68,7 @@ if __name__ == '__main__':
     os.system(' '.join(['python', 
                         script_path+'/calculate_motif_scores_biopython.py', 
                         negative_sequences_path, 
-                        output_path, ' '.join(motif_files),
+                        output_path, ' '.join(motif_files).replace(')', '\)').replace('(', '\('),
                         '-num_procs', str(num_processors),
                         '-pseudocount', str(pseudocount), 
                         ]))
