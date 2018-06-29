@@ -20,7 +20,7 @@ TBA can be used on most computers running a Unix operating system (eg. macOS and
 
 Download the latest release of TBA (source code) and decompress the download. Next add the "model_training" directory to your PATH environment variable. You can use the nano command to edit your .bashrc or .bash_profile file to modify how your PATH variable is set. You should add a line in your .bashrc or .bash_profile file to say
 ```
-PATH=$PATH:/path/to/tba/download/model/training; export PATH
+PATH=$PATH:/path/to/tba/model_training; export PATH
 ```
 
 TBA depends on several publicly available software packages as well as data resources. Please install the following software packages:
@@ -59,7 +59,7 @@ TBA depends on several publicly available software packages as well as data reso
     
 TBA requires the genomic sequence of loci of interest. You can download the the genomic sequence of most organisms with a sequenced genome from the [UCSC Genome Browser Gateway](http://hgdownload.soe.ucsc.edu/downloads.html#source_downloads). Create a directory at where you installed TBA with the name of the genome (eg: /path/to/tba/download/model/training/hg38 for the hg38 build of the human genome); within this new directory, download the fasta file for each chromosome separately. The file structure should look like this:
 ```
-/path/to/tba/download/model/training/hg38/
+/path/to/tba/model_training/hg38/
   chr1.fa
   chr2.fa
   chr3.fa
@@ -77,10 +77,30 @@ train_model_default.sh mouse_pu1_peaks.bed mm10 path_to_output
 
 The script will create a script at path_to_output/run.sh and execute it. run.sh will have correctly formatted TBA commands for each step. You can modify this script file with custom parameters if needed. Output files will be created at path_to_output. The run.sh script will look something like this:
 ```
+# Extract the genomic coordinates of your regions of interest.
+# You can skip this step if you already have a fasta file.
+extract_sequences.py /path/to/bed_file.bed genome  /path/to/output/fasta_file.fasta
+
+# Generate GC content matched background coordinates. 
+# You can skip this step if you already have your background coordinates
+generate_background_coordinates.py /path/to/bed_file.bed genome /path/to/output/
+
+# Calculate motif scores for each sequence. 
+# Motifs used are specified individually. 
+# Most of the time, you'll probably want to use all of the default motifs, which can be specified with a wild card "*"
+# The default motifs is a curated set of motifs formed from the JASPAR and CISBP motif databases. 
+# The default motifs are located at /path/to/tba/default_motifs
+create_features.py /path/to/output/fasta_file.fasta /path/to/output/background.fasta /path/to/output/ /path/to/tba/default_motifs/*
+
+# Train the TBA model. This step will produce the weights/rankings for each motif as well as performance metrics for the model.
+train_classifier.py /path/to/output/combined_features.tsv /path/to/output/labels.txt /path/to/output/
+
+# Uses the likelihood ratio test to assign a significance level (p-value) to each motif
+calc_feature_significance.py /path/to/output/combined_features.tsv /path/to/output/labels.txt /path/to/output/
 ```
 
 ## Interpreting Results
-Content coming soon - please refer to our BioRxiv manuscript for now.
+The final model outputs will be located at /path/to/output/. You should see several files:
 
 ## Visualizing Results
 Content coming soon - please refer to our BioRxiv manuscript for now.
