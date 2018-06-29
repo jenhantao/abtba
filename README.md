@@ -8,7 +8,7 @@ TBA is a multi-functional machine learning tool for identifying transcription fa
 * Predict the effect of genetic variation in any of the above contexts.
 
 ## TBA Algorithm
-TBA takes the genomic sequence of sites of interest as input and selects a set of GC-matched background loci. For each locus of interest and background locus, TBA calculates the best match to hundreds of DNA binding motifs, and quantifies the quality of the match as the motif score (aka log likelihood ratio score). To allow for degenerate motifs, all motif matches scoring over zero are considered. The motif scores are then used to train the TBA model to distinguish loci of interest from background loci. TBA scores the probability of observing binding at a sequence by computing a weighted sum over all the motif scores for that sequence. The weight for each motif is learned by iteratively modifying the weights until the model’s ability to differentiate binding sites from background loci no longer improves. The final motif weight measures whether the presence of a motif is correlated with TF binding. 
+TBA takes a set of loci that are of interest as input. First, the genomic sequence of each loci of interest are retrieved. Next, TBA selects a set of GC-matched background loci. For each locus of interest and background locus, TBA calculates the best match to hundreds of DNA binding motifs, and quantifies the quality of the match as the motif score (aka log likelihood ratio score). To allow for degenerate motifs, all motif matches scoring over zero are considered. The motif scores are then used to train the TBA model to distinguish loci of interest from background loci. TBA scores the probability of observing binding at a sequence by computing a weighted sum over all the motif scores for that sequence. The weight for each motif is learned by iteratively modifying the weights until the model’s ability to differentiate binding sites from background loci no longer improves. The final motif weight measures whether the presence of a motif is correlated with TF binding. 
 
 <img src="http://homer.ucsd.edu/jtao/tba/flowchart.png" width="500">
 
@@ -16,7 +16,14 @@ TBA takes the genomic sequence of sites of interest as input and selects a set o
 TBA uses a programatically curated library of motifs to reduce the effects of multiple collinearity, which can be problematic for machine learning models. You can view and download the motifs at: homer.ucsd.edu/jtao/merged_motifs/allList.html](http://homer.ucsd.edu/jtao/merged_motifs/allList.html "Motif Library")
 
 ## Installing TBA
-TBA can be used on most computers running a Unix operating system (eg. macOS and Ubuntu). TBA models can be trained on a data set containing ~30k genomic loci in a reasonable time frame (<1 hour) on a modern laptop (8 GB DDR3 RAM, 2.5 GHz CPU). TBA depends on several publicly available software packages as well as data resources. Please install the following software packages:
+TBA can be used on most computers running a Unix operating system (eg. macOS and Ubuntu). TBA models can be trained on a data set containing ~30k genomic loci in a reasonable time frame (<1 hour) on a modern laptop (8 GB DDR3 RAM, 2.5 GHz CPU). 
+
+Download the latest release of TBA (source code) and decompress the download. Next add the "model_training" directory to your PATH environment variable. You can use the nano command to edit your .bashrc or .bash_profile file to modify how your PATH variable is set. You should add a line in your .bashrc or .bash_profile file to say
+```
+PATH=$PATH:/path/to/tba/download/model/training; export PATH
+```
+
+TBA depends on several publicly available software packages as well as data resources. Please install the following software packages:
 * Required:
   * Python 3.5.1 (Most versions of Python 3 should work)
     * [https://www.python.org/downloads/](https://www.python.org/downloads/)
@@ -49,12 +56,28 @@ TBA can be used on most computers running a Unix operating system (eg. macOS and
     * Please see our [manuscript](https://www.biorxiv.org/content/early/2018/06/13/345835) for detail
   * Seaborn - for data visualization
     * [https://seaborn.pydata.org](https://seaborn.pydata.org)
+    
+TBA requires the genomic sequence of loci of interest. You can download the the genomic sequence of most organisms with a sequenced genome from the [UCSC Genome Browser Gateway](http://hgdownload.soe.ucsc.edu/downloads.html#source_downloads). Create a directory at where you installed TBA with the name of the genome (eg: /path/to/tba/download/model/training/hg38 for the hg38 build of the human genome); within this new directory, download the fasta file for each chromosome separately. The file structure should look like this:
+```
+/path/to/tba/download/model/training/hg38/
+  chr1.fa
+  chr2.fa
+  chr3.fa
+  ...
+  chrY.fa
+```
+
+If you have your own preferred way of retrieving genomic sequence, TBA can use a FASTA file containing the sequences of regions of interest instead of a BED file. However, TBA needs a genome to be installed using the directions above to select background sequences. Supposing you have your preferred way of generating a set of background sequences, TBA can use custom background sequences in FASTA format.
+
 ## Usage
 TBA is accessible as a series of command line (aka termina) scripts. The easiest way to train a TBA model is to use the train_model_default.sh command. train_model_default.sh will run all TBA commands necessary to train a TBA with default parameters. You can invoke the command like this:
 ```bash
 train_model_default.sh mouse_pu1_peaks.bed mm10 path_to_output 
 ```
-The script will create a script at path_to_output/run.sh and execute it. run.sh will have correctly formatted TBA commands for each step. You can modify this script file with custom parameters if needed. Output files will be created at path_to_output
+
+The script will create a script at path_to_output/run.sh and execute it. run.sh will have correctly formatted TBA commands for each step. You can modify this script file with custom parameters if needed. Output files will be created at path_to_output. The run.sh script will look something like this:
+```
+```
 
 ## Interpreting Results
 Content coming soon - please refer to our BioRxiv manuscript for now.
