@@ -122,7 +122,7 @@ Output file definitions are as follows:
 * **background.fasta** - genomic sequence of background loci
 * **background_motif_scores.tsv** - scores for each motif (columns) at each background loci
 * **background_motif_starts.tsv** - starting position for each motif (columns) at each background loci
-* **motif_scores.tsv - scores for each motif (columns) at each loci of interest
+* **motif_scores.tsv** - scores for each motif (columns) at each loci of interest
 * **motif_starts.tsv** - starting position for each motif (columns) at each loci of interest
 * **performance.tsv** - performance of the model as measured by Precision (Column 1) and the area under the Receiver Operating Characteristic curve (Column 2) for each round of cross validation (rows).
 * **coefficients.tsv** - the weight/coefficient assigned to each motif (rows) for each round of cross validation (columns)
