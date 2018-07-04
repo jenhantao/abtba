@@ -16,7 +16,7 @@ TBA takes a set of loci that are of interest as input. First, the genomic sequen
 TBA uses a programatically curated library of motifs to reduce the effects of multiple collinearity, which can be problematic for machine learning models. You can view and download the motifs at: homer.ucsd.edu/jtao/merged_motifs/allList.html](http://homer.ucsd.edu/jtao/merged_motifs/allList.html "Motif Library")
 
 ## Installing TBA
-TBA can be used on most computers running a Unix operating system (eg. macOS and Ubuntu). TBA models can be trained on a data set containing ~30k genomic loci in a reasonable time frame (<1 hour) on a modern laptop (8 GB DDR3 RAM, 2.5 GHz CPU). 
+TBA can be used on most computers running a Unix operating system (eg. macOS and Ubuntu). TBA models can be trained on a data set containing ~30k genomic loci in a reasonable time frame (~2 hours) on a modern laptop (8 GB DDR3 RAM, 2.5 GHz CPU).
 
 Download the latest release of TBA (source code) and decompress the download. Next add the "model_training" directory to your PATH environment variable. You can use the nano command to edit your .bashrc or .bash_profile file to modify how your PATH variable is set. You should add a line in your .bashrc or .bash_profile file to say
 ```
@@ -70,7 +70,7 @@ TBA requires the genomic sequence of loci of interest. You can download the the 
 If you have your own preferred way of retrieving genomic sequence, TBA can use a FASTA file containing the sequences of regions of interest instead of a BED file. However, TBA needs a genome to be installed using the directions above to select background sequences. Supposing you have your preferred way of generating a set of background sequences, TBA can use custom background sequences in FASTA format.
 
 ## Usage
-TBA is accessible as a series of command line (aka termina) scripts. The easiest way to train a TBA model is to use the train_model_default.sh command. train_model_default.sh will run all TBA commands necessary to train a TBA with default parameters. You can invoke the command like this:
+TBA is accessible as a series of command line (aka terminal) scripts. The easiest way to train a TBA model is to use the train_model_default.sh command. train_model_default.sh will run all TBA commands necessary to train a TBA with default parameters. You can invoke the command like this:
 ```bash
 train_model_default.sh mouse_pu1_peaks.bed mm10 path_to_output 
 ```
@@ -79,10 +79,12 @@ The script will create a script at path_to_output/run.sh and execute it. run.sh 
 ```
 # Extract the genomic coordinates of your regions of interest.
 # You can skip this step if you already have a fasta file.
+# Run time: several minutes
 extract_sequences.py /path/to/bed_file.bed genome  /path/to/output/fasta_file.fasta
 
 # Generate GC content matched background coordinates. 
 # You can skip this step if you already have your background coordinates
+# Run time: several minutes
 generate_background_coordinates.py /path/to/bed_file.bed genome /path/to/output/
 
 # Calculate motif scores for each sequence. 
@@ -90,15 +92,19 @@ generate_background_coordinates.py /path/to/bed_file.bed genome /path/to/output/
 # Most of the time, you'll probably want to use all of the default motifs, which can be specified with a wild card "*"
 # The default motifs is a curated set of motifs formed from the JASPAR and CISBP motif databases. 
 # The default motifs are located at /path/to/tba/default_motifs
+# Run time: ~15-20 minutes
 create_features.py /path/to/output/fasta_file.fasta /path/to/output/background.fasta /path/to/output/ /path/to/tba/default_motifs/*
 
 # Train the TBA model. This step will produce the weights/rankings for each motif as well as performance metrics for the model.
+# Run time: ~2 minutes per cross-validation iteration
 train_classifier.py /path/to/output/combined_features.tsv /path/to/output/labels.txt /path/to/output/
 
 # Uses the likelihood ratio test to assign a significance level (p-value) to each motif
+Run time: ~45 minutes per cross-validation iteration
 calc_feature_significance.py /path/to/output/combined_features.tsv /path/to/output/labels.txt /path/to/output/
 
 # Annotate model output with gene names
+Run time: seconds
 annotate_results_with_genes.py /path/to/output/coefficients.tsv /path/to/output/annotated_coefficients.tsv
 annotate_results_with_genes.py /path/to/output/significance.tsv /path/to/output/annotated_significance.tsv
 ```
