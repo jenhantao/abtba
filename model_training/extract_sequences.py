@@ -11,6 +11,8 @@ Extracts the genomic sequences
 import sys
 import os
 import inspect
+from Bio import SeqIO
+import time
 
 def read_bed_file(input_path):
     '''
@@ -29,6 +31,7 @@ def read_bed_file(input_path):
         coordinates.append((chrom,start, end))
     return coordinates
 
+
 def extract_sequence(coordinates, genome, out_file_path):
     '''
     Given a list of genomic coordinates, extracts sequences
@@ -46,9 +49,10 @@ def extract_sequence(coordinates, genome, out_file_path):
 
     print('reading genome', genome)
     for chrom in chromosomes:
-        with open(genome_path + chrom + '.fa') as f:
-            data = f.readlines()
-        seq = ''.join(x.upper().strip() for x in data[1:])
+        seq_records = list(SeqIO.parse(
+            genome_path + chrom + '.fa', 'fasta'))
+        fasta_seqs = [str(x.seq) for x in seq_records]
+        seq = ''.join(fasta_seqs).upper() 
         size = len(seq)
         chrom_size_dict[chrom] = size
         chrom_seq_dict[chrom] = seq 
