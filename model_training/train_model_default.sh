@@ -72,7 +72,7 @@ echo "$script_directory/create_features.py -num_procs 12 $seq_file $output_dir/b
 # calculate motif scores for peaks and background
 combined_features=$output_dir/combined_features.tsv
 labels=$output_dir/labels.txt
-echo "$script_directory/train_classifier.py $combined_features $labels $output_dir/">> $output_dir/run.sh
+echo "$script_directory/train_classifier.py -num_iterations 5 $combined_features $labels $output_dir/">> $output_dir/run.sh
 
 # perform insilico mutagenesis
 echo "$script_directory/calc_feature_significance.py -num_procs 12 -num_iterations 5 $combined_features $labels $output_dir/">> $output_dir/run.sh
