@@ -69,7 +69,7 @@ echo "$script_directory/generate_background_coordinates.py $bed_file $genome $ou
 # calculate motif scores
 echo "$script_directory/create_features.py -num_procs 12 $seq_file $output_dir/background.fasta $output_dir $motif_directory/*">> $output_dir/run.sh
 
-# calculate motif scores for peaks and background
+# train model
 combined_features=$output_dir/combined_features.tsv
 labels=$output_dir/labels.txt
 echo "$script_directory/train_classifier.py -num_iterations 5 $combined_features $labels $output_dir/">> $output_dir/run.sh
