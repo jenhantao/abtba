@@ -217,7 +217,7 @@ def thresholdClusterMotifs(scoreArray,
                 mergedMotifFile.write("<a href='../allScores.html'>Score Matrix</a>\n")
                 # show logo
                 mergedMotifFile.write("<h2>Logo</h2>\n")
-                mergedMotifFile.write("<img width='500px' src = './" + consensusName +".motif.svg'>\n")
+                mergedMotifFile.write("<img width='200px' src = './" + consensusName +".motif.svg'>\n")
                 # show pwm
                 mergedMotifFile.write("<h2>Position Weight Matrix</h2>\n")
                 mergedMotifFile.write("<table><thead><tr><th>Position</th><th>A</th><th>C</th><th>G</th><th>T</th></tr></thead>\n<tbody>\n")
@@ -233,7 +233,7 @@ def thresholdClusterMotifs(scoreArray,
                 
                 # list merged motifs in table
                 mergedMotifFile.write("<h2>Contributing Motifs</h2>\n")    
-                mergedMotifFile.write("<table><thead><tr><th>Motif Name</th><th>Full Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n")
+                mergedMotifFile.write("<table><thead><tr><th>Motif Name</th><th>Logo</th><th>PWM</th></tr></thead><tbody>\n")
                 for motif in motifs[1:]:
                     # write position weight matrix
                     counts_dict = {x[0]:x[1] for x in zip(list('ACGT'),
@@ -253,7 +253,7 @@ def thresholdClusterMotifs(scoreArray,
                         outputPath+'/html_files/'+bio_motif.name+'.motif.svg')
 
 
-                    mergedMotifFile.write("<tr><td><a href='"+motif[0]+".html'>" +motif[0]+"</a></td><td>"+motif[0]+"</td><td><img src = '" + motif[0]+".motif.svg'></td><td><a href='"+motif[0]+".motif' target='_blank'>Download</a></tr>\n")
+                    mergedMotifFile.write("<tr><td><a href='"+motif[0]+".html'>" +motif[0]+"</a></td><td><img src = '" + motif[0]+".motif.svg'></td><td><a href='"+motif[0]+".motif' target='_blank'>Download</a></tr>\n")
                 mergedMotifFile.write("</tbody></table>\n")
                 # find related motifs
                 mergedMotifFile.write("<h2>Related Motifs</h2>\n")
