@@ -100,6 +100,7 @@ def thresholdClusterMotifs(scoreArray,
     # create list page 
     motifListFile = open(outputPath+"/motif_list.txt", "w")
     mergedMetadataFile = open(outputPath + '/motif_metadata.tsv', 'w')
+    mergedMetadataFile.write('\t'.join(['Name', 'Gene', 'Family', 'Source']) + '\n')
     if create_html:
         # copy heatmap.js file
         heatmap_script_path = os.path.dirname(__file__) + '/heatMap.js'
