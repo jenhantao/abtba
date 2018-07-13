@@ -105,9 +105,9 @@ def get_random_background(target_positions,
         start = int(pos[1])
         end = int(pos[2])
         # use 0 indexing of position, versus 1 indexing used in fasta
-        target_chr_position_dict[chrom][start-1:end] = 1         
         if chrom in chrom_seq_dict:
             seq = chrom_seq_dict[chrom][start:(end)]
+            target_chr_position_dict[chrom][start-1:end] = 1         
             if len(seq) > 0:
                 gc_content = calc_gc_content(seq)
                 pos.append(seq)
