@@ -75,17 +75,18 @@ def thresholdClusterMotifs(scoreArray,
     allMotifs, 
     motifNames, 
     outputPath,
+    metadata_path = None,
     create_html=False):
     '''
     given a score matrix for an array of motifs, merges motifs and writes a new 
     files for the new set of motifs
     inputs: score matrix, array of motifs, threshold, outputPath
     '''
-
-    metadata_path= os.path.dirname(
-        os.path.abspath(
-        inspect.getfile(
-        inspect.currentframe()))).replace('motif_tools', 'motif_metadata.tsv')
+    if metadata_path == None:
+        metadata_path= os.path.dirname(
+            os.path.abspath(
+            inspect.getfile(
+            inspect.currentframe()))).replace('motif_tools', 'motif_metadata.tsv')
 
     metadata_frame = pd.read_csv(metadata_path, sep='\t')
     nameRoot_count_dict = {}
@@ -436,6 +437,9 @@ if __name__ == "__main__":
         help="list of moti files to cluster",
         type=str,
         nargs="+")
+    parser.add_argument("-metadata_path",
+        help="path to metadata",
+        type=str)
     parser.add_argument('-familyBasedName',action='store_true', default=True)
     parser.add_argument('-createHTML',action='store_true', default=False)
 
@@ -447,6 +451,7 @@ if __name__ == "__main__":
     threshold = args.threshold
     motifFiles = args.motifFiles
     create_html = args.createHTML
+    metadata_path = args.metadata_path
 
     if not os.path.isdir(outputPath):
         os.mkdir(outputPath)
@@ -485,4 +490,5 @@ if __name__ == "__main__":
         allMotifs, 
         motifNames, 
         outputPath, 
+        metadata_path = metadata_path,
         create_html = create_html)
