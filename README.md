@@ -10,7 +10,7 @@ TBA is a multi-functional machine learning tool for identifying transcription fa
 ## TBA Algorithm
 TBA takes a set of loci that are of interest as input. First, the genomic sequence of each loci of interest are retrieved. Next, TBA selects a set of GC-matched background loci. For each locus of interest and background locus, TBA calculates the best match to hundreds of DNA binding motifs, and quantifies the quality of the match as the motif score (aka log likelihood ratio score). To allow for degenerate motifs, all motif matches scoring over zero are considered. The motif scores are then used to train the TBA model to distinguish loci of interest from background loci. TBA scores the probability of observing binding at a sequence by computing a weighted sum over all the motif scores for that sequence. The weight for each motif is learned by iteratively modifying the weights until the model’s ability to differentiate binding sites from background loci no longer improves. The final motif weight measures whether the presence of a motif is correlated with TF binding. 
 
-<img src="http://homer.ucsd.edu/jtao/tba/flowchart.png" width="500">
+<img src="https://jenhantao.github.io/images/tba_flowchart.png" width="500">
 
 ## Motif Library
 TBA uses a programatically curated library of motifs to reduce the effects of multiple collinearity, which can be problematic for machine learning models. You can view and download the motifs at: homer.ucsd.edu/jtao/merged_motifs/allList.html](http://homer.ucsd.edu/jtao/merged_motifs/allList.html "Motif Library")
