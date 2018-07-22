@@ -12,15 +12,16 @@
 
 ### set default options ###
 
-testing=false
-
+script_only=false
+pval_calculation=false
 # check number of arguments
-if [ $# -lt 3 ] 
+if [ $# -lt 4 ] 
 then
     echo "Usage: "
     echo "train_model_default.sh <bed_file> <genome> \
-<output directory> [optional arguments]"
+<output directory> <num cores> [optional arguments]"
     echo "Options:
+-p    use likelihood ratio test to assess significance of each motif 
 -t    generate scripts but do not execute them
 "
     exit 1
@@ -28,11 +29,14 @@ fi
 
 ### parse the input ###
 
-OPTIND=4
-while getopts "t" option ; do # set $o to the next passed option
+OPTIND=5
+while getopts "tp" option ; do # set $o to the next passed option
     case "$option" in  
     t)  
-        testing=true
+        script_only=true
+    ;;  
+    p)  
+        pval_calculation=true
     ;;  
     esac
 done
@@ -40,6 +44,7 @@ done
 bed_file=$1
 genome=$2
 output_dir=$3
+num_procs=$4
 ###
 
 script_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -50,7 +55,7 @@ if [ ! -d $output_dir/ ];
     then mkdir -p $output_dir; 
 else
     # delete the existing files
-    rm $output_dir/*
+    rm $output_dir/run.sh
     # create a script file
     touch $output_dir/run.sh
 fi
@@ -67,7 +72,7 @@ echo "$script_directory/extract_sequences.py $bed_file $genome $seq_file">> $out
 echo "$script_directory/generate_background_coordinates.py $bed_file $genome $output_dir/">> $output_dir/run.sh
 
 # calculate motif scores
-echo "$script_directory/create_features.py -num_procs 12 $seq_file $output_dir/background.fasta $output_dir $motif_directory/*">> $output_dir/run.sh
+echo "$script_directory/create_features.py -num_procs $num_procs $seq_file $output_dir/background.fasta $output_dir $motif_directory/*">> $output_dir/run.sh
 
 # train model
 combined_features=$output_dir/combined_features.tsv
@@ -75,9 +80,12 @@ labels=$output_dir/labels.txt
 echo "$script_directory/train_classifier.py -num_iterations 5 $combined_features $labels $output_dir/">> $output_dir/run.sh
 
 # perform insilico mutagenesis
-echo "$script_directory/calc_feature_significance.py -num_procs 12 -num_iterations 5 $combined_features $labels $output_dir/">> $output_dir/run.sh
+if $pval_calculation;
+then
+    echo "$script_directory/calc_feature_significance.py -num_procs $num_procs -num_iterations 5 $combined_features $labels $output_dir/">> $output_dir/run.sh
+fi
 
-if ! $testing;
+if ! $script_only;
 then 
 bash $output_dir/run.sh
 fi
