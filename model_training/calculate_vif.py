@@ -13,6 +13,7 @@ import time
 import pandas as pd
 import sklearn
 from sklearn import linear_model
+from sklearn import model_selection
 
 ### functions ###
 def calculate_vif(features):
@@ -42,7 +43,7 @@ def calculate_vif(features):
         coeff_det = lr.score(other_motif_scores, current_motif_scores)
         # calculate VIF
         if coeff_det == 1:
-            vif = 10
+            vif = 100
         else:
             vif = 1/(1-coeff_det)
         vifs.append(vif)
@@ -66,16 +67,22 @@ if __name__ == '__main__':
     parser.add_argument("output_path",
         help="directory where output file should be written",
         default="./", type=str)
+    parser.add_argument("-fraction",
+        help="fraction of data for calculating VIF; should be the same as model training fraction",
+        default=0.8, type=float)
 
     # parse arguments
     args = parser.parse_args()
 
     feature_path = args.feature_path
     output_path = args.output_path
+    fraction = args.fraction
 
     # read in features
     feature_frame = pd.read_csv(feature_path, sep='\t', index_col=0)
+    train_feature, test_feature = model_selection.train_test_split(feature_frame,
+        test_size = 1-fraction)
     
-    vifs = calculate_vif(feature_frame)
+    vifs = calculate_vif(train_feature)
 
     vifs.to_csv(output_path, index = False, sep='\t')
