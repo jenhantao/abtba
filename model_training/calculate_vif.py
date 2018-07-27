@@ -59,10 +59,10 @@ def calculate_vif(features):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Given standardized motif features, \
+        description='Given features, \
         calculates the variance inflation factor')
     parser.add_argument("feature_path",
-        help="path to a standardized feature set created by create_features.py",
+        help="path to a feature set created by create_features.py",
         type = str)
     parser.add_argument("output_path",
         help="directory where output file should be written",
