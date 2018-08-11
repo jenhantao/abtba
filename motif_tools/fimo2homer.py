@@ -14,11 +14,12 @@ import sys
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         print('Usage')
-        print('fimo2homer.py <fimo_motif> <output_file_path>')
+        print('fimo2homer.py <fimo_motif> <output_file_path> <threshold>')
         sys.exit(0)
     else:
         fimo_path= sys.argv[1]
         output_path = sys.argv[2]
+        threshold = sys.argv[3]
 
     with open(fimo_path) as f:
         data = f.readlines()
@@ -29,7 +30,7 @@ if __name__ == '__main__':
     alternate_motif_name = name_tokens[2]
 
     out_file = open(output_path, 'w')
-    out_file.write('\t'.join(['>' + alternate_motif_name, motif_name, '\n']))
+    out_file.write('\t'.join(['>' + alternate_motif_name, motif_name, threshold, '\n']))
     for line in data[10:]:
         tokens = line.strip().split()
         if len(tokens) > 1:

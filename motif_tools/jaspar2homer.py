@@ -11,11 +11,12 @@ import numpy as np
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         print('Usage')
-        print('jaspar2homer.py <jaspar_motif> <output_file_path>')
+        print('jaspar2homer.py <jaspar_motif> <output_file_path> <HOMER threshold>')
         sys.exit(0)
     else:
         jaspar_path= sys.argv[1]
         output_path = sys.argv[2]
+        threshold = sys.argv[3]
 
     with open(jaspar_path) as f:
         data = f.readlines()
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     motif_name = name_line.strip().split()[-1]
     
     out_file = open(output_path, 'w')
-    out_file.write(name_line)
+    out_file.write(name_line.strip() + '\t' + threshold + '\n')
     for i in range(normed_freqs.shape[0]):
         out_file.write('\t'.join([str(x) for x in normed_freqs[i]]) + '\n')
     out_file.close()
