@@ -1,4 +1,4 @@
-# ABTBA (a Transcription factor Binding Analysis)
+# ABTBA (A Bigger Transcription factor Binding Analysis)
 
 ## ABTBA Overview
 ABTBA is a multi-functional machine learning tool for identifying transcription factors associated with genomic features. Specifically, ABTBA can be applied to:
