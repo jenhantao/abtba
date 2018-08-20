@@ -181,7 +181,7 @@ given a fasta file and a list and a list of motif files, calculates all matches 
 arguments:
 * fasta_path - path to a fasta_file containing sequences to score
 * output_path - directory where output file should be written
-* motif_files - list of motif files
+* motif_files - list of motif files in JASPAR format
 
 optional arguments:
 * -num_procs - number of processor cores to use
@@ -197,7 +197,7 @@ arguments:
 * positive_sequences_path - path to a fasta_file containing positive sequences to score
 * negative_sequences_path - path to a fasta_file containing negative sequences to score
 * output_path - directory where output file should be written
-* motif_files - list of motif files
+* motif_files - list of motif files in JASPAR format
 
 optional arguments:
 * -num_procs - number of processor cores to use
@@ -273,7 +273,7 @@ arguments:
 * similarity_scores - path to a pickled numpy array containing motif similarity scores
 * output_path - directory where output file should be written
 * output_directory - directory where file outputs should be written
-* motif_files - list of motif files
+* motif_files - list of motif files in JASPAR format
   
 optional arguments:
 * -logos - generate logos for dendrogram
@@ -285,7 +285,7 @@ calculates pairwise similarity scores between pairs of motifs
 ```
 arguments:
 * outputPath - path to output directory
-* motifFiles - space separated list of motif files
+* motifFiles - space separated list of motif files in JASPAR format
   
 optional arguments:
 * -num_procs - number of CPU cores to use
@@ -296,17 +296,50 @@ optional arguments:
 using scores calculated by the scoreMotifs.py script, clusters merges similar motifs and creates an html representation
 ```
 arguments:
-* scorePath             path to a npz file containing motif similarity scores
-* outputPath            path to directory where output will be written
-* threshold             threshold for clustering motifs
-* motifFiles            list of motif files to cluster
+* scorePath - path to a npz file containing motif similarity scores
+* outputPath - path to directory where output will be written
+* threshold - threshold for clustering motifs
+* motifFiles - list of motif files to cluster in JASPAR format
   
 optional arguments:
 * -metadata_path - path to metadata
 * -familyBasedName - use metadata to name motifs
 * -createHTML - create html files and motif logos
 ```
+**homer2meme.py.py <homer_motif> <output_file_path>**
 
+Converts motif in HOMER format to MEME format
+```
+arguments:
+* homer_motif - path to a HOMER motif file
+* output_file_path - where the converted MEME file should be written
+```
+**meme2homer.py <meme_motif> <output_file_path> <HOMER threshold>**
+
+Converts motif in MEME format to HOMER format
+```
+arguments:
+* meme_motif - path to a MEME motif file
+* output_file_path - where the converted HOMER file should be written
+* HOMER threshold - HOMER detection threshold for a motif. Please read the HOMER documentation
+```
+**homer2jaspar.py <homer_motif> <output_file_path>**
+
+Converts motif in HOMER format to JASPAR format
+```
+arguments:
+* meme_motif - path to a HOMER motif file
+* output_file_path - where the converted JASPAR file should be written
+```
+**jaspar2homer.py <jaspar_motif> <output_file_path> <HOMER threshold>**
+
+Converts motif in MEME format to HOMER format
+```
+arguments:
+* jaspar_motif - path to a JASPAR motif file
+* output_file_path - where the converted HOMER file should be written
+* HOMER threshold - HOMER detection threshold for a motif. Please read the HOMER documentation
+```
 ## Authors
 ABTBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply ABTBA to your research problem
 
