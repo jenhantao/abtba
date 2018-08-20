@@ -150,7 +150,86 @@ Content coming soon - please refer to our BioRxiv manuscript for now.
 ## Example Analysis
 Content coming soon - please refer to our BioRxiv manuscript for now.
 
-## ABTBA Parameters
+## ABTBA Motif Merging Parameters
+If you're ever unsure how to use a ABTBA command simply run the command without any parameters and help text should be displayed. All ABTBA commands and their associated parameters are listed here. Optional parameters are indicated with the default parameters
+
+**create_motif_dendrogram.py <similarity_scores> <output_path> <motif_file_1> <motif_file_2>... -logo -threshold 0.80**
+
+Given a list of motifs and an matrix of similarity scores, creates a dendrogram of the motifs
+```
+arguments:
+* similarity_scores - path to a pickled numpy array containing motif similarity scores
+* output_path - directory where output file should be written
+* output_directory - directory where file outputs should be written
+* motif_files - list of motif files in JASPAR format
+  
+optional arguments:
+* -logos - generate logos for dendrogram
+* -threshold   threshold for coloring clades
+```
+**score_motifs.py <outputPath> <motif_file_1> <motif_file_2>... -num_procs 4**
+
+calculates pairwise similarity scores between pairs of motifs
+```
+arguments:
+* outputPath - path to output directory
+* motifFiles - space separated list of motif files in JASPAR format
+  
+optional arguments:
+* -num_procs - number of CPU cores to use
+* -threshold   threshold for coloring clades
+```
+**threshold_cluster_motifs.py <scorePath> <output_path> <threshold> <motif_file_1> <motif_file_2>... -metadata_path /path/to/metadata -familyBasedName -createHTML**
+
+using scores calculated by the scoreMotifs.py script, clusters merges similar motifs and creates an html representation
+```
+arguments:
+* scorePath - path to a npz file containing motif similarity scores
+* outputPath - path to directory where output will be written
+* threshold - threshold for clustering motifs
+* motifFiles - list of motif files to cluster in JASPAR format
+  
+optional arguments:
+* -metadata_path - path to metadata
+* -familyBasedName - use metadata to name motifs
+* -createHTML - create html files and motif logos
+```
+**homer2meme.py.py <homer_motif> <output_file_path>**
+
+Converts motif in HOMER format to MEME format
+```
+arguments:
+* homer_motif - path to a HOMER motif file
+* output_file_path - where the converted MEME file should be written
+```
+**meme2homer.py <meme_motif> <output_file_path> <HOMER threshold>**
+
+Converts motif in MEME format to HOMER format
+```
+arguments:
+* meme_motif - path to a MEME motif file
+* output_file_path - where the converted HOMER file should be written
+* HOMER threshold - HOMER detection threshold for a motif. Please read the HOMER documentation
+```
+**homer2jaspar.py <homer_motif> <output_file_path>**
+
+Converts motif in HOMER format to JASPAR format
+```
+arguments:
+* meme_motif - path to a HOMER motif file
+* output_file_path - where the converted JASPAR file should be written
+```
+**jaspar2homer.py <jaspar_motif> <output_file_path> <HOMER threshold>**
+
+Converts motif in MEME format to HOMER format
+```
+arguments:
+* jaspar_motif - path to a JASPAR motif file
+* output_file_path - where the converted HOMER file should be written
+* HOMER threshold - HOMER detection threshold for a motif. Please read the HOMER documentation
+```
+
+## ABTBA Model Training Parameters
 If you're ever unsure how to use a ABTBA command simply run the command without any parameters and help text should be displayed. All ABTBA commands and their associated parameters are listed here. Optional parameters are indicated with the default parameters
 
 **annotate_results_with_genes.py <result_path> <output_path>**
@@ -265,81 +344,7 @@ arguments:
 optional arguments:
 * -t - generate scripts but do not execute them
 ```
-**create_motif_dendrogram.py <similarity_scores> <output_path> <motif_file_1> <motif_file_2>... -logo -threshold 0.80**
 
-Given a list of motifs and an matrix of similarity scores, creates a dendrogram of the motifs
-```
-arguments:
-* similarity_scores - path to a pickled numpy array containing motif similarity scores
-* output_path - directory where output file should be written
-* output_directory - directory where file outputs should be written
-* motif_files - list of motif files in JASPAR format
-  
-optional arguments:
-* -logos - generate logos for dendrogram
-* -threshold   threshold for coloring clades
-```
-**score_motifs.py <outputPath> <motif_file_1> <motif_file_2>... -num_procs 4**
-
-calculates pairwise similarity scores between pairs of motifs
-```
-arguments:
-* outputPath - path to output directory
-* motifFiles - space separated list of motif files in JASPAR format
-  
-optional arguments:
-* -num_procs - number of CPU cores to use
-* -threshold   threshold for coloring clades
-```
-**threshold_cluster_motifs.py <scorePath> <output_path> <threshold> <motif_file_1> <motif_file_2>... -metadata_path /path/to/metadata -familyBasedName -createHTML**
-
-using scores calculated by the scoreMotifs.py script, clusters merges similar motifs and creates an html representation
-```
-arguments:
-* scorePath - path to a npz file containing motif similarity scores
-* outputPath - path to directory where output will be written
-* threshold - threshold for clustering motifs
-* motifFiles - list of motif files to cluster in JASPAR format
-  
-optional arguments:
-* -metadata_path - path to metadata
-* -familyBasedName - use metadata to name motifs
-* -createHTML - create html files and motif logos
-```
-**homer2meme.py.py <homer_motif> <output_file_path>**
-
-Converts motif in HOMER format to MEME format
-```
-arguments:
-* homer_motif - path to a HOMER motif file
-* output_file_path - where the converted MEME file should be written
-```
-**meme2homer.py <meme_motif> <output_file_path> <HOMER threshold>**
-
-Converts motif in MEME format to HOMER format
-```
-arguments:
-* meme_motif - path to a MEME motif file
-* output_file_path - where the converted HOMER file should be written
-* HOMER threshold - HOMER detection threshold for a motif. Please read the HOMER documentation
-```
-**homer2jaspar.py <homer_motif> <output_file_path>**
-
-Converts motif in HOMER format to JASPAR format
-```
-arguments:
-* meme_motif - path to a HOMER motif file
-* output_file_path - where the converted JASPAR file should be written
-```
-**jaspar2homer.py <jaspar_motif> <output_file_path> <HOMER threshold>**
-
-Converts motif in MEME format to HOMER format
-```
-arguments:
-* jaspar_motif - path to a JASPAR motif file
-* output_file_path - where the converted HOMER file should be written
-* HOMER threshold - HOMER detection threshold for a motif. Please read the HOMER documentation
-```
 ## Authors
 ABTBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply ABTBA to your research problem
 
