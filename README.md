@@ -224,7 +224,7 @@ optional arguments:
 * -nThreshold - maximum fraction of background sequences that can be N
 * -filterChromosomes - chromosomes to ignore
 ```
-**train_classifier.py  <feature_path> <label_path> <output_path> -num_iterations 5-test_fraction 0.2**
+**train_classifier.py  <feature_path> <label_path> <output_path> -num_iterations 5 -test_fraction 0.2**
                           
 Given standardized motif features and matching labels trains a classifier and returns performance metrics and model coefficients
 ```
@@ -262,6 +262,21 @@ arguments:
 optional arguments:
 * -t - generate scripts but do not execute them
 ```
+**create_motif_dendrogram.py <similarity_scores> <output_path> <motif_file_1> <motif_file_2>... -logo -threshold 0.80**
+
+Given a list of motifs and an matrix of similarity scores, creates a dendrogram of the motifs
+```
+arguments:
+* similarity_scores - path to a pickled numpy array containing motif similarity scores
+* output_path - directory where output file should be written
+* output_directory - directory where file outputs should be written
+* motif_files - list of motif files
+  
+optional arguments:
+* -logos - generate logos for dendrogram
+* -threshold   threshold for coloring clades
+```
+
 ## Authors
 ABTBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply ABTBA to your research problem
 
