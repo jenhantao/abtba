@@ -4,11 +4,9 @@
 ABTBA is a multi-functional machine learning tool for identifying transcription factors associated with genomic features. Specifically, ABTBA can be applied to:
 * ChIP-seq targeting a transcription to identify collaborative binding partners for a given transcription factor. 
 * DNAse-seq and ATAC-seq to identify transcription factors associated with open chromatin
-* GRO-seq and other assays measuring enhancer activity to identify transcription factors associated with enhancer activty
-* Predict the effect of genetic variation in any of the above contexts.
 
 ## ABTBA Algorithm
-ABTBA takes a set of loci that are of interest as input. First, the genomic sequence of each loci of interest are retrieved. Next, ABTBA selects a set of GC-matched background loci. For each locus of interest and background locus, ABTBA calculates the best match to hundreds of DNA binding motifs, and quantifies the quality of the match as the motif score (aka log likelihood ratio score). To allow for degenerate motifs, all motif matches scoring over zero are considered. The motif scores are then used to train the ABTBA model to distinguish loci of interest from background loci. ABTBA scores the probability of observing binding at a sequence by computing a weighted sum over all the motif scores for that sequence. The weight for each motif is learned by iteratively modifying the weights until the model’s ability to differentiate binding sites from background loci no longer improves. The final motif weight measures whether the presence of a motif is correlated with TF binding. 
+We present a machine learning tool, ABTBA (A Bigger TF Binding Analysis), for the analysis of TF binding motif interactions in the context of non-coding regulatory elements. ABTBA uses a programmatically curated library of motifs formed from the JASPAR and CISBP databases that reduces multiple collinearity and enhances the interpretability of the model. ABTBA then analyzes genomic sequence to learn combinations of motifs that are associated with regulatory elements.
 
 <img src="https://jenhantao.github.io/images/abtba_workflow.png" width="500">
 
