@@ -276,7 +276,18 @@ optional arguments:
 * -logos - generate logos for dendrogram
 * -threshold   threshold for coloring clades
 ```
+**score_motifs.py <outputPath> <output_path> <motif_file_1> <motif_file_2>... -num_procs 4**
 
+calculates pairwise similarity scores between pairs of motifs
+```
+arguments:
+* outputPath - path to output directory
+* motifFiles - space separated list of motif files
+  
+optional arguments:
+* -num_procs - number of CPU cores to use
+* -threshold   threshold for coloring clades
+```
 ## Authors
 ABTBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply ABTBA to your research problem
 
