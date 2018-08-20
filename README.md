@@ -70,6 +70,7 @@ ABTBA requires the genomic sequence of loci of interest. You can download the th
 If you have your own preferred way of retrieving genomic sequence, ABTBA can use a FASTA file containing the sequences of regions of interest instead of a BED file. However, ABTBA needs a genome to be installed using the directions above to select background sequences. Supposing you have your preferred way of generating a set of background sequences, ABTBA can use custom background sequences in FASTA format.
 
 ## Usage
+### Model Training
 ABTBA is accessible as a series of command line (aka terminal) scripts. The easiest way to train a ABTBA model is to use the train_model_default.sh command. train_model_default.sh will run all ABTBA commands necessary to train a ABTBA with default parameters. You can invoke the command like this:
 ```bash
 train_model_default.sh mouse_pu1_peaks.bed mm10 path_to_output 
@@ -108,6 +109,8 @@ Run time: seconds
 annotate_results_with_genes.py /path/to/output/coefficients.tsv /path/to/output/annotated_coefficients.tsv
 annotate_results_with_genes.py /path/to/output/significance.tsv /path/to/output/annotated_significance.tsv
 ```
+### Motif merging and motif library creation
+Coming soon
 
 ## Interpreting Results
 The final model outputs will be located at /path/to/output/. You should see several files:
@@ -276,7 +279,7 @@ optional arguments:
 * -logos - generate logos for dendrogram
 * -threshold   threshold for coloring clades
 ```
-**score_motifs.py <outputPath> <output_path> <motif_file_1> <motif_file_2>... -num_procs 4**
+**score_motifs.py <outputPath> <motif_file_1> <motif_file_2>... -num_procs 4**
 
 calculates pairwise similarity scores between pairs of motifs
 ```
@@ -288,6 +291,22 @@ optional arguments:
 * -num_procs - number of CPU cores to use
 * -threshold   threshold for coloring clades
 ```
+**threshold_cluster_motifs.py <scorePath> <output_path> <threshold> <motif_file_1> <motif_file_2>... -metadata_path /path/to/metadata -familyBasedName -createHTML**
+
+using scores calculated by the scoreMotifs.py script, clusters merges similar motifs and creates an html representation
+```
+arguments:
+* scorePath             path to a npz file containing motif similarity scores
+* outputPath            path to directory where output will be written
+* threshold             threshold for clustering motifs
+* motifFiles            list of motif files to cluster
+  
+optional arguments:
+* -metadata_path - path to metadata
+* -familyBasedName - use metadata to name motifs
+* -createHTML - create html files and motif logos
+```
+
 ## Authors
 ABTBA was created by Jenhan Tao with feedback from Gregory Fonseca and Christopher Benner. If you have any questions, please send an email to jenhantao@gmail.com. We would be glad to help you apply ABTBA to your research problem
 
