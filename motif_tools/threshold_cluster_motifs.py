@@ -424,7 +424,7 @@ if __name__ == "__main__":
                                      representation')
 
     parser.add_argument("scorePath",
-        help="path to a npz file containing motif similarity scores",
+        help="path to a tsv file containing motif similarity scores",
         type = str)
     parser.add_argument("outputPath",
         help="path to directory where output will be written",

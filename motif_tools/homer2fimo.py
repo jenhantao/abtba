@@ -14,7 +14,7 @@ import sys
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         print('Usage')
-        print('fimo2homer.py <homer_motif> <output_file_path>')
+        print('homer2fimo.py <homer_motif> <output_file_path>')
         sys.exit(0)
     else:
         homer_path= sys.argv[1]
