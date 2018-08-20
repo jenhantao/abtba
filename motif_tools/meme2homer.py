@@ -14,14 +14,14 @@ import sys
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         print('Usage')
-        print('fimo2homer.py <fimo_motif> <output_file_path> <threshold>')
+        print('meme2homer.py <meme_motif> <output_file_path> <threshold>')
         sys.exit(0)
     else:
-        fimo_path= sys.argv[1]
+        meme_path= sys.argv[1]
         output_path = sys.argv[2]
         threshold = sys.argv[3]
 
-    with open(fimo_path) as f:
+    with open(meme_path) as f:
         data = f.readlines()
     
     nameline = data[8].strip()
