@@ -107,8 +107,6 @@ Run time: seconds
 annotate_results_with_genes.py /path/to/output/coefficients.tsv /path/to/output/annotated_coefficients.tsv
 annotate_results_with_genes.py /path/to/output/significance.tsv /path/to/output/annotated_significance.tsv
 ```
-### Motif merging and motif library creation
-Coming soon
 
 ## Interpreting Results
 The final model outputs will be located at /path/to/output/. You should see several files:
